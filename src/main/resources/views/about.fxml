@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
+   <stylesheets>
+      <URL value="@../css/primer-light.css" />
+      <URL value="@../css/agilteam-styles.css" />
+   </stylesheets>
+   <children>
+      <BorderPane prefHeight="600.0" prefWidth="500.0">
+         <center>
+            <VBox spacing="10.0" BorderPane.alignment="CENTER">
+               <padding>
+                  <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+               </padding>
+               <children>
+                  <VBox alignment="CENTER">
+                     <children>
+                        <Label prefHeight="36.0" prefWidth="315.0" styleClass="page-title" text="AGILTEAM MANAGER" />
+                        <Label styleClass="page-subtitle" text="Gestión ágil para equipos" />
+                        <Label styleClass="page-subtitle" text="Versión 1.0.0" textAlignment="CENTER" />
+                        <Separator prefWidth="200.0" />
+                        <Label styleClass="form-label" text="DESCRIPCIÓN:">
+                           <padding>
+                              <Insets bottom="5.0" />
+                           </padding>
+                        </Label>
+                        <Label prefHeight="54.0" prefWidth="460.0" styleClass="form-label" text="Solución integral para optimizar la carga de trabajo y el seguimiento de competencias en equipos IT." wrapText="true" />
+                        <Label prefHeight="35.0" prefWidth="153.0" styleClass="form-label" text="DESARROLLADO POR: ">
+                           <padding>
+                              <Insets bottom="5.0" />
+                           </padding>
+                        </Label>
+                        <Label prefHeight="48.0" prefWidth="460.0" styleClass="form-label" text="Francisco José Rodríguez Ruiz (Fran)Proyecto Fin de Grado - FP DAM - 2025/26" wrapText="true" />
+                        <Label styleClass="form-label" text="AGRADECIMIENTOS:">
+                           <padding>
+                              <Insets bottom="5.0" />
+                           </padding>
+                        </Label>
+                        <Label prefHeight="30.0" prefWidth="465.0" styleClass="form-label" text="A los tutores del centro y a Kenzo (Happiness Off.)" />
+                        <Label styleClass="form-label" text="LICENCIA:">
+                           <padding>
+                              <Insets bottom="5.0" />
+                           </padding>
+                        </Label>
+                        <Label prefHeight="18.0" prefWidth="466.0" styleClass="form-label" text="Creative Commons - Uso Educativo" />
+                        <Separator prefHeight="44.0" prefWidth="460.0" />
+                     </children>
+                  </VBox>
+               </children>
+            </VBox>
+         </center>
+         <top>
+            <ImageView fitHeight="133.0" fitWidth="498.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
+               <image>
+                  <Image url="@../assets/logo_oscuro.png" />
+               </image>
+            </ImageView>
+         </top>
+         <bottom>
+            <Button mnemonicParsing="false" prefHeight="34.0" prefWidth="107.0" styleClass="button, primary" text="Regresar" BorderPane.alignment="TOP_CENTER" />
+         </bottom>
+      </BorderPane>
+   </children>
+</AnchorPane>

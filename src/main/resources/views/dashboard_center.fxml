@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="930.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <VBox prefHeight="930.0" prefWidth="1200.0">
+         <children>
+            <HBox alignment="CENTER" prefHeight="140.0" prefWidth="200.0" spacing="20.0" VBox.vgrow="ALWAYS">
+               <VBox.margin>
+                  <Insets top="17.0" />
+               </VBox.margin>
+               <children>
+                  <fx:include fx:id="widgetProyectos" source="widget_card.fxml" />
+                  <fx:include fx:id="widgetTareas" source="widget_card.fxml" />
+                  <fx:include fx:id="widgetPersonas" source="widget_card.fxml" />
+                  <fx:include fx:id="widgetCarga" source="widget_card.fxml" />
+               </children>
+            </HBox>
+            <Label styleClass="section-title" text="Rendimiento del Equipo (Últimos 7 Días)" />
+            <HBox prefHeight="412.0" prefWidth="200.0">
+               <VBox.margin>
+                  <Insets top="17.0" />
+               </VBox.margin>
+               <children>
+                  <BarChart fx:id="barChartRendimiento" prefWidth="666.0">
+                    <xAxis>
+                      <CategoryAxis side="BOTTOM" />
+                    </xAxis>
+                    <yAxis>
+                      <NumberAxis side="LEFT" />
+                    </yAxis>
+                     <HBox.margin>
+                        <Insets right="45.0" />
+                     </HBox.margin>
+                     <styleClass>
+                        <String fx:value="card" />
+                        <String fx:value="elevated-1" />
+                     </styleClass>
+                  </BarChart>
+                  <ListView prefHeight="408.0" prefWidth="394.0">
+                     <styleClass>
+                        <String fx:value="striped" />
+                        <String fx:value="dense" />
+                     </styleClass>
+                  </ListView>
+               </children>
+            </HBox>
+            <HBox prefHeight="310.0" prefWidth="200.0">
+               <VBox.margin>
+                  <Insets top="17.0" />
+               </VBox.margin>
+               <children>
+                  <TableView fx:id="tblTareasPendientes" prefHeight="200.0" prefWidth="530.0">
+                    <columns>
+                      <TableColumn prefWidth="75.0" text="C1" />
+                      <TableColumn prefWidth="75.0" text="C2" />
+                    </columns>
+                     <HBox.margin>
+                        <Insets right="45.0" />
+                     </HBox.margin>
+                  </TableView>
+                  <TableView fx:id="tblEquipoActivo" prefHeight="200.0" prefWidth="530.0">
+                    <columns>
+                      <TableColumn prefWidth="75.0" text="C1" />
+                      <TableColumn prefWidth="75.0" text="C2" />
+                    </columns>
+                  </TableView>
+               </children>
+            </HBox>
+         </children>
+         <padding>
+            <Insets left="40.0" />
+         </padding>
+      </VBox>
+   </children>
+   <stylesheets>
+      <URL value="@../css/primer-light.css" />
+      <URL value="@../css/agilteam-styles.css" />
+   </stylesheets>
+</AnchorPane>

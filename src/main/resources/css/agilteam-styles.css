@@ -1,0 +1,212 @@
+/* =====================================================
+   FUENTES
+   ===================================================== */
+
+@font-face {
+    font-family: "Inter";
+    src: url("../fonts/Inter_18pt-Regular.ttf");
+}
+
+@font-face {
+    font-family: "Inter";
+    src: url("../fonts/Inter_18pt-Medium.ttf");
+}
+
+@font-face {
+    font-family: "Inter";
+    src: url("../fonts/Inter_18pt-SemiBold.ttf");
+}
+
+@font-face {
+    font-family: "Inter";
+    src: url("../fonts/Inter_18pt-Bold.ttf");
+}
+
+.root {
+    -fx-font-family: "Inter";
+}
+
+.kpi-value {
+    -fx-font-size: 32px;
+    -fx-font-weight: 700;
+}
+
+.kpi-value-sm {
+    -fx-font-size: 22px;
+    -fx-font-weight: 600;
+}
+
+.kpi-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: -fx-text-muted;
+}
+
+
+
+/* =====================================================
+   VARIABLES DE DISEÑO (Penpot)
+   ===================================================== */
+
+.root {
+    /* Tipografía base */
+    -fx-font-family: "Inter";
+
+    /* Zonas oscuras */
+    -app-bg-sidebar: #0F1419;
+    -app-bg-header:  #1A1F26;
+    -app-bg-hover:   #242A33;
+    -app-text-dark:  #E8EAED;
+
+    /* Área de trabajo */
+    -app-bg-workspace: #F8F7F4;
+    -app-bg-card:      #FFFFFF;
+    -app-border-soft:  #E5E7EB;
+
+    -app-text-main:      #1F2937;
+    -app-text-secondary: #6B7280;
+
+    /* Colores funcionales */
+    -app-primary:        #00D4FF;
+    -app-primary-hover:  #00B0D4;
+
+    -app-success: #10B981;
+    -app-warning: #F59E0B;
+    -app-error:   #EF4444;
+    -app-info:    #3B82F6;
+}
+
+
+/* =====================================================
+   BARRAS (HEADER / SIDEBAR / FOOTER)
+   ===================================================== */
+
+/* Header superior */
+.app-header {
+    -fx-background-color: -app-bg-header;
+    -fx-padding: 12 20;
+}
+
+/* Sidebar */
+.app-sidebar {
+    -fx-background-color: -app-bg-sidebar;
+    -fx-padding: 12;
+}
+
+/* Hover sidebar */
+.app-sidebar .button:hover,
+.app-sidebar .label:hover {
+    -fx-background-color: -app-bg-hover;
+}
+
+/* Footer */
+.app-footer {
+    -fx-background-color: -app-bg-header;
+    -fx-padding: 8 16;
+}
+
+
+/* =====================================================
+   TEXTO Y TIPOGRAFÍA (según Penpot)
+   ===================================================== */
+
+/* Título de página */
+.page-title {
+    -fx-font-size: 30px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -app-text-main;
+}
+
+/* Subtítulo */
+.page-subtitle {
+    -fx-font-size: 14px;
+    -fx-font-weight: 400;
+    -fx-text-fill: -app-text-secondary;
+}
+
+/* Título de sección / card */
+.section-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: 600;
+    -fx-text-fill: -app-text-main;
+}
+
+/* Texto normal */
+.text-body {
+    -fx-font-size: 16px;
+    -fx-font-weight: 400;
+    -fx-text-fill: -app-text-main;
+}
+
+/* Labels de formulario */
+.form-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: 500;
+    -fx-text-fill: #374151;
+}
+
+/* Sidebar normal */
+.sidebar-item {
+    -fx-font-size: 16px;
+    -fx-font-weight: 400;
+    -fx-text-fill: -app-text-dark;
+}
+
+/* Sidebar grupo */
+.sidebar-group {
+    -fx-font-size: 16px;
+    -fx-font-weight: 600;
+    -fx-text-fill: -app-text-dark;
+}
+
+/* Sidebar activo */
+.sidebar-item-active {
+    -fx-font-weight: 600;
+    -fx-text-fill: -app-primary;
+}
+
+
+/* =====================================================
+   BOTONES (sin romper Atlanta)
+   ===================================================== */
+
+.button.primary {
+    -fx-background-color: -app-primary;
+    -fx-text-fill: white;
+    -fx-font-weight: 600;
+}
+
+.button.primary:hover {
+    -fx-background-color: -app-primary-hover;
+}
+
+/* =====================================================
+   BOTONES DE NAVEGACIÓN (texto sin cromado)
+   ===================================================== */
+
+.button.nav-item {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+
+    -fx-font-size: 16px;
+    -fx-font-weight: 400;
+    -fx-text-fill: -app-text-dark;
+
+    -fx-padding: 8 12;
+    -fx-alignment: CENTER_LEFT;
+}
+
+/* Hover */
+.button.nav-item:hover {
+    -fx-background-color: -app-bg-hover;
+}
+
+/* Activo */
+.button.nav-item.active {
+    -fx-font-weight: 600;
+    -fx-text-fill: -app-primary;
+}
+
+/* Foco (accesible pero discreto) */
+.button.nav-item:focused {
+    -fx-background-color: -app-bg-hover;
+}

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="">
+
+    <ScrollPane fitToWidth="true"
+                AnchorPane.topAnchor="0"
+                AnchorPane.bottomAnchor="0"
+                AnchorPane.leftAnchor="0"
+                AnchorPane.rightAnchor="0">
+
+        <GridPane padding="20"
+                  hgap="12"
+                  vgap="10">
+
+            <!-- Columnas -->
+            <columnConstraints>
+                <ColumnConstraints minWidth="120" halignment="RIGHT"/>
+                <ColumnConstraints hgrow="ALWAYS"/>
+            </columnConstraints>
+
+            <!-- Fila 0 -->
+            <Label text="Nombre:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+            <TextField fx:id="txtNombre" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+            <!-- Fila 1 -->
+            <Label text="Apellidos:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+            <TextField fx:id="txtApellidos" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+            <!-- Fila 2 -->
+            <Label text="Email:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+            <TextField fx:id="txtEmail" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+            <!-- Fila 3 -->
+            <Label text="Rol:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+            <ComboBox fx:id="cmbRol" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+            <!-- Fila 4 -->
+            <Label text="Activo:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+            <CheckBox fx:id="chkActivo" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+            <!-- Botones -->
+            <HBox spacing="10"
+                  GridPane.rowIndex="5"
+                  GridPane.columnIndex="1"
+                  alignment="CENTER_RIGHT">
+
+                <Button text="Cancelar"/>
+                <Button text="Guardar"/>
+            </HBox>
+
+        </GridPane>
+    </ScrollPane>
+</AnchorPane>
+
