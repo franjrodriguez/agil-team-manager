@@ -33,8 +33,7 @@ public class LoginController {
     public void initialize() {
         // Obtener el service desde el contexto de Spring
         autenticacionService = SpringContext.getBean(AutenticacionService.class);
-
-        System.out.println("✅ LoginController inicializado correctamente");
+        System.out.println("(FRANDEV)---> LoginController inicializado correctamente");
     }
 
     /**
@@ -42,12 +41,15 @@ public class LoginController {
      */
     @FXML
     private void onLoginClick() {
+        System.out.println("(FRANDEV)---> ESTÁN LLAMANDO A LA PUERTA... A VER QUIEN ES");
+
         String usuario = txtUsuario.getText().trim();
         String password = txtPassword.getText();
 
         // Validar campos vacíos
         if (usuario.isEmpty() || password.isEmpty()) {
             mostrarError("Por favor, introduce usuario y contraseña");
+            System.out.println("(FRANDEV)---> NO TE CONOZCO CHAVAL...");
             return;
         }
 
@@ -57,10 +59,12 @@ public class LoginController {
 
             if (persona == null) {
                 mostrarError("Usuario o contraseña incorrectos");
+                System.out.println("(FRANDEV)---> NO TE CONOZCO CHAVAL SEGUNDA PARTE...");
                 return;
             }
 
             // Login exitoso → Cargar dashboard según rol
+            System.out.println("(FRANDEV)---> ME PREPARO PARA EL SALTO AL HIPERESPACIO...");
             cargarDashboard(persona);
 
         } catch (Exception e) {
@@ -78,6 +82,7 @@ public class LoginController {
      * no como escena raíz — esa era la lógica anterior incorrecta.
      */
     private void cargarDashboard(Persona persona) {
+        System.out.println("(FRANDEV)---> ESTOY DENTRO, PERO A VER CON QUE ME ENCUENTRO...");
         try {
             boolean esAdmin = autenticacionService.esAdministrador(persona);
             String rolNombre = persona.getRol().getNombre();
@@ -85,9 +90,11 @@ public class LoginController {
             // Cargamos siempre la estructura principal (cabecera + menú + footer)
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/dashboard/MainView.fxml"));
             Parent root = loader.load();
+            System.out.println("(FRANDEV)---> PARECÍA QUE VEÍA ALGO...");
 
             // Pasamos los datos de sesión al controlador principal.
             // Él decide qué dashboard cargar en el contentArea central.
+            System.out.println("(FRANDEV)---> PREPARADOS PARA EL SEGUNDO SALTO A MAINCONTROLLER, AUNQUE ESTO SIGUE...");
             MainController mainController = loader.getController();
             mainController.iniciarSesion(persona.getNombre(), rolNombre, true, esAdmin);
 
@@ -98,6 +105,7 @@ public class LoginController {
             stage.setMaximized(true);
             stage.show();
 
+            System.out.println("(FRANDEV)---> UN GRUPO DE INVESTIGACION SE LANZÓ HACIA EL HYPER-MAINCONTROLLER...");
             System.out.println("✅ MainView cargada para: " + persona.getNombre() + " [" + rolNombre + "]");
 
         } catch (Exception e) {

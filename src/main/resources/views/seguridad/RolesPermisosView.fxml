@@ -17,13 +17,13 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="930.0" prefWidth="1200.0" styleClass="bg-default" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="806.0" prefWidth="1200.0" styleClass="bg-default" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
     <stylesheets>
         <URL value="@../../css/primer-light.css" />
         <URL value="@../../css/agilteam-styles.css" />
     </stylesheets>
     <left>
-        <VBox fx:id="sidebarPanel" prefHeight="930.0" prefWidth="380.0" spacing="16.0" styleClass="app-sidebar" BorderPane.alignment="CENTER">
+        <VBox fx:id="sidebarPanel" prefHeight="806.0" prefWidth="380.0" spacing="16.0" styleClass="app-sidebar" BorderPane.alignment="CENTER">
             <children>
                 <TextField fx:id="searchField" prefHeight="40.0" promptText="Buscar rol..." />
                 <Button fx:id="btnAddRol" mnemonicParsing="false" prefHeight="40.0" prefWidth="400.0" styleClass="primary" text="Nuevo Rol" />

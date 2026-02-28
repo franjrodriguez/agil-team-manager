@@ -19,7 +19,7 @@
     El controller lo inyecta al pulsar "+ AÑADIR SPRINT"
 -->
 
-<VBox prefWidth="380.0" prefHeight="930.0" spacing="0"
+<VBox prefWidth="380.0" prefHeight="806.0" spacing="0"
       style="-fx-background-color: white;"
       xmlns="http://javafx.com/javafx/25"
       xmlns:fx="http://javafx.com/fxml/1"

@@ -35,7 +35,7 @@
 ╚══════════════════════════════════════════════════════════════════╝
 -->
 
-<StackPane prefHeight="700" prefWidth="960" stylesheets="@../css/primer-light.css,@../css/agilteam-styles.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iesaguadulce.agilteammanager.controller.ui.proyectos.ProyectosController">
+<StackPane prefHeight="806" prefWidth="1200" stylesheets="@../css/primer-light.css,@../css/agilteam-styles.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iesaguadulce.agilteammanager.controller.ui.proyectos.ProyectosController">
 
 
     <!-- ═══════════════════════════════════════════════════════════
@@ -206,7 +206,7 @@
            NuevoSprint.fxml con FXMLLoader en tiempo de ejecución.
          ═══════════════════════════════════════════════════════════ -->
     <HBox alignment="CENTER_RIGHT" mouseTransparent="true">
-        <VBox fx:id="drawerPanel" maxWidth="380" mouseTransparent="true" prefWidth="380" style="-fx-background-color: white;                      -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 20, 0, -4, 0);" translateX="380">
+        <VBox fx:id="drawerPanel" maxWidth="380" mouseTransparent="true" prefWidth="380" style="-fx-background-color: white; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 20, 0, -4, 0);" translateX="380">
 
             <!-- SLOT: aquí se carga dinámicamente NuevaTarea.fxml
                        o NuevoSprint.fxml desde el controller -->

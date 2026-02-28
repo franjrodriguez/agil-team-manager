@@ -14,10 +14,13 @@ import java.util.Optional;
  */
 @Service
 @Transactional
-@RequiredArgsConstructor
 public class PuestoService {
 
     private final PuestoRepository puestoRepository;
+
+    public PuestoService(PuestoRepository puestoRepository) {
+        this.puestoRepository = puestoRepository;
+    }
 
     /**
      * Crea un nuevo puesto
@@ -52,6 +55,26 @@ public class PuestoService {
         return puestoRepository.save(puesto);
     }
 
+    public Puesto guardar(Puesto puesto) {
+        // Validación: nombre no puede estar vacío
+        if (puesto.getNombre() == null || puesto.getNombre().isBlank()) {
+            throw new IllegalArgumentException("El nombre del puesto no puede estar vacío.");
+        }
+
+        // Validación: nombre único (comprobamos si existe otro con el mismo nombre)
+        Optional<Puesto> existente = puestoRepository.findByNombre(puesto.getNombre().trim());
+        if (existente.isPresent() && !existente.get().getId().equals(puesto.getId())) {
+            throw new IllegalArgumentException(
+                    "Ya existe un puesto con el nombre: " + puesto.getNombre()
+            );
+        }
+
+        // Limpiamos espacios extra del nombre antes de guardar
+        puesto.setNombre(puesto.getNombre().trim());
+
+        return puestoRepository.save(puesto);
+    }
+
     /**
      * Elimina un puesto (solo si no tiene personas asignadas)
      */
@@ -71,7 +94,10 @@ public class PuestoService {
      */
     @Transactional(readOnly = true)
     public List<Puesto> obtenerTodos() {
-        return puestoRepository.findAll();
+        return puestoRepository.findAll()
+                .stream()
+                .sorted((a, b) -> a.getNombre().compareToIgnoreCase(b.getNombre()))
+                .toList();
     }
 
     /**
@@ -86,7 +112,10 @@ public class PuestoService {
      * Busca puestos por nombre
      */
     @Transactional(readOnly = true)
-    public List<Puesto> buscarPorNombre(String nombre) {
-        return puestoRepository.findByNombreContainingIgnoreCase(nombre);
+    public List<Puesto> buscarPorNombre(String texto) {
+        if (texto == null || texto.isBlank()) {
+            return obtenerTodos();
+        }
+        return puestoRepository.findByNombreContainingIgnoreCase(texto.trim());
     }
 }

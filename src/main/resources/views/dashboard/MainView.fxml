@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane fx:id="mainBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1024.0" prefWidth="1440.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iesaguadulce.agilteammanager.controller.ui.dashboard.MainController">
+<BorderPane fx:id="mainBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="900.0" prefWidth="1440.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iesaguadulce.agilteammanager.controller.ui.dashboard.MainController">
 
    <stylesheets>
       <URL value="@../../css/primer-light.css" />
@@ -109,7 +109,7 @@
          AnchorPane donde se cargan dinámicamente las vistas FXML
     ════════════════════════════════════════════════════════ -->
     <center>
-        <AnchorPane fx:id="contentArea" prefHeight="930.0" prefWidth="1200.0" BorderPane.alignment="CENTER" />
+        <AnchorPane fx:id="contentArea" prefHeight="806.0" prefWidth="1200.0" BorderPane.alignment="CENTER" />
     </center>
 
     <!-- ═══════════════════════════════════════════════════
@@ -143,7 +143,7 @@
          Botones de navegación con onAction apuntando a métodos del controlador
     ════════════════════════════════════════════════════════ -->
     <left>
-        <VBox fx:id="sidebar" prefHeight="930.0" prefWidth="240.0" styleClass="app-sidebar" BorderPane.alignment="CENTER">
+        <VBox fx:id="sidebar" prefHeight="806.0" prefWidth="240.0" styleClass="app-sidebar" BorderPane.alignment="CENTER">
             <children>
 
                 <!-- ── DASHBOARD DE INICIO ── -->

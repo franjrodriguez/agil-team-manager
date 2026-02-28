@@ -32,13 +32,14 @@ public class JavaFxApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        System.out.println("Iniciando interfaz JavaFX...");
+        System.out.println("(FRANDEV)---> Iniciando interfaz JavaFX...");
 
         //
         // Se procede con la carga de la ventana de Logueo...
         //
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/login/LoginView.fxml"));
         Parent root = loader.load();
+        System.out.println("(FRANDEV)---> SE HA CARGADO PANTALLA DE LOGUEO");
 
         // Configurar la ventana de logueo
         Scene scene = new Scene(root);
@@ -53,7 +54,7 @@ public class JavaFxApplication extends Application {
     @Override
     public void stop() {
         // Cerrar contexto Spring al salir
-        System.out.println("Cerrando aplicación...");
+        System.out.println("(FRANDEV)---> Cerrando aplicación... LA PREGUNTA ES: SE CIERRA FX CON LOGIN?");
         if (springContext != null) {
             springContext.close();
         }
