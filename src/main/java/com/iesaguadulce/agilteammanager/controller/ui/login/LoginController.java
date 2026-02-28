@@ -1,6 +1,7 @@
 package com.iesaguadulce.agilteammanager.controller.ui.login;
 
 import com.iesaguadulce.agilteammanager.config.SpringContext;
+import com.iesaguadulce.agilteammanager.controller.ui.dashboard.MainController;
 import com.iesaguadulce.agilteammanager.model.personas.Persona;
 import com.iesaguadulce.agilteammanager.service.seguridad.AutenticacionService;
 import javafx.fxml.FXML;
@@ -70,40 +71,39 @@ public class LoginController {
     }
 
     /**
-     * Carga el dashboard correspondiente según el rol del usuario
+     * Carga la vista principal (MainView) e inyecta los datos de sesión.
+     *
+     * MainView es la estructura completa: cabecera + menú lateral + footer.
+     * El dashboard (Admin o Usuario) se carga DENTRO del contentArea de MainView,
+     * no como escena raíz — esa era la lógica anterior incorrecta.
      */
     private void cargarDashboard(Persona persona) {
         try {
-            String fxmlPath;
-            String titulo;
+            boolean esAdmin = autenticacionService.esAdministrador(persona);
+            String rolNombre = persona.getRol().getNombre();
 
-            // Decidir qué dashboard cargar
-            if (autenticacionService.esAdministrador(persona)) {
-                fxmlPath = "/views/dashboard_admin.fxml";
-                titulo = "AgilTeam Manager - Administración";
-            } else {
-                fxmlPath = "/views/dashboard.fxml";
-                titulo = "AgilTeam Manager - Dashboard";
-            }
-
-            // Cargar FXML
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            // Cargamos siempre la estructura principal (cabecera + menú + footer)
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/dashboard/MainView.fxml"));
             Parent root = loader.load();
+
+            // Pasamos los datos de sesión al controlador principal.
+            // Él decide qué dashboard cargar en el contentArea central.
+            MainController mainController = loader.getController();
+            mainController.iniciarSesion(persona.getNombre(), rolNombre, true, esAdmin);
 
             // Cambiar escena
             Stage stage = (Stage) btnLogin.getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.setTitle(titulo + " - " + persona.getNombre());
-            stage.setMaximized(true); // Pantalla completa
+            stage.setScene(new Scene(root));
+            stage.setTitle("AgilTeam Manager - " + persona.getNombre());
+            stage.setMaximized(true);
             stage.show();
 
-            System.out.println("✅ Dashboard cargado para: " + persona.getNombre());
+            System.out.println("✅ MainView cargada para: " + persona.getNombre() + " [" + rolNombre + "]");
 
         } catch (Exception e) {
-            System.err.println("❌ Error cargando dashboard: " + e.getMessage());
+            System.err.println("❌ Error cargando vista principal: " + e.getMessage());
             e.printStackTrace();
-            mostrarError("No se pudo cargar el dashboard. Verifica que el archivo FXML existe.");
+            mostrarError("No se pudo cargar la vista principal. Verifica que MainView.fxml existe.");
         }
     }
 

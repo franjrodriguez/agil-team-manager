@@ -26,8 +26,8 @@
       <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
    </padding>
    <stylesheets>
-      <URL value="@../css/primer-light.css" />
-      <URL value="@../css/agilteam-styles.css" />
+      <URL value="@../../css/primer-light.css" />
+      <URL value="@../../css/agilteam-styles.css" />
    </stylesheets>
    <styleClass>
       <String fx:value="card" />

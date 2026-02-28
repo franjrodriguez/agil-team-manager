@@ -23,10 +23,10 @@
                   <Insets top="17.0" />
                </VBox.margin>
                <children>
-                  <fx:include fx:id="widgetProyectos" source="widget_card.fxml" />
-                  <fx:include fx:id="widgetTareas" source="widget_card.fxml" />
-                  <fx:include fx:id="widgetPersonas" source="widget_card.fxml" />
-                  <fx:include fx:id="widgetCarga" source="widget_card.fxml" />
+                  <fx:include fx:id="widgetProyectos" source="WidgetCard.fxml" />
+                  <fx:include fx:id="widgetTareas" source="WidgetCard.fxml" />
+                  <fx:include fx:id="widgetPersonas" source="WidgetCard.fxml" />
+                  <fx:include fx:id="widgetCarga" source="WidgetCard.fxml" />
                </children>
             </HBox>
             <Label styleClass="section-title" text="Rendimiento del Equipo (Últimos 7 Días)" />
@@ -87,7 +87,7 @@
       </VBox>
    </children>
    <stylesheets>
-      <URL value="@../css/primer-light.css" />
-      <URL value="@../css/agilteam-styles.css" />
+      <URL value="@../../css/primer-light.css" />
+      <URL value="@../../css/agilteam-styles.css" />
    </stylesheets>
 </AnchorPane>

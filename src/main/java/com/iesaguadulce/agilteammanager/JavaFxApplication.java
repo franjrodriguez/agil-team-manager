@@ -37,7 +37,7 @@ public class JavaFxApplication extends Application {
         //
         // Se procede con la carga de la ventana de Logueo...
         //
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/login.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/login/LoginView.fxml"));
         Parent root = loader.load();
 
         // Configurar la ventana de logueo

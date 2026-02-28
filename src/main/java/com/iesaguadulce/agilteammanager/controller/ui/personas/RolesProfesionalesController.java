@@ -1,4 +1,4 @@
 package com.iesaguadulce.agilteammanager.controller.ui.personas;
 
-public class RoleProfesionalController {
+public class RolesProfesionalesController {
 }

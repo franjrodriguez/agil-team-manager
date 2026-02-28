@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="CENTER" prefHeight="600" prefWidth="450" spacing="20" style="-fx-background-color: #1a1a2e; -fx-padding: 60;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/25" fx:controller="com.iesaguadulce.agilteammanager.controller.ui.login.LoginController">
+
+    <!-- Logo / Título -->
+    <Label style="-fx-font-size: 32px; -fx-text-fill: #00d4ff; -fx-font-weight: bold;" text="AgilTeam Manager" />
+
+    <Label style="-fx-text-fill: #aaa; -fx-font-size: 14px;" text="Gestión Inteligente de Equipos Ágiles" />
+
+    <!-- Espaciador -->
+    <Region VBox.vgrow="SOMETIMES" />
+
+    <!-- Campo Usuario -->
+    <VBox spacing="8">
+        <Label style="-fx-text-fill: white;" text="Usuario" />
+        <TextField fx:id="txtUsuario" promptText="Introduce tu usuario" style="-fx-pref-height: 45px; -fx-font-size: 14px;" />
+    </VBox>
+
+    <!-- Campo Contraseña -->
+    <VBox spacing="8">
+        <Label style="-fx-text-fill: white;" text="Contraseña" />
+        <PasswordField fx:id="txtPassword" promptText="Introduce tu contraseña" style="-fx-pref-height: 45px; -fx-font-size: 14px;" />
+    </VBox>
+
+    <!-- Botón Login -->
+    <Button fx:id="btnLogin" defaultButton="true" onAction="#onLoginClick" style="-fx-background-color: #00d4ff;                    -fx-text-fill: #1a1a2e;                    -fx-font-weight: bold;                    -fx-font-size: 16px;                    -fx-pref-height: 50px;                    -fx-background-radius: 25;                    -fx-cursor: hand;" text="Iniciar Sesión" />
+    <!-- Botón Login -->
+    <Button fx:id="btnCancel" defaultButton="true" onAction="#onCancelClick" prefWidth="122.0" style="-fx-background-color: #00d4ff;                    -fx-text-fill: #1a1a2e;                    -fx-font-weight: bold;                    -fx-font-size: 16px;                    -fx-pref-height: 50px;                    -fx-background-radius: 25;                    -fx-cursor: hand;" text="Salir" />
+
+    <!-- Espaciador -->
+    <Region VBox.vgrow="SOMETIMES" />
+
+    <!-- Footer -->
+    <Label style="-fx-text-fill: #555; -fx-font-size: 10px;" text="v1.0 • FP DAM 2025" />
+
+</VBox>

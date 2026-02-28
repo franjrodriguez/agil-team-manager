@@ -17,7 +17,7 @@
 
     <properties>
         <java.version>21</java.version>
-        <javafx.version>21.0.5</javafx.version>
+        <javafx.version>21.0.4</javafx.version>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
     </properties>
@@ -71,12 +71,14 @@
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>${javafx.version}</version>
+            <classifier>win</classifier>
         </dependency>
 
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
             <version>${javafx.version}</version>
+            <classifier>win</classifier>
         </dependency>
 
         <!-- ← AÑADIDO: javafx-graphics (soluciona bugs raros) -->
@@ -84,6 +86,7 @@
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-graphics</artifactId>
             <version>${javafx.version}</version>
+            <classifier>win</classifier>
         </dependency>
     </dependencies>
 

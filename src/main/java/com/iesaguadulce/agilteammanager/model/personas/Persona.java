@@ -48,12 +48,14 @@ public class Persona {
     private LocalDate fechaAlta = LocalDate.now();
 
     // FK → Puesto
-    @ManyToOne(fetch = FetchType.LAZY)
+    // EAGER: necesario porque JavaFX accede al puesto fuera del contexto JPA (sesión ya cerrada)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "puesto_id", nullable = false)
     private Puesto puesto;
 
     // FK → RolSistema
-    @ManyToOne(fetch = FetchType.LAZY)
+    // EAGER: necesario para acceder al rol desde el LoginController sin LazyInitializationException
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "rol_id", nullable = false)
     private RolSistema rol;
 

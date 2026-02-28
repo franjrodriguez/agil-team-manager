@@ -9,9 +9,10 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="420.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iesaguadulce.agilteammanager.ui.login.LoginController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="420.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iesaguadulce.agilteammanager.controller.ui.login.LoginController">
    <center>
       <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="20.0" BorderPane.alignment="CENTER">
          <children>
@@ -19,17 +20,28 @@
             <VBox prefHeight="46.0" prefWidth="275.0">
                <children>
                   <Label text="Usuario:" />
-                  <TextField fx:id="txtUserName" prefHeight="26.0" prefWidth="237.0" promptText="nombre de usuario" />
+                  <TextField fx:id="txtUsuario" prefHeight="26.0" prefWidth="237.0" promptText="nombre de usuario" />
                </children>
             </VBox>
             <VBox prefHeight="59.0" prefWidth="275.0">
                <children>
                   <Label text="Password:" />
-                  <PasswordField fx:id="pwdPassword" />
+                  <PasswordField fx:id="txtPassword" />
+                  <HBox prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <Button fx:id="btnLogin" mnemonicParsing="false" onAction="#onLoginClick" prefHeight="26.0" prefWidth="128.0" styleClass="button, primary" text="INICIAR" textAlignment="CENTER">
+                           <HBox.margin>
+                              <Insets right="30.0" />
+                           </HBox.margin>
+                        </Button>
+                        <Button fx:id="btnCancel" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCancelClick" prefHeight="26.0" prefWidth="128.0" styleClass="button, primary" text="SALIR" textAlignment="CENTER" />
+                     </children>
+                     <VBox.margin>
+                        <Insets top="26.0" />
+                     </VBox.margin>
+                  </HBox>
                </children>
             </VBox>
-            <Label fx:id="lblMessage" alignment="CENTER" prefHeight="48.0" prefWidth="290.0" styleClass="page-information" text="&lt;mostrando mensajes&gt;" wrapText="true" />
-            <Button fx:id="btnLogin" mnemonicParsing="false" onAction="#btnLoginOnClick" prefHeight="26.0" prefWidth="128.0" styleClass="button, primary" text="LOGIN" textAlignment="CENTER" />
          </children>
          <padding>
             <Insets left="35.0" right="35.0" />
@@ -39,12 +51,12 @@
    <left>
       <ImageView fitHeight="420.0" fitWidth="280.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
          <image>
-            <Image url="@../assets/logo-login.png" />
+            <Image url="@../../assets/logo-login.png" />
          </image></ImageView>
    </left>
    <stylesheets>
-      <URL value="@../css/primer-light.css" />
-      <URL value="@../css/agilteam-styles.css" />
+      <URL value="@../../css/primer-light.css" />
+      <URL value="@../../css/agilteam-styles.css" />
    </stylesheets>
    <bottom>
       <ImageView fx:id="imgConexion" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="BOTTOM_RIGHT" />

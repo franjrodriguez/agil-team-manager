@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<!--
+╔══════════════════════════════════════════════════════════════════╗
+║  ProyectosTareasView.fxml  –  1200 × 930 px                     ║
+║  Estilos: primer-light.css  +  agilteam-styles.css              ║
+║                                                                  ║
+║  ESTRUCTURA DE CAPAS (StackPane apila hijos en Z):              ║
+║                                                                  ║
+║  ┌─ StackPane (root) ──────────────────────────────────────┐   ║
+║  │                                                          │   ║
+║  │  [CAPA 0] BorderPane ← layout principal                 │   ║
+║  │  [CAPA 1] Pane overlayOscuro ← fondo semitransparente  │   ║
+║  │  [CAPA 2] HBox > VBox drawerPanel ← formulario lateral  │   ║
+║  │                                                          │   ║
+║  └──────────────────────────────────────────────────────────┘   ║
+║                                                                  ║
+║  Capas 1 y 2 comienzan ocultas/fuera de pantalla.               ║
+║  El controller las anima al pulsar "Añadir Sprint"/"Nueva Tarea"║
+╚══════════════════════════════════════════════════════════════════╝
+-->
+
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="930.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iesaguadulce.agilteammanager.controller.ui.proyectos.ProyectosController">
+
+    <stylesheets>
+        <URL value="@../../css/primer-light.css" />
+        <URL value="@../../css/agilteam-styles.css" />
+    </stylesheets>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         CAPA 0 ─ BORDERPANE PRINCIPAL
+         ═══════════════════════════════════════════════════════════ -->
+    <BorderPane fx:id="rootPane" styleClass="bg-default">
+
+        <!-- ── IZQUIERDA: Panel lista de proyectos ── -->
+        <left>
+            <VBox fx:id="sidebarPanel" prefHeight="930.0" prefWidth="380.0" spacing="16.0" styleClass="app-sidebar" BorderPane.alignment="CENTER">
+                <children>
+                    <TextField fx:id="searchField" prefHeight="40.0" promptText="Buscar proyectos..." />
+                    <HBox fx:id="filterBox" prefHeight="40.0" prefWidth="200.0" spacing="8.0">
+                        <children>
+                            <ComboBox fx:id="statusFilter" prefHeight="36.0" prefWidth="227.0" promptText="STATUS" />
+                            <ComboBox fx:id="deptFilter" prefWidth="116.0" promptText="DEPT" visible="false" />
+                            <ComboBox fx:id="roleFilter" prefWidth="116.0" promptText="ROL" visible="false" />
+                        </children>
+                    </HBox>
+                    <Button fx:id="btnAddProyecto" mnemonicParsing="false" prefHeight="40.0" prefWidth="400.0" styleClass="primary" text="Añadir Proyecto Nuevo" />
+                    <ListView fx:id="proyectoListView" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                </children>
+                <padding>
+                    <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+                </padding>
+            </VBox>
+        </left>
+
+        <!-- ── CENTRO: Detalle del proyecto ── -->
+        <center>
+            <ScrollPane fx:id="detailScrollPane" fitToWidth="true" hbarPolicy="NEVER" BorderPane.alignment="CENTER">
+                <content>
+                    <VBox fx:id="detailPane" maxWidth="1.7976931348623157E308" spacing="20.0" style="-fx-background-color: -app-bg-workspace;">
+                        <padding>
+                            <Insets bottom="32.0" left="32.0" right="32.0" top="32.0" />
+                        </padding>
+                        <children>
+
+                            <!-- ·· Cabecera: icono + nombre + estado ·· -->
+                            <HBox fx:id="headerBox" alignment="CENTER_LEFT" prefHeight="80.0" spacing="16.0">
+                                <children>
+                                    <ImageView fx:id="profileAvatar" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" style="-fx-effect: dropshadow(gaussian, #00000019, 8, 0, 0, 2);">
+                                        <image>
+                                            <Image url="@../../icons/project.png" />
+                                        </image>
+                                    </ImageView>
+                                    <VBox fx:id="headerInfo" alignment="CENTER_LEFT" spacing="4.0" HBox.hgrow="ALWAYS">
+                                        <children>
+                                            <Label fx:id="profileName" styleClass="page-title" text="AgilTeam Manager" />
+                                            <Label fx:id="profileRole" styleClass="page-subtitle" text="Sistema de Gestión de Equipos Ágiles" />
+                                        </children>
+                                    </VBox>
+                                    <ComboBox fx:id="statusComboBox" prefHeight="36.0" prefWidth="150.0" promptText="Activo" style="-fx-background-color: -app-success;" />
+                                </children>
+                            </HBox>
+
+                            <!-- ·· Card datos del proyecto ·· -->
+                            <!--
+                                NUEVO LAYOUT DEL GRIDPANE (3 columnas, 4 filas):
+                                Fila 0 (labels):  NOMBRE | FECHA COMIENZO | FECHA FINALIZACIÓN
+                                Fila 1 (campos):  TextField | DatePicker   | DatePicker
+                                Fila 2 (label):   DESCRIPCIÓN (colspan=3)
+                                Fila 3 (campo):   TextArea (colspan=3)
+                            -->
+                            <GridPane fx:id="personalDataGrid" hgap="24.0" style="-fx-background-color: -app-bg-card; -fx-background-radius: 8;" vgap="12.0">
+                                <columnConstraints>
+                                    <ColumnConstraints hgrow="ALWAYS" minWidth="180.0" prefWidth="260.0" />
+                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="140.0" prefWidth="180.0" />
+                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="140.0" prefWidth="180.0" />
+                                </columnConstraints>
+                                <rowConstraints>
+                                    <RowConstraints minHeight="20.0" />
+                                    <RowConstraints minHeight="36.0" />
+                                    <RowConstraints minHeight="20.0" />
+                                    <RowConstraints minHeight="100.0" vgrow="SOMETIMES" />
+                                </rowConstraints>
+                                <padding>
+                                    <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+                                </padding>
+                                <children>
+
+                                    <!-- Fila 0: labels -->
+                                    <Label style="-fx-text-fill: -app-text-secondary;" styleClass="form-label" text="NOMBRE" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                                    <Label style="-fx-text-fill: -app-text-secondary;" styleClass="form-label" text="FECHA COMIENZO" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                                    <Label style="-fx-text-fill: -app-text-secondary;" styleClass="form-label" text="FECHA FINALIZACIÓN" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+
+                                    <!-- Fila 1: campos nombre + fechas -->
+                                    <TextField fx:id="nombreField" prefHeight="36.0" promptText="Nombre del proyecto" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                                    <DatePicker fx:id="fechacomienzoDate" prefHeight="36.0" prefWidth="170.0" promptText="Fecha inicio" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                    <DatePicker fx:id="fechafinDate" prefHeight="36.0" prefWidth="170.0" promptText="Fecha fin" styleClass="btn-secondary" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+
+                                    <!-- Fila 2: label descripción (colspan=3) -->
+                                    <Label style="-fx-text-fill: -app-text-secondary;" styleClass="form-label" text="DESCRIPCIÓN" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="2" />
+
+                                    <!-- Fila 3: TextArea descripción (colspan=3) -->
+                                    <TextArea fx:id="descripcionField" prefHeight="40.0" promptText="Descripción del proyecto..." wrapText="true" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="3" />
+
+                                </children>
+                            </GridPane>
+
+                            <!-- ·· Card Sprints ·· -->
+                            <VBox fx:id="taskSection" spacing="12.0" style="-fx-background-color: -app-bg-card; -fx-background-radius: 8;">
+                                <padding>
+                                    <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+                                </padding>
+                                <children>
+                                    <HBox fx:id="taskSectionHeader" alignment="CENTER_LEFT" spacing="12.0">
+                                        <children>
+                                            <ImageView fx:id="profileAvatar1" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" style="-fx-effect: dropshadow(gaussian, #00000019, 8, 0, 0, 2);">
+                                                <image>
+                                                    <Image url="@../../icons/sprints.png" />
+                                                </image>
+                                            </ImageView>
+                                            <Label styleClass="section-title" text="Ciclos de Trabajo (Sprints)" HBox.hgrow="ALWAYS" />
+                                            <Separator prefHeight="25.0" prefWidth="242.0" visible="false" />
+                                            <Button fx:id="btnAddSprint" mnemonicParsing="false" onAction="#onNuevoSprint" prefHeight="40.0" prefWidth="180.0" styleClass="btn-secondary" text="+ AÑADIR SPRINT" />
+                                        </children>
+                                    </HBox>
+                                    <TableView fx:id="sprintsTable" prefHeight="120.0" VBox.vgrow="ALWAYS">
+                                        <columns>
+                                            <TableColumn fx:id="objetivoColumn" prefWidth="285.0" text="OBJETIVO" />
+                                            <TableColumn fx:id="estadoColumn" prefWidth="75.0" text="ESTADO" />
+                                            <TableColumn fx:id="inicioColumn" prefWidth="135.0" text="INICIO" />
+                                            <TableColumn fx:id="finColumn" prefWidth="141.0" text="FIN" />
+                                            <TableColumn fx:id="accionesColumn" prefWidth="84.0" text="ACCIONES" />
+                                        </columns>
+                                        <placeholder>
+                                            <Label style="-fx-text-fill: -app-text-secondary; -fx-font-size: 13px;" text="No hay sprints todavía." />
+                                        </placeholder>
+                                    </TableView>
+                                </children>
+                            </VBox>
+
+                            <!-- ·· Card Tareas ·· -->
+                            <VBox fx:id="competenciesSection" spacing="12.0" style="-fx-background-color: -app-bg-card; -fx-background-radius: 8;">
+                                <padding>
+                                    <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+                                </padding>
+                                <children>
+                                    <HBox fx:id="taskSectionHeader1" alignment="CENTER_LEFT" spacing="12.0">
+                                        <children>
+                                            <ImageView fx:id="profileAvatar11" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" style="-fx-effect: dropshadow(gaussian, #00000019, 8, 0, 0, 2);">
+                                                <image>
+                                                    <Image url="@../../icons/tareas.png" />
+                                                </image>
+                                            </ImageView>
+                                            <Label styleClass="section-title" text="Listado de Tareas" HBox.hgrow="ALWAYS" />
+                                            <Separator prefHeight="25.0" prefWidth="319.0" visible="false" />
+                                            <Button fx:id="btnAddTask" mnemonicParsing="false" onAction="#onNuevaTarea" prefHeight="40.0" prefWidth="180.0" styleClass="btn-secondary" text="+ NUEVA TAREA" />
+                                        </children>
+                                    </HBox>
+                                    <TableView fx:id="tareasTable" prefHeight="150.0" VBox.vgrow="ALWAYS">
+                                        <columns>
+                                            <TableColumn fx:id="tituloTareasColumn" prefWidth="350.0" text="TITULO" />
+                                            <TableColumn fx:id="estadoTareasColumn" prefWidth="118.0" text="ESTADO" />
+                                            <TableColumn fx:id="prioridadTareasColumn" prefWidth="99.0" text="PRIORIDAD" />
+                                            <TableColumn fx:id="tiempoTareasColumn" prefWidth="71.0" text="TIEMPO" />
+                                            <TableColumn fx:id="accionesTareasColumn" prefWidth="84.0" text="ACCIONES" />
+                                        </columns>
+                                        <placeholder>
+                                            <Label style="-fx-text-fill: -app-text-secondary; -fx-font-size: 13px;" text="No hay tareas en este proyecto." />
+                                        </placeholder>
+                                    </TableView>
+                                </children>
+                            </VBox>
+
+                            <!-- ·· Botones acción ·· -->
+                            <HBox fx:id="actionButtons" alignment="CENTER_RIGHT" spacing="16.0">
+                                <children>
+                                    <Button fx:id="btnDelete" mnemonicParsing="false" prefHeight="40.0" prefWidth="180.0" style="-fx-background-color: -app-error; -fx-text-fill: white;" text="Borrar Proyecto" />
+                                    <Button fx:id="btnSave" mnemonicParsing="false" prefHeight="40.0" prefWidth="180.0" styleClass="primary" text="Guardar Cambios" />
+                                </children>
+                                <padding>
+                                    <Insets left="16.0" right="16.0" />
+                                </padding>
+                            </HBox>
+
+                        </children>
+                    </VBox>
+                </content>
+            </ScrollPane>
+        </center>
+
+    </BorderPane>
+    <!-- ═══ FIN CAPA 0 ════════════════════════════════════════════ -->
+
+
+    <!-- ═══════════════════════════════════════════════════════════
+         CAPA 1 ─ OVERLAY OSCURO
+         • opacity="0"            → invisible al inicio
+         • mouseTransparent="true"→ no bloquea clics cuando está oculto
+         • Clic sobre el overlay  → cierra el drawer
+         ═══════════════════════════════════════════════════════════ -->
+    <Pane fx:id="overlayOscuro" mouseTransparent="true" onMouseClicked="#onCerrarDrawer" opacity="0" style="-fx-background-color: rgba(0,0,0,0.45);" />
+
+      
+          <!-- ═══════════════════════════════════════════════════════════
+         CAPA 2 ─ PANEL DRAWER (desliza desde la derecha)
+               • translateX="380" → empieza fuera de pantalla
+               • Al abrir: TranslateTransition translateX 380 → 0
+               • Al cerrar: TranslateTransition translateX 0 → 380
+               • drawerContenido: slot donde el controller inyecta
+                 el formulario correspondiente (Sprint o Tarea)
+               ═══════════════════════════════════════════════════════════ -->
+    <HBox alignment="CENTER_RIGHT" mouseTransparent="true">
+        <VBox fx:id="drawerPanel" maxWidth="380.0" mouseTransparent="true" prefWidth="380.0" style="-fx-background-color: white; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 20, 0, -4, 0);" translateX="380">
+            <StackPane fx:id="drawerContenido" VBox.vgrow="ALWAYS" />
+        </VBox>
+    </HBox>
+    <!-- ═══ FIN CAPA 2 ════════════════════════════════════════════ -->
+
+
+</StackPane>

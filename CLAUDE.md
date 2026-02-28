@@ -17,9 +17,10 @@
 - **Manejo de errores:** Usar excepciones personalizadas y evitar bloques try-catch vacíos.
 
 ## Comandos Frecuentes
-- **Compilar:** `mvn clean compile`
-- **Ejecutar tests:** `mvn test`
-- **Limpiar proyecto:** `mvn clean`
+> Maven no está instalado globalmente. Usar siempre el wrapper del proyecto.
+- **Compilar:** `./mvnw clean compile`
+- **Ejecutar tests:** `./mvnw test`
+- **Limpiar proyecto:** `./mvnw clean`
 
 ## Notas Importantes para Claude
 - **Antes de modificar el `pom.xml`**, explícame por qué es necesaria la nueva dependencia.

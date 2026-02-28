@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.String?>
 <?import java.net.URL?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.chart.BarChart?>
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -15,17 +18,24 @@
    <children>
       <VBox prefHeight="930.0" prefWidth="1200.0">
          <children>
-            <HBox prefHeight="140.0" prefWidth="200.0">
+            <HBox alignment="CENTER" prefHeight="140.0" prefWidth="200.0" spacing="20.0" VBox.vgrow="ALWAYS">
                <VBox.margin>
                   <Insets top="17.0" />
                </VBox.margin>
+               <children>
+                  <fx:include fx:id="widgetProyectos" source="WidgetCard.fxml" />
+                  <fx:include fx:id="widgetTareas" source="WidgetCard.fxml" />
+                  <fx:include fx:id="widgetPersonas" source="WidgetCard.fxml" />
+                  <fx:include fx:id="widgetCarga" source="WidgetCard.fxml" />
+               </children>
             </HBox>
+            <Label styleClass="section-title" text="Rendimiento del Equipo (Últimos 7 Días)" />
             <HBox prefHeight="412.0" prefWidth="200.0">
                <VBox.margin>
                   <Insets top="17.0" />
                </VBox.margin>
                <children>
-                  <BarChart prefWidth="666.0">
+                  <BarChart fx:id="barChartRendimiento" prefWidth="666.0">
                     <xAxis>
                       <CategoryAxis side="BOTTOM" />
                     </xAxis>
@@ -35,12 +45,17 @@
                      <HBox.margin>
                         <Insets right="45.0" />
                      </HBox.margin>
+                     <styleClass>
+                        <String fx:value="card" />
+                        <String fx:value="elevated-1" />
+                     </styleClass>
                   </BarChart>
-                  <TableView prefHeight="200.0" prefWidth="377.0">
-                    <columns>
-                      <TableColumn minWidth="377.0" prefWidth="267.0" text="Notificaciones y Alertas" />
-                    </columns>
-                  </TableView>
+                  <ListView prefHeight="408.0" prefWidth="394.0">
+                     <styleClass>
+                        <String fx:value="striped" />
+                        <String fx:value="dense" />
+                     </styleClass>
+                  </ListView>
                </children>
             </HBox>
             <HBox prefHeight="310.0" prefWidth="200.0">
@@ -48,7 +63,7 @@
                   <Insets top="17.0" />
                </VBox.margin>
                <children>
-                  <TableView prefHeight="200.0" prefWidth="530.0">
+                  <TableView fx:id="tblTareasPendientes" prefHeight="200.0" prefWidth="530.0">
                     <columns>
                       <TableColumn prefWidth="75.0" text="C1" />
                       <TableColumn prefWidth="75.0" text="C2" />
@@ -57,7 +72,7 @@
                         <Insets right="45.0" />
                      </HBox.margin>
                   </TableView>
-                  <TableView prefHeight="200.0" prefWidth="530.0">
+                  <TableView fx:id="tblEquipoActivo" prefHeight="200.0" prefWidth="530.0">
                     <columns>
                       <TableColumn prefWidth="75.0" text="C1" />
                       <TableColumn prefWidth="75.0" text="C2" />
@@ -72,7 +87,7 @@
       </VBox>
    </children>
    <stylesheets>
-      <URL value="@../css/primer-light.css" />
-      <URL value="@../css/agilteam-styles.css" />
+      <URL value="@../../css/primer-light.css" />
+      <URL value="@../../css/agilteam-styles.css" />
    </stylesheets>
 </AnchorPane>

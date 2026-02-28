@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="930.0" prefWidth="1200.0" styleClass="bg-default" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
+    <stylesheets>
+        <URL value="@../../css/primer-light.css" />
+        <URL value="@../../css/agilteam-styles.css" />
+    </stylesheets>
+    <left>
+        <VBox fx:id="sidebarPanel" prefHeight="930.0" prefWidth="380.0" spacing="16.0" styleClass="app-sidebar" BorderPane.alignment="CENTER">
+            <children>
+                <TextField fx:id="searchField" prefHeight="40.0" promptText="Buscar profesional..." />
+                <HBox fx:id="filterBox" prefHeight="40.0" prefWidth="200.0" spacing="8.0">
+                    <children>
+                        <ComboBox fx:id="deptFilter" prefWidth="116.0" promptText="DEPT" />
+                        <ComboBox fx:id="statusFilter" layoutX="10.0" layoutY="10.0" prefWidth="116.0" promptText="STATUS" />
+                        <ComboBox fx:id="roleFilter" layoutX="160.0" layoutY="10.0" prefWidth="116.0" promptText="ROL" />
+                    </children></HBox>
+                <Button fx:id="btnAddProfessional" mnemonicParsing="false" prefHeight="40.0" prefWidth="400.0" styleClass="primary" text="Añadir Profesional" />
+                <ListView fx:id="professionalsListView" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+            </children>
+            <padding>
+                <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+            </padding>
+        </VBox>
+    </left>
+    <center>
+        <ScrollPane fx:id="detailScrollPane" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" style="-fx-fit-to-width: true;;" BorderPane.alignment="CENTER">
+            <content>
+                <VBox fx:id="detailPane" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefHeight="200.0" spacing="24.0" style="-fx-background-color: -app-bg-workspace;;">
+                    <padding>
+                        <Insets bottom="32.0" left="32.0" right="32.0" top="32.0" />
+                    </padding>
+                    <children>
+                        <HBox fx:id="headerBox" alignment="CENTER_LEFT" prefHeight="80.0" prefWidth="200.0" spacing="16.0">
+                            <children>
+                                <ImageView fx:id="profileAvatar" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" style="-fx-effect: dropshadow(gaussian, #00000019, 8, 0, 0, 2);;" />
+                                <VBox fx:id="headerInfo" alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="100.0" spacing="4.0" HBox.hgrow="ALWAYS">
+                                    <children>
+                                        <Label fx:id="profileName" styleClass="page-title" text="Alex Rivera" />
+                                        <Label fx:id="profileRole" layoutX="10.0" layoutY="10.0" styleClass="page-subtitle" text="System Administrator" />
+                                    </children>
+                                </VBox>
+                                <ComboBox fx:id="statusComboBox" prefHeight="36.0" prefWidth="150.0" promptText="Activo" style="-fx-background-color: -app-success;" />
+                            </children>
+                        </HBox>
+                  <VBox fx:id="credencialesSection" layoutX="42.0" layoutY="315.0" prefHeight="200.0" prefWidth="100.0" spacing="12.0" style="-fx-background-color: -app-bg-card; -fx-background-radius: 8;">
+                     <padding>
+                        <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+                     </padding>
+                     <children>
+                        <HBox fx:id="taskSectionHeader2" alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="12.0">
+                           <children>
+                              <ImageView fx:id="profileAvatar1" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../icons/KeyTitle.png" />
+                                 </image>
+                              </ImageView>
+                              <Label styleClass="section-title" text="Editar Credenciales" HBox.hgrow="ALWAYS" />
+                           </children>
+                        </HBox>
+                        <VBox prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                                      <Label style="-fx-text-fill: -app-text-secondary;;" styleClass="form-label" text="USUARIO" />
+                                      <TextField fx:id="emailField" prefHeight="36.0" promptText="nombre de usuario para acceder al sistema" />
+                           </children>
+                        </VBox>
+                        <VBox layoutX="26.0" layoutY="70.0" prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                              <Label style="-fx-text-fill: -app-text-secondary;;" styleClass="form-label" text="CONTRASEÑA" />
+                              <TextField fx:id="passwordField" prefHeight="36.0" promptText="entre una contraseña valida" />
+                           </children>
+                        </VBox>
+                        <VBox layoutX="26.0" layoutY="138.0" prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                              <Label style="-fx-text-fill: -app-text-secondary;;" styleClass="form-label" text="ROL DE SISTEMA" />
+                                      <ComboBox fx:id="systemRoleComboBox" editable="true" maxWidth="1.7976931348623157E308" prefHeight="36.0" promptText="determina los permisos de acceso" />
+                           </children>
+                        </VBox>
+                     </children>
+                  </VBox>
+                        <VBox fx:id="rolesSection" prefHeight="400.0" prefWidth="100.0" spacing="12.0" style="-fx-background-color: -app-bg-card; -fx-background-radius: 8;">
+                            <padding>
+                                <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+                            </padding>
+                            <children>
+                                <HBox fx:id="taskSectionHeader" alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="12.0">
+                                    <children>
+                                        <Label styleClass="section-title" text="Relación de Permisos Asociados al Rol Seleccionado" HBox.hgrow="ALWAYS" />
+                                    </children></HBox>
+                                <TableView fx:id="tasksTable" prefHeight="200.0" prefWidth="200.0">
+                                    <columns>
+                                        <TableColumn fx:id="prioColumn" prefWidth="250.0" text="NOMBRE" />
+                                        <TableColumn fx:id="tareaColumn" prefWidth="500.0" text="DESCRIPCIÓN" />
+                                    </columns>
+                                </TableView>
+                            </children>
+                        </VBox>
+                        <HBox fx:id="actionButtons" alignment="CENTER_RIGHT" layoutX="42.0" layoutY="42.0" prefHeight="80.0" prefWidth="200.0" spacing="16.0">
+                            <children>
+                                <Button fx:id="btnDelete" mnemonicParsing="false" prefHeight="40.0" prefWidth="180.0" style="-fx-background-color: -app-error; -fx-text-fill: white;" text="Borrar Profesional" />
+                                <Button fx:id="btnSave" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="180.0" styleClass="primary" text="Guardar Cambios" />
+                            </children>
+                            <padding>
+                                <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+                            </padding>
+                        </HBox>
+                    </children>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </center>
+</BorderPane>

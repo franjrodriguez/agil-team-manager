@@ -104,6 +104,12 @@
     -fx-padding: 8 16;
 }
 
+/* Lateral List */
+.app-lateral-list {
+    -fx-background-color:   white;
+    -fx-border-color:       #E5E7EB;
+    -fx-border-width:       0 1 0 0;
+}
 
 /* =====================================================
    TEXTO Y TIPOGRAFÍA (según Penpot)
@@ -209,4 +215,15 @@
 /* Foco (accesible pero discreto) */
 .button.nav-item:focused {
     -fx-background-color: -app-bg-hover;
+}
+
+.btn-secondary {
+    -fx-background-color: #E8E8E8;
+    -fx-text-fill: #1a73e8;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.btn-secondary:hover {
+    -fx-background-color: #D0D0D0;
 }

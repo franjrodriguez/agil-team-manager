@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="930.0" prefWidth="1200.0" styleClass="bg-default" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
+    <stylesheets>
+        <URL value="@../../css/primer-light.css" />
+        <URL value="@../../css/agilteam-styles.css" />
+    </stylesheets>
+    <left>
+        <VBox fx:id="sidebarPanel" prefHeight="930.0" prefWidth="380.0" spacing="16.0" styleClass="app-sidebar" BorderPane.alignment="CENTER">
+            <children>
+                <TextField fx:id="searchField" prefHeight="40.0" promptText="Buscar competencia..." />
+                <Button fx:id="btnAddCompetencia" mnemonicParsing="false" prefHeight="40.0" prefWidth="400.0" styleClass="primary" text="Añadir Competencia" />
+                <ListView fx:id="competenciasListView" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+            </children>
+            <padding>
+                <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+            </padding>
+        </VBox>
+    </left>
+    <center>
+        <ScrollPane fx:id="detailScrollPane" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" style="-fx-fit-to-width: true;;" BorderPane.alignment="CENTER">
+            <content>
+                <VBox fx:id="detailPane" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefHeight="605.0" prefWidth="820.0" spacing="24.0" style="-fx-background-color: -app-bg-workspace;;">
+                    <padding>
+                        <Insets bottom="32.0" left="32.0" right="32.0" top="32.0" />
+                    </padding>
+                    <children>
+                        <HBox fx:id="headerBox" alignment="CENTER_LEFT" prefHeight="56.0" prefWidth="756.0" spacing="16.0">
+                            <children>
+                                <ImageView fx:id="profileAvatar" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" style="-fx-effect: dropshadow(gaussian, #00000019, 8, 0, 0, 2);;">
+                           <image>
+                              <Image url="@../../icons/competencias.png" />
+                           </image></ImageView>
+                                <VBox fx:id="headerInfo" alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="100.0" spacing="4.0" HBox.hgrow="ALWAYS">
+                                    <children>
+                                        <Label fx:id="profileName" styleClass="page-title" text="Detalle Competencias" />
+                                    </children>
+                                </VBox>
+                            </children>
+                        </HBox>
+                  <VBox fx:id="detailSection" prefHeight="70.0" prefWidth="756.0">
+                     <children>
+                        <HBox prefHeight="100.0" prefWidth="200.0" spacing="16.0">
+                           <children>
+                              <VBox fx:id="nombreBox" HBox.hgrow="ALWAYS">
+                                 <children>
+                                            <Label fx:id="labelNombre" style="-fx-text-fill: -app-text-secondary;;" styleClass="form-label" text="NOMBRE COMPETENCIA" />
+                                            <TextField fx:id="nombreField" prefHeight="36.0" promptText="nombre de la competencia" />
+                                 </children>
+                              </VBox>
+                              <VBox fx:id="tipoBox" layoutX="10.0" layoutY="10.0" prefHeight="200.0" prefWidth="300.0" HBox.hgrow="NEVER">
+                                 <children>
+                                            <Label fx:id="labelTipo" style="-fx-text-fill: -app-text-secondary;" styleClass="form-label" text="TIPO" />
+                                            <ComboBox fx:id="tipoComboBox" maxWidth="1.7976931348623157E308" prefHeight="36.0" promptText="Technical Lead" />
+                                 </children>
+                              </VBox>
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+                  <VBox fx:id="descripcionBox" prefWidth="100.0">
+                     <children>
+                                <Label fx:id="descripcionLabel" style="-fx-text-fill: -app-text-secondary;" styleClass="form-label" text="DESCRIPCION DETALLADA" />
+                        <TextArea fx:id="descripcionField" prefHeight="100.0" prefWidth="756.0" promptText="descripción detallada de la competencia" VBox.vgrow="ALWAYS" />
+                     </children>
+                  </VBox>
+                        <VBox fx:id="relationSection" prefHeight="200.0" prefWidth="100.0" spacing="12.0" style="-fx-background-color: -app-bg-card; -fx-background-radius: 8;">
+                            <padding>
+                                <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+                            </padding>
+                            <children>
+                                <HBox fx:id="taskSectionHeader" alignment="CENTER_LEFT" prefHeight="38.0" prefWidth="724.0" spacing="12.0">
+                                    <children>
+                              <ImageView fx:id="profileAvatar1" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" style="-fx-effect: dropshadow(gaussian, #00000019, 8, 0, 0, 2);;">
+                                 <image>
+                                    <Image url="@../../icons/relacionado.png" />
+                                 </image>
+                              </ImageView>
+                                        <Label styleClass="title-4" text="Elementos Relacionados" HBox.hgrow="ALWAYS" />
+                                    </children></HBox>
+                            </children>
+                        </VBox>
+                        <HBox fx:id="actionButtons" alignment="CENTER_RIGHT" layoutX="42.0" layoutY="42.0" prefHeight="80.0" prefWidth="200.0" spacing="16.0">
+                            <children>
+                                <Button fx:id="btnDelete" mnemonicParsing="false" prefHeight="40.0" prefWidth="180.0" style="-fx-background-color: -app-error; -fx-text-fill: white;" text="Borrar Competencia" />
+                                <Button fx:id="btnSave" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="180.0" styleClass="primary" text="Guardar Cambios" />
+                            </children>
+                            <padding>
+                                <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+                            </padding>
+                        </HBox>
+                    </children>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </center>
+</BorderPane>
