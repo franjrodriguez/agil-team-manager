@@ -38,7 +38,7 @@
 
 .kpi-label {
     -fx-font-size: 13px;
-    -fx-text-fill: -fx-text-muted;
+    -fx-text-fill: -app-text-secondary;
 }
 
 

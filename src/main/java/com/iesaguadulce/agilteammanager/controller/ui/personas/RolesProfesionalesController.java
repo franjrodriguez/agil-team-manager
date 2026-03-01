@@ -1,5 +1,6 @@
 package com.iesaguadulce.agilteammanager.controller.ui.personas;
 
+import com.iesaguadulce.agilteammanager.config.SpringContext;
 import com.iesaguadulce.agilteammanager.model.personas.Puesto;
 import com.iesaguadulce.agilteammanager.service.personas.PuestoService;
 import javafx.collections.FXCollections;
@@ -8,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
@@ -25,7 +27,7 @@ import java.util.ResourceBundle;
  *     1. Al arrancar: carga la lista de puestos desde la BD
  *     2. Al escribir en el buscador: filtra la lista en tiempo real
  *     3. Al hacer clic en un puesto: carga sus datos en el formulario
- *     4. Al pulsar "Guardar": valida y guarda el puesto (nuevo o editado)
+ *     4. Al pulsar "Guardar": valída y guarda el puesto (nuevo o editado)
  *     5. Al pulsar "Borrar": confirma y elimina el puesto seleccionado
  *     6. Al pulsar "Cancelar" o "+ Añadir": limpia el formulario
  *
@@ -44,11 +46,9 @@ public class RolesProfesionalesController implements Initializable {
     // INYECCIÓN DE DEPENDENCIAS
     // Spring inyecta PuestoService automáticamente
     // ─────────────────────────────────────────────────────────
-    private final PuestoService puestoService;
+    @Autowired
+    private PuestoService puestoService;
 
-    public RolesProfesionalesController(PuestoService puestoService) {
-        this.puestoService = puestoService;
-    }
 
     // ─────────────────────────────────────────────────────────
     // REFERENCIAS A ELEMENTOS DEL FXML
@@ -99,9 +99,17 @@ public class RolesProfesionalesController implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        System.out.println("(FRANDEV) --> Entramos en RolesProfesionalesController");
+        this.puestoService = SpringContext.getBean(PuestoService.class);
+
         configurarListView();
+        System.out.println("(FRANDEV) --> REGRESAMOS DE PREPARAR AL LISTVIEW...");
+
         cargarTodosLosPuestos();
+        System.out.println("(FRANDEV) --> REGRESO AL FUTURO CARGANDO PUESTOS DE CURRELE");
+
         limpiarFormulario();
+        System.out.println("(FRANDEV) --> REGRESA LIMPIO Y SIN DAÑO DE ASEAR EL CULETE DEL FORMULARIO");
     }
 
     /**
@@ -313,12 +321,12 @@ public class RolesProfesionalesController implements Initializable {
      * Limpia el formulario para el estado "sin selección" o "nuevo".
      */
     private void limpiarFormulario() {
-        profileName.setText("Selecciona un puesto de la lista");
+        // profileName.setText("Selecciona un puesto de la lista");
         nombreField.clear();
         descripcionField.clear();
-        lblContadorProfesionales.setText("0 profesionales");
-        lblSinProfesionales.setVisible(true);
-        btnDelete.setVisible(false);  // Ocultamos el botón borrar
+        // lblContadorProfesionales.setText("0 profesionales");
+        // lblSinProfesionales.setVisible(true);
+        // btnDelete.setVisible(false);  // Ocultamos el botón borrar
     }
 
     /**

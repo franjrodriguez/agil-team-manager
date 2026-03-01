@@ -20,13 +20,13 @@
             <VBox prefHeight="46.0" prefWidth="275.0">
                <children>
                   <Label text="Usuario:" />
-                  <TextField fx:id="txtUsuario" prefHeight="26.0" prefWidth="237.0" promptText="nombre de usuario" />
+                  <TextField fx:id="txtUsuario" prefHeight="26.0" prefWidth="237.0" promptText="Introduce tu usuario" />
                </children>
             </VBox>
             <VBox prefHeight="59.0" prefWidth="275.0">
                <children>
                   <Label text="Password:" />
-                  <PasswordField fx:id="txtPassword" />
+                  <PasswordField fx:id="txtPassword" promptText="Introduce tu contraseña" />
                   <HBox prefHeight="100.0" prefWidth="200.0">
                      <children>
                         <Button fx:id="btnLogin" mnemonicParsing="false" onAction="#onLoginClick" prefHeight="26.0" prefWidth="128.0" styleClass="button, primary" text="INICIAR" textAlignment="CENTER">
@@ -37,11 +37,12 @@
                         <Button fx:id="btnCancel" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCancelClick" prefHeight="26.0" prefWidth="128.0" styleClass="button, primary" text="SALIR" textAlignment="CENTER" />
                      </children>
                      <VBox.margin>
-                        <Insets top="26.0" />
+                        <Insets top="30.0" />
                      </VBox.margin>
                   </HBox>
                </children>
             </VBox>
+            <Label style="-fx-text-fill: #555; -fx-font-size: 10px;" text="v1.0 • FP DAM 2025" />
          </children>
          <padding>
             <Insets left="35.0" right="35.0" />

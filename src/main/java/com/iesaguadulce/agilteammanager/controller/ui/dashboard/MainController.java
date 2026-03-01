@@ -104,19 +104,29 @@ public class MainController {
     // Dashboards de inicio (rol-dependientes)
     private static final String FXML_DASHBOARD_ADMIN = "/views/dashboard/DashboardAdminView.fxml";
     private static final String FXML_DASHBOARD_USER  = "/views/dashboard/DashboardView.fxml";
+    private static final String FXML_ABOUT           = "/views/aboutView.fxml";
 
-    // Secciones del menú de navegación (se irán creando progresivamente)
-    private static final String FXML_ROLES           = "/views/personas/RolesProfesionalesView.fxml";
-    private static final String FXML_COMPETENCIAS    = "/views/personas/CompetenciasView.fxml";
-    private static final String FXML_PROFESIONALES   = "/views/personas/PersonasView.fxml";
+    // Secciones del menú de navegación
+
+    // Submenú PROFESIONALES /views/personas/
+    private static final String FXML_ROLES           = "/views/profesionales/RolesProfesionalesView.fxml";
+    private static final String FXML_COMPETENCIAS    = "/views/profesionales/CompetenciasView.fxml";
+    private static final String FXML_PROFESIONALES   = "/views/profesionales/PersonasView.fxml";
+
+    // Submenú PROYECTOS /views/proyectos/
     private static final String FXML_PROYECTOS       = "/views/proyectos/ProyectosTareasView.fxml";
     private static final String FXML_MOTOR           = "/views/proyectos/MotorAsignacionView.fxml";
+
+    // Submenú PROYECTOS /views/proyectos/
     private static final String FXML_MIS_TAREAS      = "/views/perfil/MisTareasView.fxml";
+
+    // Submenú PROYECTOS /views/proyectos/
     private static final String FXML_USUARIOS        = "/views/seguridad/UsuariosView.fxml";
-    private static final String FXML_ROLES_SISTEMA  = "/views/seguridad/RolesPermisosView.fxml";
+    private static final String FXML_ROLES_SISTEMA   = "/views/seguridad/RolesPermisosView.fxml";
     private static final String FXML_PERMISOS        = "/views/seguridad/RolesPermisosView.fxml";
+
+    // Submenú PROYECTOS /views/proyectos/
     private static final String FXML_CONFIGURACION   = "/views/configuracion/ConfiguracionView.fxml";
-    private static final String FXML_ABOUT           = "/views/aboutView.fxml";
 
     // ─────────────────────────────────────────────────────────
     // INICIALIZACIÓN — JavaFX llama a este método automáticamente

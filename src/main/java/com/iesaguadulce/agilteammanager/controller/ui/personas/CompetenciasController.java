@@ -1,4 +1,301 @@
 package com.iesaguadulce.agilteammanager.controller.ui.personas;
 
-public class CompetenciasController {
+import com.iesaguadulce.agilteammanager.config.SpringContext;
+import com.iesaguadulce.agilteammanager.model.personas.Competencia;
+import com.iesaguadulce.agilteammanager.service.personas.CompetenciaService;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
+import org.hibernate.tool.schema.internal.exec.ScriptTargetOutputToFile;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.net.URL;
+import java.util.List;
+import java.util.ResourceBundle;
+
+/**
+ * ═══════════════════════════════════════════════════════════════
+ * CompetenciasController — Controlador UI de Competencias Técnicas
+ * ───────────────────────────────────────────────────────────────
+ * UBICACIÓN: src/main/java/.../ui/personas/CompetenciasController.java
+ *
+ * FLUJO:
+ *   FXML (evento) → este Controller → CompetenciaService → CompetenciaRepository → BD
+ * ═══════════════════════════════════════════════════════════════
+ */
+@Component
+public class CompetenciasController implements Initializable {
+
+    // ─────────────────────────────────────────────────────────
+    // INYECCIÓN DE DEPENDENCIAS
+    // ─────────────────────────────────────────────────────────
+    @Autowired
+    private CompetenciaService competenciaService;
+
+    // ─────────────────────────────────────────────────────────
+    // REFERENCIAS A ELEMENTOS DEL FXML
+    // ─────────────────────────────────────────────────────────
+
+    /** Panel izquierdo: buscador de texto */
+    @FXML private TextField searchField;
+
+    /** Panel izquierdo: lista de competencias */
+    @FXML private ListView<Competencia> competenciasListView;
+
+    /** Panel derecho: título dinámico */
+    @FXML private Label profileName;
+
+    /** Panel derecho: campo nombre */
+    @FXML private TextField nombreField;
+
+    /** Panel derecho: campo descripción */
+    @FXML private TextArea descripcionField;
+
+    /** Panel derecho: selector de tipo (Lenguaje, Framework, BD, DevOps, Testing, Cloud) */
+    @FXML private ComboBox<String> tipoComboBox;
+
+    /** Botón de borrar (visible solo con selección) */
+    @FXML private Button btnDelete;
+
+    // ─────────────────────────────────────────────────────────
+    // ESTADO INTERNO
+    // ─────────────────────────────────────────────────────────
+
+    /** Competencia actualmente seleccionada. null = modo "nueva" */
+    private Competencia competenciaSeleccionada = null;
+
+    /** Lista observable que alimenta el ListView */
+    private ObservableList<Competencia> listaCompetencias = FXCollections.observableArrayList();
+
+    // ─────────────────────────────────────────────────────────
+    // INICIALIZACIÓN
+    // ─────────────────────────────────────────────────────────
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        System.out.println("(FRANDEV) --> Entramos en CompetenciasController");
+        this.competenciaService = SpringContext.getBean(CompetenciaService.class);
+
+        configurarComboBoxTipo();
+        configurarListView();
+        cargarTodasLasCompetencias();
+        limpiarFormulario();
+
+        System.out.println("(FRANDEV) --> CompetenciasController inicializado correctamente");
+    }
+
+    /**
+     * Carga los tipos fijos en el ComboBox.
+     * Los tipos están definidos en el modelo: Lenguaje, Framework, BD, DevOps, Testing, Cloud
+     */
+    private void configurarComboBoxTipo() {
+        ObservableList<String> tipos = FXCollections.observableArrayList(
+                "Lenguaje", "Framework", "BD", "DevOps", "Testing", "Cloud"
+        );
+        tipoComboBox.setItems(tipos);
+    }
+
+    /**
+     * Configura el ListView para mostrar nombre y tipo de cada competencia.
+     */
+    private void configurarListView() {
+        competenciasListView.setCellFactory(lv -> new ListCell<>() {
+            @Override
+            protected void updateItem(Competencia competencia, boolean empty) {
+                super.updateItem(competencia, empty);
+                if (empty || competencia == null) {
+                    setText(null);
+                } else {
+                    // Mostramos: "Java [Lenguaje]"
+                    String tipo = competencia.getTipo() != null ? " [" + competencia.getTipo() + "]" : "";
+                    setText(competencia.getNombre() + tipo);
+                }
+            }
+        });
+
+        competenciasListView.setItems(listaCompetencias);
+    }
+
+    // ─────────────────────────────────────────────────────────
+    // CARGA DE DATOS
+    // ─────────────────────────────────────────────────────────
+
+    private void cargarTodasLasCompetencias() {
+        List<Competencia> competencias = competenciaService.obtenerTodas();
+        listaCompetencias.setAll(competencias);
+    }
+
+    // ─────────────────────────────────────────────────────────
+    // EVENTOS DEL FXML
+    // ─────────────────────────────────────────────────────────
+
+    /**
+     * Filtra el ListView en tiempo real al escribir en el buscador.
+     * Referenciado en FXML: onKeyReleased="#filtrarLista"
+     */
+    @FXML
+    private void filtrarLista() {
+        String texto = searchField.getText();
+        if (texto == null || texto.isBlank()) {
+            competenciasListView.setItems(listaCompetencias);
+        } else {
+            ObservableList<Competencia> filtradas = listaCompetencias.filtered(
+                    c -> c.getNombre().toLowerCase().contains(texto.toLowerCase().trim())
+            );
+            competenciasListView.setItems(filtradas);
+        }
+    }
+
+    /**
+     * Carga los datos de la competencia seleccionada en el formulario.
+     * Referenciado en FXML: onMouseClicked="#seleccionarCompetencia"
+     */
+    @FXML
+    private void seleccionarCompetencia(MouseEvent event) {
+        Competencia seleccionada = competenciasListView.getSelectionModel().getSelectedItem();
+        if (seleccionada == null) return;
+
+        competenciaSeleccionada = seleccionada;
+        cargarDatosEnFormulario(competenciaSeleccionada);
+    }
+
+    /**
+     * Limpia el formulario para introducir una competencia nueva.
+     * Referenciado en FXML: onAction="#nuevaCompetencia"
+     */
+    @FXML
+    private void nuevaCompetencia() {
+        competenciaSeleccionada = null;
+        limpiarFormulario();
+        nombreField.requestFocus();
+    }
+
+    /**
+     * Guarda la competencia (nueva o editada).
+     * Referenciado en FXML: onAction="#guardarCompetencia"
+     */
+    @FXML
+    private void guardarCompetencia() {
+        System.out.println("(FRANDEV) --> ACABO DE LLEGAR... GUARDANAO");
+        String nombre = nombreField.getText();
+        String descripcion = descripcionField.getText();
+        String tipo = tipoComboBox.getValue();
+
+        System.out.println("(FRANDEV) --> DATOS QUE GUARDO: " + nombre + " | " + descripcion + " | " + tipo);
+
+        // Validación básica
+        if (nombre == null || nombre.isBlank()) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Campo requerido", "El nombre es obligatorio.");
+            nombreField.requestFocus();
+            return;
+        }
+
+        System.out.println("(FRANDEV) --> vamos con el intento...");
+        try {
+            Competencia guardada;
+
+            if (competenciaSeleccionada == null) {
+                // CREAR nueva
+                guardada = competenciaService.crear(
+                        nombre.trim(),
+                        descripcion != null ? descripcion.trim() : "",
+                        tipo
+                );
+            } else {
+                // ACTUALIZAR existente
+                guardada = competenciaService.actualizar(
+                        competenciaSeleccionada.getId(),
+                        nombre.trim(),
+                        descripcion != null ? descripcion.trim() : "",
+                        tipo
+                );
+            }
+
+            cargarTodasLasCompetencias();
+            competenciaSeleccionada = guardada;
+            // seleccionarEnLista(guardada);
+            cargarDatosEnFormulario(guardada);
+
+            mostrarAlerta(Alert.AlertType.INFORMATION, "Guardado",
+                    "Competencia '" + guardada.getNombre() + "' guardada correctamente.");
+
+        } catch (RuntimeException e) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Error", e.getMessage());
+        }
+    }
+
+    /**
+     * Elimina la competencia seleccionada (con confirmación).
+     * Referenciado en FXML: onAction="#borrarCompetencia"
+     */
+    @FXML
+    private void borrarCompetencia() {
+        if (competenciaSeleccionada == null) return;
+
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Confirmar eliminación");
+        confirm.setHeaderText("¿Borrar '" + competenciaSeleccionada.getNombre() + "'?");
+        confirm.setContentText("Solo se puede borrar si no está asignada a ningún profesional o tarea.");
+
+        confirm.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                try {
+                    competenciaService.eliminar(competenciaSeleccionada.getId());
+                    cargarTodasLasCompetencias();
+                    limpiarFormulario();
+                    mostrarAlerta(Alert.AlertType.INFORMATION, "Eliminado", "Competencia eliminada correctamente.");
+                } catch (RuntimeException e) {
+                    mostrarAlerta(Alert.AlertType.ERROR, "No se puede eliminar", e.getMessage());
+                }
+            }
+        });
+    }
+
+    /**
+     * Cancela la edición y limpia el formulario.
+     * Referenciado en FXML: onAction="#cancelar"
+     */
+    @FXML
+    private void cancelar() {
+        competenciaSeleccionada = null;
+        limpiarFormulario();
+        competenciasListView.getSelectionModel().clearSelection();
+    }
+
+    // ─────────────────────────────────────────────────────────
+    // MÉTODOS AUXILIARES PRIVADOS
+    // ─────────────────────────────────────────────────────────
+
+    private void cargarDatosEnFormulario(Competencia competencia) {
+        profileName.setText(competencia.getNombre());
+        nombreField.setText(competencia.getNombre());
+        descripcionField.setText(competencia.getDescripcion() != null ? competencia.getDescripcion() : "");
+        System.out.println("(FRANDEV) --> TIPO QUE LLEGA: " + competencia.getTipo());
+        tipoComboBox.setValue(competencia.getTipo());
+        btnDelete.setVisible(true);
+    }
+
+    private void limpiarFormulario() {
+        nombreField.clear();
+        descripcionField.clear();
+        tipoComboBox.setValue(null);
+        btnDelete.setVisible(false);
+    }
+
+    private void seleccionarEnLista(Competencia competencia) {
+        competenciasListView.getSelectionModel().select(competencia);
+        competenciasListView.scrollTo(competencia);
+    }
+
+    private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
+        Alert alert = new Alert(tipo);
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
+    }
 }
