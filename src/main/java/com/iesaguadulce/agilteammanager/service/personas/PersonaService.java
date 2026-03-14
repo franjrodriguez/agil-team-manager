@@ -60,6 +60,15 @@ public class PersonaService {
     }
 
     /**
+     * Obtiene una persona con asignaciones, tareas y competencias cargadas eagerly.
+     * Necesario para mostrar el detalle en la UI sin LazyInitializationException.
+     */
+    @Transactional(readOnly = true)
+    public Optional<Persona> obtenerPorIdConTodo(Long id) {
+        return personaRepository.findByIdWithAll(id);
+    }
+
+    /**
      * Busca personas por nombre
      */
     @Transactional(readOnly = true)
@@ -73,6 +82,13 @@ public class PersonaService {
     @Transactional(readOnly = true)
     public List<Persona> obtenerPorPuesto(Long puestoId) {
         return personaRepository.findByPuestoId(puestoId);
+    }
+
+    /**
+     * Guarda (crea o actualiza) una persona
+     */
+    public Persona guardar(Persona persona) {
+        return personaRepository.save(persona);
     }
 
     /**
@@ -92,5 +108,13 @@ public class PersonaService {
     @Transactional(readOnly = true)
     public long contarActivas() {
         return personaRepository.countByEstado("activo");
+    }
+
+    /**
+     * Cuenta personas totales
+     */
+    @Transactional(readOnly = true)
+    public long contarTotal() {
+        return personaRepository.count();
     }
 }

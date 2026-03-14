@@ -73,6 +73,18 @@ public interface PersonaRepository extends JpaRepository<Persona, Long> {
     List<Persona> findActivasWithCompetencias();
 
     /**
+     * Carga una persona con asignaciones, tareas y competencias en una sola consulta.
+     * Evita LazyInitializationException al acceder a estas colecciones fuera de transacción.
+     */
+    @Query("SELECT DISTINCT p FROM Persona p " +
+           "LEFT JOIN FETCH p.personasCompetencias pc " +
+           "LEFT JOIN FETCH pc.competencia " +
+           "LEFT JOIN FETCH p.asignaciones a " +
+           "LEFT JOIN FETCH a.tarea " +
+           "WHERE p.id = :id")
+    Optional<Persona> findByIdWithAll(@Param("id") Long id);
+
+    /**
      * Busca personas por nombre (búsqueda parcial)
      */
     List<Persona> findByNombreContainingIgnoreCase(String nombre);

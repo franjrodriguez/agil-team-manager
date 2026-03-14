@@ -88,7 +88,12 @@ public class LoginController {
             String rolNombre = persona.getRol().getNombre();
 
             // Cargamos siempre la estructura principal (cabecera + menú + footer)
+            // IMPORTANTE: setControllerFactory asegura que MainController sea el bean
+            // de Spring, no una instancia nueva por reflexión. Sin esto, los controladores
+            // hijos (DashboardAdminController) obtienen desde SpringContext un MainController
+            // diferente al que tiene los @FXML inyectados → contentArea sería null.
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/dashboard/MainView.fxml"));
+            loader.setControllerFactory(SpringContext::getBean);
             Parent root = loader.load();
             System.out.println("(FRANDEV)---> PARECÍA QUE VEÍA ALGO...");
 
@@ -96,7 +101,7 @@ public class LoginController {
             // Él decide qué dashboard cargar en el contentArea central.
             System.out.println("(FRANDEV)---> PREPARADOS PARA EL SEGUNDO SALTO A MAINCONTROLLER, AUNQUE ESTO SIGUE...");
             MainController mainController = loader.getController();
-            mainController.iniciarSesion(persona.getNombre(), rolNombre, true, esAdmin);
+            mainController.iniciarSesion(persona, true, esAdmin);
 
             // Cambiar escena
             Stage stage = (Stage) btnLogin.getScene().getWindow();

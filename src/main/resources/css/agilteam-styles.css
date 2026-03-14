@@ -41,6 +41,19 @@
     -fx-text-fill: -app-text-secondary;
 }
 
+/* Modificamos la tarjeta para que destaque sobre cualquier fondo */
+.card {
+    -fx-background-color: -color-bg-default; /* Usa el color base del tema */
+    -fx-background-radius: 8px;              /* Bordes más redondeados (más moderno) */
+    -fx-border-color: -color-border-subtle;  /* Un borde casi invisible que da definición */
+    -fx-border-radius: 8px;
+    -fx-padding: 10px;                       /* Aire interno para no saturar la vista */
+}
+
+/* Potenciamos la sombra para que el cerebro detecte profundidad */
+.elevated-2 {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 4);
+}
 
 
 /* =====================================================

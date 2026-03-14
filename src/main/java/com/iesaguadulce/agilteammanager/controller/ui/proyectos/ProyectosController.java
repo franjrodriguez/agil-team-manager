@@ -8,8 +8,10 @@ import com.iesaguadulce.agilteammanager.service.proyectos.ProyectoService;
 import com.iesaguadulce.agilteammanager.service.proyectos.SprintService;
 import com.iesaguadulce.agilteammanager.service.proyectos.TareaService;
 
-import javafx.animation.TranslateTransition;
 import javafx.animation.FadeTransition;
+import javafx.animation.TranslateTransition;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -18,8 +20,11 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.util.Duration;
 
+import org.springframework.stereotype.Component;
+
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,32 +32,33 @@ import java.util.List;
  * Gestiona:
  *   - Lista de proyectos (sidebar izquierdo)
  *   - Detalle del proyecto seleccionado (centro)
- *   - Tablas de Sprints y Tareas
+ *   - Tablas de Sprints y Tareas con botón de borrado por fila
  *   - Apertura/cierre del drawer lateral (NuevoSprint / NuevaTarea)
  */
+@Component
 public class ProyectosController {
 
     // ── Sidebar ──────────────────────────────────────────────
-    @FXML private TextField searchField;
+    @FXML private TextField        searchField;
     @FXML private ComboBox<String> deptFilter;
     @FXML private ComboBox<String> statusFilter;
     @FXML private ComboBox<String> roleFilter;
-    @FXML private Button btnAddProyecto;
+    @FXML private Button           btnAddProyecto;
     @FXML private ListView<Proyecto> proyectoListView;
 
     // ── Cabecera detalle ─────────────────────────────────────
-    @FXML private Label profileName;
-    @FXML private Label profileRole;
+    @FXML private Label            projectName;
+    @FXML private Label            projectDescriptionBreve;
     @FXML private ComboBox<String> statusComboBox;
 
     // ── Formulario del proyecto ──────────────────────────────
-    @FXML private TextField nombreField;
-    @FXML private TextArea  descripcionField;
+    @FXML private TextField  nombreField;
+    @FXML private TextArea   descripcionField;
     @FXML private DatePicker fechacomienzoDate;
     @FXML private DatePicker fechafinDate;
 
     // ── Tabla Sprints ────────────────────────────────────────
-    @FXML private TableView<Sprint>      sprintsTable;
+    @FXML private TableView<Sprint>              sprintsTable;
     @FXML private TableColumn<Sprint, String>    objetivoColumn;
     @FXML private TableColumn<Sprint, String>    estadoColumn;
     @FXML private TableColumn<Sprint, LocalDate> inicioColumn;
@@ -61,12 +67,12 @@ public class ProyectosController {
     @FXML private Button btnAddSprint;
 
     // ── Tabla Tareas ─────────────────────────────────────────
-    @FXML private TableView<Tarea>      tareasTable;
-    @FXML private TableColumn<Tarea, String>  tituloTareasColumn;
-    @FXML private TableColumn<Tarea, String>  estadoTareasColumn;
-    @FXML private TableColumn<Tarea, String>  prioridadTareasColumn;
-    @FXML private TableColumn<Tarea, Integer> tiempoTareasColumn;
-    @FXML private TableColumn<Tarea, Void>    accionesTareasColumn;
+    @FXML private TableView<Tarea>              tareasTable;
+    @FXML private TableColumn<Tarea, String>    tituloTareasColumn;
+    @FXML private TableColumn<Tarea, String>    estadoTareasColumn;
+    @FXML private TableColumn<Tarea, String>    prioridadTareasColumn;
+    @FXML private TableColumn<Tarea, Integer>   tiempoTareasColumn;
+    @FXML private TableColumn<Tarea, Void>      accionesTareasColumn;
     @FXML private Button btnAddTask;
 
     // ── Botones acción ───────────────────────────────────────
@@ -75,6 +81,7 @@ public class ProyectosController {
 
     // ── Drawer (overlay + panel deslizante) ─────────────────
     @FXML private Pane      overlayOscuro;
+    @FXML private HBox      drawerWrapper;   // HBox contenedor del drawerPanel
     @FXML private VBox      drawerPanel;
     @FXML private StackPane drawerContenido;
 
@@ -102,6 +109,7 @@ public class ProyectosController {
         cargarListaProyectos();
         configurarSeleccionProyecto();
         configurarBuscador();
+        configurarFiltroEstado();
     }
 
     // ════════════════════════════════════════════════════════
@@ -111,30 +119,91 @@ public class ProyectosController {
     private void configurarComboEstados() {
         List<String> estados = List.of("planificacion", "activo", "completado", "cancelado");
         statusComboBox.setItems(FXCollections.observableArrayList(estados));
-        statusFilter.setItems(FXCollections.observableArrayList(estados));
+
+        List<String> estadosFiltro = new ArrayList<>();
+        estadosFiltro.add("Todos");
+        estadosFiltro.addAll(estados);
+        statusFilter.setItems(FXCollections.observableArrayList(estadosFiltro));
+        statusFilter.setValue("Todos");
     }
 
     private void configurarColumnasSprints() {
         objetivoColumn.setCellValueFactory(c ->
-                new javafx.beans.property.SimpleStringProperty(c.getValue().getObjetivo()));
+                new SimpleStringProperty(c.getValue().getObjetivo()));
         estadoColumn.setCellValueFactory(c ->
-                new javafx.beans.property.SimpleStringProperty(c.getValue().getEstado()));
+                new SimpleStringProperty(c.getValue().getEstado()));
         inicioColumn.setCellValueFactory(c ->
-                new javafx.beans.property.SimpleObjectProperty<>(c.getValue().getFechaInicio()));
+                new SimpleObjectProperty<>(c.getValue().getFechaInicio()));
         finColumn.setCellValueFactory(c ->
-                new javafx.beans.property.SimpleObjectProperty<>(c.getValue().getFechaFin()));
+                new SimpleObjectProperty<>(c.getValue().getFechaFin()));
+        configurarColumnaBorrarSprint();
+    }
+
+    private void configurarColumnaBorrarSprint() {
+        accionesColumn.setCellFactory(col -> new TableCell<>() {
+            private final Button btnBorrar = new Button("Borrar");
+            {
+                btnBorrar.setStyle("-fx-background-color: -app-error; -fx-text-fill: white;");
+                btnBorrar.setOnAction(e -> {
+                    Sprint sprint = getTableView().getItems().get(getIndex());
+                    Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
+                            "¿Eliminar el sprint \"" + sprint.getObjetivo() + "\"?",
+                            ButtonType.YES, ButtonType.NO);
+                    confirm.showAndWait().ifPresent(btn -> {
+                        if (btn == ButtonType.YES) {
+                            sprintService.eliminar(sprint.getId());
+                            if (proyectoSeleccionado != null) cargarSprints(proyectoSeleccionado);
+                        }
+                    });
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : btnBorrar);
+            }
+        });
     }
 
     private void configurarColumnasTareas() {
         tituloTareasColumn.setCellValueFactory(c ->
-                new javafx.beans.property.SimpleStringProperty(c.getValue().getTitulo()));
+                new SimpleStringProperty(c.getValue().getTitulo()));
         estadoTareasColumn.setCellValueFactory(c ->
-                new javafx.beans.property.SimpleStringProperty(c.getValue().getEstado()));
+                new SimpleStringProperty(c.getValue().getEstado()));
         prioridadTareasColumn.setCellValueFactory(c ->
-                new javafx.beans.property.SimpleStringProperty(
+                new SimpleStringProperty(
                         c.getValue().getPrioridad() != null ? c.getValue().getPrioridad().toString() : ""));
         tiempoTareasColumn.setCellValueFactory(c ->
-                new javafx.beans.property.SimpleObjectProperty<>(c.getValue().getEstimacionHoras()));
+                new SimpleObjectProperty<>(c.getValue().getEstimacionHoras()));
+        configurarColumnaBorrarTarea();
+    }
+
+    private void configurarColumnaBorrarTarea() {
+        accionesTareasColumn.setCellFactory(col -> new TableCell<>() {
+            private final Button btnBorrar = new Button("Borrar");
+            {
+                btnBorrar.setStyle("-fx-background-color: -app-error; -fx-text-fill: white;");
+                btnBorrar.setOnAction(e -> {
+                    Tarea tarea = getTableView().getItems().get(getIndex());
+                    Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
+                            "¿Eliminar la tarea \"" + tarea.getTitulo() + "\"?",
+                            ButtonType.YES, ButtonType.NO);
+                    confirm.showAndWait().ifPresent(btn -> {
+                        if (btn == ButtonType.YES) {
+                            tareaService.eliminar(tarea.getId());
+                            if (proyectoSeleccionado != null) cargarTareas(proyectoSeleccionado);
+                        }
+                    });
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : btnBorrar);
+            }
+        });
     }
 
     private void configurarSeleccionProyecto() {
@@ -146,7 +215,6 @@ public class ProyectosController {
                     }
                 }
         );
-        // Celda personalizada: muestra el nombre del proyecto en la lista
         proyectoListView.setCellFactory(lv -> new ListCell<>() {
             @Override
             protected void updateItem(Proyecto item, boolean empty) {
@@ -157,7 +225,11 @@ public class ProyectosController {
     }
 
     private void configurarBuscador() {
-        searchField.textProperty().addListener((obs, anterior, nuevo) -> filtrarProyectos(nuevo));
+        searchField.textProperty().addListener((obs, anterior, nuevo) -> aplicarFiltros());
+    }
+
+    private void configurarFiltroEstado() {
+        statusFilter.valueProperty().addListener((obs, anterior, nuevo) -> aplicarFiltros());
     }
 
     // ════════════════════════════════════════════════════════
@@ -169,23 +241,27 @@ public class ProyectosController {
         proyectoListView.setItems(FXCollections.observableArrayList(proyectos));
     }
 
-    private void filtrarProyectos(String texto) {
+    private void aplicarFiltros() {
         List<Proyecto> todos = proyectoService.obtenerTodos();
-        if (texto == null || texto.isBlank()) {
-            proyectoListView.setItems(FXCollections.observableArrayList(todos));
-        } else {
+        String texto = searchField.getText();
+        String estadoFiltro = statusFilter.getValue();
+
+        var stream = todos.stream();
+
+        if (texto != null && !texto.isBlank()) {
             String lower = texto.toLowerCase();
-            proyectoListView.setItems(FXCollections.observableArrayList(
-                    todos.stream()
-                            .filter(p -> p.getNombre().toLowerCase().contains(lower))
-                            .toList()
-            ));
+            stream = stream.filter(p -> p.getNombre().toLowerCase().contains(lower));
         }
+        if (estadoFiltro != null && !estadoFiltro.equals("Todos")) {
+            stream = stream.filter(p -> estadoFiltro.equals(p.getEstado()));
+        }
+
+        proyectoListView.setItems(FXCollections.observableArrayList(stream.toList()));
     }
 
     private void mostrarDetalleProyecto(Proyecto p) {
-        profileName.setText(p.getNombre());
-        profileRole.setText(p.getDescripcion() != null ? p.getDescripcion() : "");
+        projectName.setText(p.getNombre());
+        projectDescriptionBreve.setText(p.getDescripcion() != null ? p.getDescripcion() : "");
         nombreField.setText(p.getNombre());
         descripcionField.setText(p.getDescripcion());
         fechacomienzoDate.setValue(p.getFechaInicio());
@@ -213,15 +289,29 @@ public class ProyectosController {
     @FXML
     private void onGuardarProyecto() {
         if (proyectoSeleccionado == null) return;
-        proyectoSeleccionado = proyectoService.actualizar(
-                proyectoSeleccionado.getId(),
-                nombreField.getText(),
-                descripcionField.getText(),
-                fechacomienzoDate.getValue(),
-                fechafinDate.getValue(),
-                statusComboBox.getValue()
-        );
-        cargarListaProyectos();
+
+        // Validación: fecha fin no puede ser anterior a fecha comienzo
+        LocalDate inicio = fechacomienzoDate.getValue();
+        LocalDate fin    = fechafinDate.getValue();
+        if (inicio != null && fin != null && fin.isBefore(inicio)) {
+            mostrarError("La fecha de finalización no puede ser anterior a la de comienzo.");
+            return;
+        }
+
+        try {
+            proyectoSeleccionado = proyectoService.actualizar(
+                    proyectoSeleccionado.getId(),
+                    nombreField.getText(),
+                    descripcionField.getText(),
+                    inicio,
+                    fin,
+                    statusComboBox.getValue()
+            );
+            cargarListaProyectos();
+            mostrarInfo("Proyecto \"" + proyectoSeleccionado.getNombre() + "\" guardado correctamente.");
+        } catch (Exception e) {
+            mostrarError("Error al guardar el proyecto: " + e.getMessage());
+        }
     }
 
     @FXML
@@ -241,8 +331,9 @@ public class ProyectosController {
 
     @FXML
     private void onAddProyecto() {
-        proyectoService.crear("Nuevo Proyecto", null, null, null);
+        Proyecto nuevo = proyectoService.crear("Nuevo Proyecto", null, null, null);
         cargarListaProyectos();
+        proyectoListView.getSelectionModel().select(nuevo);
     }
 
     // ════════════════════════════════════════════════════════
@@ -251,12 +342,20 @@ public class ProyectosController {
 
     @FXML
     public void onNuevoSprint() {
-        abrirDrawer("/fxml/views/proyectos/NuevoSprintDrawer.fxml");
+        if (proyectoSeleccionado == null) {
+            new Alert(Alert.AlertType.WARNING, "Selecciona primero un proyecto.", ButtonType.OK).showAndWait();
+            return;
+        }
+        abrirDrawer("/views/proyectos/NuevoSprintDrawer.fxml");
     }
 
     @FXML
     public void onNuevaTarea() {
-        abrirDrawer("/fxml/views/proyectos/NuevaTareaDrawer.fxml");
+        if (proyectoSeleccionado == null) {
+            new Alert(Alert.AlertType.WARNING, "Selecciona primero un proyecto.", ButtonType.OK).showAndWait();
+            return;
+        }
+        abrirDrawer("/views/proyectos/NuevaTareaDrawer.fxml");
     }
 
     @FXML
@@ -273,7 +372,6 @@ public class ProyectosController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Node contenido = loader.load();
 
-            // Pasar referencia al controller hijo para que pueda cerrar el drawer
             Object childController = loader.getController();
             if (childController instanceof DrawerChildController hijo) {
                 hijo.setParentController(this);
@@ -282,14 +380,15 @@ public class ProyectosController {
 
             drawerContenido.getChildren().setAll(contenido);
 
-            // Overlay: aparece con fade
+            // Activar wrapper y panel ANTES de animar (el HBox padre debe recibir eventos)
+            drawerWrapper.setMouseTransparent(false);
+            drawerPanel.setMouseTransparent(false);
+
             overlayOscuro.setMouseTransparent(false);
             FadeTransition fade = new FadeTransition(Duration.millis(200), overlayOscuro);
             fade.setToValue(1.0);
             fade.play();
 
-            // Panel: desliza desde la derecha
-            drawerPanel.setMouseTransparent(false);
             TranslateTransition slide = new TranslateTransition(Duration.millis(280), drawerPanel);
             slide.setToX(0);
             slide.play();
@@ -300,25 +399,42 @@ public class ProyectosController {
     }
 
     public void cerrarDrawer() {
-        // Panel: desliza hacia la derecha
         TranslateTransition slide = new TranslateTransition(Duration.millis(250), drawerPanel);
         slide.setToX(380);
         slide.setOnFinished(e -> {
             drawerContenido.getChildren().clear();
             drawerPanel.setMouseTransparent(true);
+            drawerWrapper.setMouseTransparent(true);  // devolver transparencia al wrapper
         });
         slide.play();
 
-        // Overlay: desaparece con fade
         FadeTransition fade = new FadeTransition(Duration.millis(200), overlayOscuro);
         fade.setToValue(0.0);
         fade.setOnFinished(e -> overlayOscuro.setMouseTransparent(true));
         fade.play();
     }
 
-    /**
-     * Llamado por los controllers hijos tras guardar, para refrescar las tablas.
-     */
+    // ════════════════════════════════════════════════════════
+    //  UTILIDADES
+    // ════════════════════════════════════════════════════════
+
+    private void mostrarError(String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Error de validación");
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
+    }
+
+    private void mostrarInfo(String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Guardado");
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
+    }
+
+    /** Llamado por los controllers hijos tras guardar, para refrescar las tablas. */
     public void refrescarDatos() {
         if (proyectoSeleccionado != null) {
             cargarSprints(proyectoSeleccionado);

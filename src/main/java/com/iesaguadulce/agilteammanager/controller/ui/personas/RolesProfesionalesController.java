@@ -70,12 +70,6 @@ public class RolesProfesionalesController implements Initializable {
     /** Panel derecho: campo descripción */
     @FXML private TextArea descripcionField;
 
-    /** Panel derecho: contador de profesionales asociados */
-    @FXML private Label lblContadorProfesionales;
-
-    /** Panel derecho: mensaje cuando no hay profesionales */
-    @FXML private Label lblSinProfesionales;
-
     /** Botón de borrar (oculto si no hay selección) */
     @FXML private Button btnDelete;
 
@@ -308,11 +302,6 @@ public class RolesProfesionalesController implements Initializable {
         nombreField.setText(puesto.getNombre());
         descripcionField.setText(puesto.getDescripcion() != null ? puesto.getDescripcion() : "");
 
-        // Sección de profesionales relacionados
-        int numeroProfesionales = puesto.getPersonas() != null ? puesto.getPersonas().size() : 0;
-        lblContadorProfesionales.setText(numeroProfesionales + " profesional(es)");
-        lblSinProfesionales.setVisible(numeroProfesionales == 0);
-
         // Mostrar botón borrar solo cuando hay un puesto seleccionado
         btnDelete.setVisible(true);
     }
@@ -324,8 +313,6 @@ public class RolesProfesionalesController implements Initializable {
         // profileName.setText("Selecciona un puesto de la lista");
         nombreField.clear();
         descripcionField.clear();
-        // lblContadorProfesionales.setText("0 profesionales");
-        // lblSinProfesionales.setVisible(true);
         // btnDelete.setVisible(false);  // Ocultamos el botón borrar
     }
 

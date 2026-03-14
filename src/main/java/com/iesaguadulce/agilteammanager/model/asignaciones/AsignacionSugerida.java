@@ -5,6 +5,7 @@ import com.iesaguadulce.agilteammanager.model.proyectos.Tarea;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
@@ -13,10 +14,12 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "asignaciones_sugeridas")
 @Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class AsignacionSugerida {
 
+    @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

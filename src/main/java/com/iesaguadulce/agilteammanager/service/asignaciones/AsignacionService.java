@@ -12,6 +12,7 @@ import com.iesaguadulce.agilteammanager.service.personas.DisponibilidadService;
 import com.iesaguadulce.agilteammanager.service.proyectos.TareaService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -167,11 +168,21 @@ public class AsignacionService {
     }
 
     /**
-     * Obtiene todas las asignaciones de una persona
+     * Obtiene todas las asignaciones de una persona.
+     * Inicializa proxies lazy de Tarea, Proyecto y Sprint para evitar
+     * LazyInitializationException en la capa de UI (JavaFX).
      */
     @Transactional(readOnly = true)
     public List<Asignacion> obtenerPorPersona(Long personaId) {
-        return asignacionRepository.findByPersonaId(personaId);
+        List<Asignacion> lista = asignacionRepository.findByPersonaId(personaId);
+        lista.forEach(a -> {
+            Hibernate.initialize(a.getTarea());
+            if (a.getTarea() != null) {
+                Hibernate.initialize(a.getTarea().getProyecto());
+                Hibernate.initialize(a.getTarea().getSprint());
+            }
+        });
+        return lista;
     }
 
     /**

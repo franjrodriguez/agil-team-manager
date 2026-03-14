@@ -8,6 +8,7 @@ import com.iesaguadulce.agilteammanager.repository.personas.CompetenciaRepositor
 import com.iesaguadulce.agilteammanager.repository.personas.PersonaCompetenciaRepository;
 import com.iesaguadulce.agilteammanager.repository.personas.PersonaRepository;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -70,11 +71,14 @@ public class PersonaCompetenciaService {
     }
 
     /**
-     * Obtiene todas las competencias de una persona con sus niveles actuales
+     * Obtiene todas las competencias de una persona con sus niveles actuales.
+     * Inicializa el proxy de Competencia dentro de la sesión para evitar LazyInitializationException.
      */
     @Transactional(readOnly = true)
     public List<PersonaCompetencia> obtenerCompetenciasDePersona(Long personaId) {
-        return personaCompetenciaRepository.findByPersonaId(personaId);
+        List<PersonaCompetencia> lista = personaCompetenciaRepository.findByPersonaId(personaId);
+        lista.forEach(pc -> Hibernate.initialize(pc.getCompetencia()));
+        return lista;
     }
 
     /**

@@ -109,6 +109,17 @@ public class PuestoService {
     }
 
     /**
+     * Cuenta las personas asignadas a un puesto.
+     * Se ejecuta dentro de la transacción para evitar LazyInitializationException.
+     */
+    @Transactional(readOnly = true)
+    public long contarPersonasPorPuesto(Long puestoId) {
+        return puestoRepository.findById(puestoId)
+                .map(p -> (long) p.getPersonas().size())
+                .orElse(0L);
+    }
+
+    /**
      * Busca puestos por nombre
      */
     @Transactional(readOnly = true)

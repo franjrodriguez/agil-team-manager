@@ -8,81 +8,204 @@
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="930.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="806.0" prefWidth="1200.0" styleClass="bg-default" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iesaguadulce.agilteammanager.controller.ui.dashboard.DashboardController">
    <children>
-      <VBox prefHeight="930.0" prefWidth="1200.0">
+      <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="806.0" prefWidth="1200.0" style="-fx-background-color: -app-bg-workspace;">
          <children>
-            <HBox alignment="CENTER" prefHeight="140.0" prefWidth="200.0" spacing="20.0" VBox.vgrow="ALWAYS">
-               <VBox.margin>
-                  <Insets top="17.0" />
-               </VBox.margin>
+            <HBox fx:id="boxHeaderWidget" prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <fx:include fx:id="widgetProyectos" source="WidgetCard.fxml" />
-                  <fx:include fx:id="widgetTareas" source="WidgetCard.fxml" />
-                  <fx:include fx:id="widgetPersonas" source="WidgetCard.fxml" />
-                  <fx:include fx:id="widgetCarga" source="WidgetCard.fxml" />
-               </children>
-            </HBox>
-            <Label styleClass="section-title" text="Rendimiento del Equipo (Últimos 7 Días)" />
-            <HBox prefHeight="412.0" prefWidth="200.0">
-               <VBox.margin>
-                  <Insets top="17.0" />
-               </VBox.margin>
-               <children>
-                  <BarChart fx:id="barChartRendimiento" prefWidth="666.0">
-                    <xAxis>
-                      <CategoryAxis side="BOTTOM" />
-                    </xAxis>
-                    <yAxis>
-                      <NumberAxis side="LEFT" />
-                    </yAxis>
-                     <HBox.margin>
-                        <Insets right="45.0" />
-                     </HBox.margin>
+                  <VBox fx:id="widgetCard1" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="140.0" prefWidth="256.0" spacing="10.0">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="8.0">
+                           <children>
+                              <Label fx:id="valueProyectosActivos" prefHeight="47.0" prefWidth="70.0" styleClass="kpi-value" text="00" />
+                              <Separator prefHeight="25.0" prefWidth="103.0" visible="false" />
+                              <ImageView fx:id="imgWidget" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../icons/project.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                        </HBox>
+                        <Label fx:id="titleLabel" prefHeight="19.0" prefWidth="247.0" styleClass="kpi-label" text="Proyectos Activos" />
+                     </children>
+                     <padding>
+                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                     </padding>
+                     <stylesheets>
+                        <URL value="@../../css/primer-light.css" />
+                        <URL value="@../../css/agilteam-styles.css" />
+                     </stylesheets>
                      <styleClass>
                         <String fx:value="card" />
-                        <String fx:value="elevated-1" />
+                        <String fx:value="elevated-2" />
                      </styleClass>
-                  </BarChart>
-                  <ListView prefHeight="408.0" prefWidth="394.0">
+                  </VBox>
+                  <Separator prefWidth="200.0" visible="false" />
+                  <VBox fx:id="widgetCard2" alignment="CENTER" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="140.0" prefWidth="256.0" spacing="10.0">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="8.0">
+                           <children>
+                              <Label fx:id="valueTareasPendientes" prefHeight="53.0" prefWidth="70.0" styleClass="kpi-value" text="00" />
+                              <Separator prefHeight="25.0" prefWidth="103.0" visible="false" />
+                              <ImageView fx:id="imgWidget1" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../icons/tareas.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                        </HBox>
+                        <Label fx:id="titleLabel1" prefHeight="19.0" prefWidth="265.0" styleClass="kpi-label" text="Tareas Pendientes" />
+                     </children>
+                     <padding>
+                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                     </padding>
+                     <stylesheets>
+                        <URL value="@../../css/primer-light.css" />
+                        <URL value="@../../css/agilteam-styles.css" />
+                     </stylesheets>
                      <styleClass>
-                        <String fx:value="striped" />
-                        <String fx:value="dense" />
+                        <String fx:value="card" />
+                        <String fx:value="elevated-2" />
                      </styleClass>
-                  </ListView>
+                  </VBox>
+                  <Separator layoutX="266.0" layoutY="10.0" prefWidth="200.0" visible="false" />
+                  <VBox fx:id="widgetCard3" alignment="CENTER" layoutX="266.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="140.0" prefWidth="256.0" spacing="10.0">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="8.0">
+                           <children>
+                              <Label fx:id="valueProfesionalesActivos" prefHeight="47.0" prefWidth="70.0" styleClass="kpi-value" text="00" />
+                              <Separator prefHeight="25.0" prefWidth="103.0" visible="false" />
+                              <ImageView fx:id="imgWidget11" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../icons/professional.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                        </HBox>
+                        <Label fx:id="titleLabel11" prefHeight="19.0" prefWidth="270.0" styleClass="kpi-label" text="Profesionales Activos" />
+                     </children>
+                     <padding>
+                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                     </padding>
+                     <stylesheets>
+                        <URL value="@../../css/primer-light.css" />
+                        <URL value="@../../css/agilteam-styles.css" />
+                     </stylesheets>
+                     <styleClass>
+                        <String fx:value="card" />
+                        <String fx:value="elevated-2" />
+                     </styleClass>
+                  </VBox>
+                  <Separator layoutX="590.0" layoutY="10.0" prefWidth="200.0" visible="false" />
+                  <VBox fx:id="widgetCard4" alignment="CENTER" layoutX="522.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="140.0" prefWidth="256.0" spacing="10.0">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="8.0">
+                           <children>
+                              <Label fx:id="valueCargaPromedio" prefHeight="47.0" prefWidth="85.0" styleClass="kpi-value" text="100%" />
+                              <Separator prefHeight="25.0" prefWidth="51.0" visible="false" />
+                              <ImageView fx:id="imgWidget111" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../icons/carga.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                        </HBox>
+                        <Label fx:id="titleLabel111" prefHeight="19.0" prefWidth="248.0" styleClass="kpi-label" text="Carga Promedio del Equipo" />
+                     </children>
+                     <padding>
+                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                     </padding>
+                     <stylesheets>
+                        <URL value="@../../css/primer-light.css" />
+                        <URL value="@../../css/agilteam-styles.css" />
+                     </stylesheets>
+                     <styleClass>
+                        <String fx:value="card" />
+                        <String fx:value="elevated-2" />
+                     </styleClass>
+                  </VBox>
                </children>
             </HBox>
-            <HBox prefHeight="310.0" prefWidth="200.0">
+            <HBox fx:id="seccionGraficaNotificaciones" prefHeight="380.0" prefWidth="200.0">
+               <children>
+                  <VBox prefHeight="300.0" prefWidth="694.0" style="-fx-background-color: -app-bg-card; -fx-background-radius: 8;">
+                     <children>
+                        <Label prefHeight="25.0" prefWidth="694.0" styleClass="section-title" text="Rendimiento del Equipo (Últimos 7 Días)" />
+                        <BarChart fx:id="barChartRendimiento" prefHeight="356.0">
+                          <xAxis>
+                            <CategoryAxis prefHeight="24.0" prefWidth="637.0" side="BOTTOM" />
+                          </xAxis>
+                          <yAxis>
+                            <NumberAxis side="LEFT" />
+                          </yAxis>
+                           <styleClass>
+                              <String fx:value="card" />
+                              <String fx:value="elevated-1" />
+                           </styleClass>
+                        </BarChart>
+                     </children>
+                  </VBox>
+                  <Separator prefHeight="25.0" prefWidth="36.0" visible="false" />
+                  <VBox layoutX="10.0" layoutY="10.0" prefHeight="200.0" style="-fx-background-color: -app-bg-card; -fx-background-radius: 8;">
+                     <children>
+                        <Label styleClass="section-title" text="Notificaciones" />
+                        <ListView prefHeight="371.0" prefWidth="392.0">
+                           <styleClass>
+                              <String fx:value="striped" />
+                              <String fx:value="dense" />
+                           </styleClass>
+                        </ListView>
+                     </children>
+                  </VBox>
+               </children>
+               <VBox.margin>
+                  <Insets top="16.0" />
+               </VBox.margin>
+            </HBox>
+            <HBox fx:id="seccionTablasInformativas" prefHeight="240.0" prefWidth="200.0">
                <VBox.margin>
                   <Insets top="17.0" />
                </VBox.margin>
                <children>
-                  <TableView fx:id="tblTareasPendientes" prefHeight="200.0" prefWidth="530.0">
-                    <columns>
-                      <TableColumn prefWidth="75.0" text="C1" />
-                      <TableColumn prefWidth="75.0" text="C2" />
-                    </columns>
-                     <HBox.margin>
-                        <Insets right="45.0" />
-                     </HBox.margin>
-                  </TableView>
-                  <TableView fx:id="tblEquipoActivo" prefHeight="200.0" prefWidth="530.0">
-                    <columns>
-                      <TableColumn prefWidth="75.0" text="C1" />
-                      <TableColumn prefWidth="75.0" text="C2" />
-                    </columns>
-                  </TableView>
+                  <VBox prefHeight="200.0" prefWidth="550.0">
+                     <children>
+                        <Label styleClass="section-title" text="Tareas Pendientes" />
+                        <TableView fx:id="tblTareasPendientes" prefHeight="200.0" prefWidth="530.0">
+                          <columns>
+                            <TableColumn prefWidth="440.0" text="Nombre Tarea y Sprint" />
+                            <TableColumn prefWidth="106.0" text="Acción" />
+                          </columns>
+                        </TableView>
+                     </children>
+                  </VBox>
+                  <Separator prefHeight="25.0" prefWidth="13.0" visible="false" />
+                  <VBox fx:id="tablaEquipoActivo" layoutX="10.0" layoutY="10.0" prefHeight="200.0" prefWidth="550.0">
+                     <children>
+                        <Label styleClass="section-title" text="Equipo Activo" />
+                        <TableView fx:id="tblEquipoActivo" prefHeight="200.0" prefWidth="530.0">
+                          <columns>
+                            <TableColumn prefWidth="95.0" text="\% Carga" />
+                            <TableColumn prefWidth="338.0" text="Profesional / Tareas" />
+                              <TableColumn prefWidth="113.0" text="Imagen" />
+                          </columns>
+                        </TableView>
+                     </children>
+                  </VBox>
                </children>
             </HBox>
          </children>
          <padding>
-            <Insets left="40.0" />
+            <Insets left="40.0" right="40.0" />
          </padding>
       </VBox>
    </children>

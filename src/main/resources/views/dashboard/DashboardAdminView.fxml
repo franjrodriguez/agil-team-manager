@@ -3,86 +3,336 @@
 <?import java.lang.String?>
 <?import java.net.URL?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.chart.BarChart?>
-<?import javafx.scene.chart.CategoryAxis?>
-<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="930.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="806.0" prefWidth="1200.0" styleClass="bg-default" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iesaguadulce.agilteammanager.controller.ui.dashboard.DashboardAdminController">
    <children>
-      <VBox prefHeight="930.0" prefWidth="1200.0">
+      <ImageView fitHeight="806.0" fitWidth="1437.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../assets/fondopunteado.jpg" />
+         </image>
+      </ImageView>
+      <VBox prefHeight="806.0" prefWidth="1200.0" style="-fx-background-color: transparent;">
          <children>
-            <HBox alignment="CENTER" prefHeight="140.0" prefWidth="200.0" spacing="20.0" VBox.vgrow="ALWAYS">
+            <HBox fx:id="seccionBotones" prefHeight="412.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                <VBox.margin>
-                  <Insets top="17.0" />
+                  <Insets bottom="30.0" top="30.0" />
                </VBox.margin>
                <children>
-                  <fx:include fx:id="widgetProyectos" source="WidgetCard.fxml" />
-                  <fx:include fx:id="widgetTareas" source="WidgetCard.fxml" />
-                  <fx:include fx:id="widgetPersonas" source="WidgetCard.fxml" />
-                  <fx:include fx:id="widgetCarga" source="WidgetCard.fxml" />
+                  <Button fx:id="buttonUsuarios" maxHeight="Infinity" maxWidth="Infinity" mnemonicParsing="false" onAction="#mostrarUsuarios" prefHeight="411.0" prefWidth="319.0" style="-fx-background-radius: 16;" textAlignment="CENTER" HBox.hgrow="ALWAYS">
+                     <font>
+                        <Font size="45.0" />
+                     </font>
+                     <graphic>
+                        <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                              <ImageView fitHeight="175.0" fitWidth="175.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../icons/users.png" />
+                                 </image>
+                                 <VBox.margin>
+                                    <Insets bottom="30.0" top="30.0" />
+                                 </VBox.margin>
+                              </ImageView>
+                              <Label styleClass="title-4" text="Usuarios" />
+                              <Label layoutX="10.0" layoutY="160.0" styleClass="tile-base" text="Gestión de usuarios" />
+                           </children>
+                        </VBox>
+                     </graphic>
+                  </Button>
+                  <Separator prefHeight="25.0" prefWidth="58.0" visible="false" />
+                  <Button fx:id="buttonRoles" layoutX="10.0" layoutY="10.0" maxHeight="Infinity" maxWidth="Infinity" mnemonicParsing="false" onAction="#mostrarRoles" prefHeight="411.0" prefWidth="319.0" style="-fx-background-radius: 16;" textAlignment="CENTER" HBox.hgrow="ALWAYS">
+                     <font>
+                        <Font size="45.0" />
+                     </font>
+                     <graphic>
+                        <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                              <ImageView fitHeight="175.0" fitWidth="175.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../icons/menu/role-verde.png" />
+                                 </image>
+                                 <VBox.margin>
+                                    <Insets bottom="30.0" top="30.0" />
+                                 </VBox.margin>
+                              </ImageView>
+                              <Label styleClass="title-4" text="Roles" />
+                              <Label layoutX="10.0" layoutY="160.0" styleClass="tile-base" text="Gestión de roles sistema y permisos" />
+                           </children>
+                        </VBox>
+                     </graphic>
+                  </Button>
+                  <Separator layoutX="967.0" layoutY="10.0" prefWidth="58.0" visible="false" />
+                  <Button fx:id="buttonConfig" layoutX="329.0" layoutY="10.0" maxHeight="Infinity" maxWidth="Infinity" mnemonicParsing="false" onAction="#mostrarConfig" prefHeight="411.0" prefWidth="319.0" style="-fx-background-radius: 16;" textAlignment="CENTER" HBox.hgrow="ALWAYS">
+                     <font>
+                        <Font size="45.0" />
+                     </font>
+                     <graphic>
+                        <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                              <ImageView fitHeight="175.0" fitWidth="175.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../icons/menu/config-naranja.png" />
+                                 </image>
+                                 <VBox.margin>
+                                    <Insets bottom="30.0" top="30.0" />
+                                 </VBox.margin>
+                              </ImageView>
+                              <Label styleClass="title-4" text="Config" />
+                              <Label layoutX="75.0" layoutY="245.0" styleClass="titled-pane" text="Configuración del Sistema" />
+                           </children>
+                        </VBox>
+                     </graphic>
+                  </Button>
                </children>
             </HBox>
-            <Label styleClass="section-title" text="Rendimiento del Equipo (Últimos 7 Días)" />
-            <HBox prefHeight="412.0" prefWidth="200.0">
-               <VBox.margin>
-                  <Insets top="17.0" />
-               </VBox.margin>
+            <HBox fx:id="seccionContadores" prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <BarChart fx:id="barChartRendimiento" prefWidth="666.0">
-                    <xAxis>
-                      <CategoryAxis side="BOTTOM" />
-                    </xAxis>
-                    <yAxis>
-                      <NumberAxis side="LEFT" />
-                    </yAxis>
-                     <HBox.margin>
-                        <Insets right="45.0" />
-                     </HBox.margin>
+                  <VBox fx:id="widgetCard1" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="140.0" prefWidth="256.0" spacing="10.0" style="-fx-background-color: white; -fx-background-radius: 8;">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="8.0">
+                           <children>
+                              <ImageView fx:id="imgWidget" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../icons/widget/users.png" />
+                                 </image>
+                              </ImageView>
+                              <Separator prefHeight="25.0" prefWidth="30.0" visible="false" />
+                              <Label fx:id="titleLabel" prefHeight="19.0" prefWidth="247.0" styleClass="kpi-label" text="Números de usuarios" wrapText="true" />
+                           </children>
+                        </HBox>
+                        <Label fx:id="valueUsuarios" prefHeight="47.0" prefWidth="70.0" styleClass="kpi-value" text="00" />
+                     </children>
+                     <padding>
+                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                     </padding>
+                     <stylesheets>
+                        <URL value="@../../css/primer-light.css" />
+                        <URL value="@../../css/agilteam-styles.css" />
+                     </stylesheets>
                      <styleClass>
                         <String fx:value="card" />
                         <String fx:value="elevated-1" />
                      </styleClass>
-                  </BarChart>
-                  <ListView prefHeight="408.0" prefWidth="394.0">
+                  </VBox>
+                  <Separator prefHeight="25.0" prefWidth="33.0" visible="false" />
+                  <VBox fx:id="widgetCard2" alignment="CENTER" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="140.0" prefWidth="256.0" spacing="10.0">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="8.0">
+                           <children>
+                              <ImageView fx:id="imgWidget1" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../icons/widget/useractive-verde.png" />
+                                 </image>
+                              </ImageView>
+                              <Separator prefHeight="25.0" prefWidth="30.0" visible="false" />
+                              <Label fx:id="titleLabel1" prefHeight="19.0" prefWidth="265.0" styleClass="kpi-label" text="Usuarios en activo" />
+                           </children>
+                        </HBox>
+                        <Label fx:id="valueUsuariosActivos" prefHeight="53.0" prefWidth="70.0" styleClass="kpi-value" text="00" />
+                     </children>
+                     <padding>
+                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                     </padding>
+                     <stylesheets>
+                        <URL value="@../../css/primer-light.css" />
+                        <URL value="@../../css/agilteam-styles.css" />
+                     </stylesheets>
                      <styleClass>
-                        <String fx:value="striped" />
-                        <String fx:value="dense" />
+                        <String fx:value="card" />
+                        <String fx:value="elevated-2" />
                      </styleClass>
-                  </ListView>
+                  </VBox>
+                  <Separator layoutX="266.0" layoutY="10.0" prefWidth="33.0" visible="false" />
+                  <VBox fx:id="widgetCard3" alignment="CENTER" layoutX="266.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="140.0" prefWidth="256.0" spacing="10.0">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="8.0">
+                           <children>
+                              <ImageView fx:id="imgWidget11" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../icons/widget/userlocked-rojo.png" />
+                                 </image>
+                              </ImageView>
+                              <Separator prefHeight="25.0" prefWidth="30.0" visible="false" />
+                              <Label fx:id="titleLabel11" prefHeight="19.0" prefWidth="270.0" styleClass="kpi-label" text="Usuarios inactivos" />
+                           </children>
+                        </HBox>
+                        <Label fx:id="valueUsuariosNoActivos" prefHeight="47.0" prefWidth="70.0" styleClass="kpi-value" text="00" />
+                     </children>
+                     <padding>
+                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                     </padding>
+                     <stylesheets>
+                        <URL value="@../../css/primer-light.css" />
+                        <URL value="@../../css/agilteam-styles.css" />
+                     </stylesheets>
+                     <styleClass>
+                        <String fx:value="card" />
+                        <String fx:value="elevated-2" />
+                     </styleClass>
+                  </VBox>
+                  <Separator layoutX="590.0" layoutY="10.0" prefWidth="33.0" visible="false" />
+                  <VBox fx:id="widgetCard4" alignment="CENTER" layoutX="522.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="140.0" prefWidth="256.0" spacing="10.0">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="8.0">
+                           <children>
+                              <ImageView fx:id="imgWidget111" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../icons/widget/group-gris.png" />
+                                 </image>
+                              </ImageView>
+                              <Separator prefHeight="25.0" prefWidth="30.0" visible="false" />
+                              <Label fx:id="titleLabel111" prefHeight="19.0" prefWidth="248.0" styleClass="kpi-label" text="Roles en sistema" />
+                           </children>
+                        </HBox>
+                        <Label fx:id="valueRoles" prefHeight="47.0" prefWidth="85.0" styleClass="kpi-value" text="00" />
+                     </children>
+                     <padding>
+                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                     </padding>
+                     <stylesheets>
+                        <URL value="@../../css/primer-light.css" />
+                        <URL value="@../../css/agilteam-styles.css" />
+                     </stylesheets>
+                     <styleClass>
+                        <String fx:value="card" />
+                        <String fx:value="elevated-2" />
+                     </styleClass>
+                  </VBox>
                </children>
-            </HBox>
-            <HBox prefHeight="310.0" prefWidth="200.0">
                <VBox.margin>
-                  <Insets top="17.0" />
+                  <Insets />
                </VBox.margin>
+            </HBox>
+            <HBox fx:id="seccionLog" layoutX="50.0" layoutY="439.0" prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <TableView fx:id="tblTareasPendientes" prefHeight="200.0" prefWidth="530.0">
-                    <columns>
-                      <TableColumn prefWidth="75.0" text="C1" />
-                      <TableColumn prefWidth="75.0" text="C2" />
-                    </columns>
-                     <HBox.margin>
-                        <Insets right="45.0" />
-                     </HBox.margin>
-                  </TableView>
-                  <TableView fx:id="tblEquipoActivo" prefHeight="200.0" prefWidth="530.0">
-                    <columns>
-                      <TableColumn prefWidth="75.0" text="C1" />
-                      <TableColumn prefWidth="75.0" text="C2" />
-                    </columns>
-                  </TableView>
+                  <VBox fx:id="widgetCard11" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="140.0" prefWidth="256.0" spacing="10.0">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="8.0">
+                           <children>
+                              <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../icons/widget/version-naranja.png" />
+                                 </image>
+                              </ImageView>
+                              <Separator prefHeight="25.0" prefWidth="30.0" visible="false" />
+                              <Label prefHeight="19.0" prefWidth="247.0" styleClass="kpi-label" text="Versión de la aplicación" />
+                           </children>
+                        </HBox>
+                        <Label fx:id="valueVersion" prefHeight="47.0" prefWidth="70.0" styleClass="kpi-value" text="1.0" />
+                     </children>
+                     <padding>
+                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                     </padding>
+                     <stylesheets>
+                        <URL value="@../../css/primer-light.css" />
+                        <URL value="@../../css/agilteam-styles.css" />
+                     </stylesheets>
+                     <styleClass>
+                        <String fx:value="card" />
+                        <String fx:value="elevated-2" />
+                     </styleClass>
+                  </VBox>
+                  <Separator prefWidth="33.0" visible="false" />
+                  <VBox fx:id="widgetCard21" alignment="CENTER" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="140.0" prefWidth="256.0" spacing="10.0">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="8.0">
+                           <children>
+                              <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../icons/widget/login-verde.png" />
+                                 </image>
+                              </ImageView>
+                              <Separator prefHeight="25.0" prefWidth="30.0" visible="false" />
+                              <Label prefHeight="19.0" prefWidth="265.0" styleClass="kpi-label" text="Ultimo login" />
+                           </children>
+                        </HBox>
+                        <Label fx:id="valueHoraUltimoLogin" prefHeight="47.0" prefWidth="91.0" styleClass="kpi-value" text="00:00" />
+                     </children>
+                     <padding>
+                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                     </padding>
+                     <stylesheets>
+                        <URL value="@../../css/primer-light.css" />
+                        <URL value="@../../css/agilteam-styles.css" />
+                     </stylesheets>
+                     <styleClass>
+                        <String fx:value="card" />
+                        <String fx:value="elevated-2" />
+                     </styleClass>
+                  </VBox>
+                  <Separator layoutX="266.0" layoutY="10.0" prefWidth="33.0" visible="false" />
+                  <VBox fx:id="widgetCard31" alignment="CENTER" layoutX="266.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="140.0" prefWidth="256.0" spacing="10.0">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="8.0">
+                           <children>
+                              <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../icons/widget/loginfail.png" />
+                                 </image>
+                              </ImageView>
+                              <Separator prefHeight="25.0" prefWidth="30.0" visible="false" />
+                              <Label prefHeight="19.0" prefWidth="270.0" styleClass="kpi-label" text="Ultima conexión fallida" />
+                           </children>
+                        </HBox>
+                        <Label fx:id="valueUltimaConexionFallida" prefHeight="47.0" prefWidth="93.0" styleClass="kpi-value" text="00:00" />
+                     </children>
+                     <padding>
+                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                     </padding>
+                     <stylesheets>
+                        <URL value="@../../css/primer-light.css" />
+                        <URL value="@../../css/agilteam-styles.css" />
+                     </stylesheets>
+                     <styleClass>
+                        <String fx:value="card" />
+                        <String fx:value="elevated-2" />
+                     </styleClass>
+                  </VBox>
+                  <Separator layoutX="590.0" layoutY="10.0" prefWidth="33.0" visible="false" />
+                  <VBox fx:id="widgetCard41" alignment="CENTER" layoutX="522.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="140.0" prefWidth="256.0" spacing="10.0">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="8.0">
+                           <children>
+                              <ImageView fx:id="imgWidget1111" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../icons/widget/errorconected.png" />
+                                 </image>
+                              </ImageView>
+                              <Separator prefHeight="25.0" prefWidth="30.0" visible="false" />
+                              <Label fx:id="titleLabel1111" prefHeight="19.0" prefWidth="248.0" styleClass="kpi-label" text="Número de conexiones ERR" textOverrun="CLIP" wrapText="true" />
+                           </children>
+                        </HBox>
+                        <Label fx:id="valueErrorConexion" prefHeight="47.0" prefWidth="85.0" styleClass="kpi-value" text="00" wrapText="true" />
+                     </children>
+                     <padding>
+                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                     </padding>
+                     <stylesheets>
+                        <URL value="@../../css/primer-light.css" />
+                        <URL value="@../../css/agilteam-styles.css" />
+                     </stylesheets>
+                     <styleClass>
+                        <String fx:value="card" />
+                        <String fx:value="elevated-2" />
+                     </styleClass>
+                  </VBox>
                </children>
+               <VBox.margin>
+                  <Insets top="30.0" />
+               </VBox.margin>
             </HBox>
          </children>
          <padding>
-            <Insets left="40.0" />
+            <Insets left="40.0" right="40.0" />
          </padding>
       </VBox>
    </children>

@@ -1,143 +1,173 @@
 package com.iesaguadulce.agilteammanager.controller.ui.dashboard;
 
+import com.iesaguadulce.agilteammanager.config.SpringContext;
 import com.iesaguadulce.agilteammanager.dto.DashboardKPIs;
+import com.iesaguadulce.agilteammanager.dto.PersonaActivaDTO;
+import com.iesaguadulce.agilteammanager.dto.RendimientoDiaDTO;
+import com.iesaguadulce.agilteammanager.dto.TareaPendienteDTO;
 import com.iesaguadulce.agilteammanager.service.dashboard.DashboardService;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
-import javafx.scene.layout.VBox;
 import javafx.scene.image.ImageView;
-import org.springframework.beans.factory.annotation.Autowired;
+import javafx.scene.layout.VBox;
 import org.springframework.stereotype.Component;
 
-/**
- * Controlador JavaFX del Dashboard principal
- * Gestiona los 4 widgets con KPIs
- */
+import java.util.List;
+
 @Component
 public class DashboardController {
 
-    @Autowired
+    // SpringContext.getBean() NO puede llamarse aquí (el contexto aún no existe).
+    // Se asigna en initialize(), que JavaFX invoca cuando el FXML ya está cargado.
     private DashboardService dashboardService;
 
-    // ===== REFERENCIAS A LOS 4 WIDGETS IMPORTADOS =====
+    // ===== WIDGETS (cabecera) =====
     @FXML private VBox widgetProyectos;
     @FXML private VBox widgetTareas;
     @FXML private VBox widgetPersonas;
     @FXML private VBox widgetCarga;
 
-    // ----- Relacion de asignaciones de la imagen a su Widget --
-    private String imgWidgetProyectos = "/icons/project.png";
-    private String imgWidgetTareas = "/icons/task.png";
-    private String imgWidgetPersonas = "/icons/professional.png";
-    private String imgWidgetCarga = "/icons/charge.png";
+    // ===== GRÁFICA =====
+    @FXML private BarChart<String, Number> barChartRendimiento;
 
-    /**
-     * Método que se ejecuta automáticamente al cargar el FXML
-     */
+    // ===== TABLAS =====
+    @FXML private TableView<TareaPendienteDTO> tblTareasPendientes;
+    @FXML private TableView<PersonaActivaDTO>  tblEquipoActivo;
+
+    // Rutas de iconos
+    private static final String IMG_PROYECTOS = "/icons/project.png";
+    private static final String IMG_TAREAS    = "/icons/task.png";
+    private static final String IMG_PERSONAS  = "/icons/professional.png";
+    private static final String IMG_CARGA     = "/icons/charge.png";
+
     @FXML
     public void initialize() {
+        // Obtener el service aquí, no en el campo — el contexto ya está listo
+        dashboardService = SpringContext.getBean(DashboardService.class);
+
         cargarKPIs();
+        cargarGrafica();
+        configurarTablas();
+        cargarTablas();
     }
 
-    /**
-     * Obtiene los datos del service y actualiza los widgets
-     */
+    // ─── KPIs ──────────────────────────────────────────────────────────────────
+
     private void cargarKPIs() {
         try {
-            // Obtener datos desde Spring Boot Service
             DashboardKPIs kpis = dashboardService.obtenerKPIs();
-
-            // Actualizar cada widget usando lookup para acceder a los Labels internos
-            actualizarWidget(widgetProyectos,
-                    "Proyectos Activos",
-                    String.valueOf(kpis.getProyectosActivos()),
-                    imgWidgetProyectos
-            );
-
-            actualizarWidget(widgetTareas,
-                    "Tareas Pendientes",
-                    String.valueOf(kpis.getTareasPendientes()),
-                    imgWidgetTareas
-            );
-
-            actualizarWidget(widgetPersonas,
-                    "Personas Activas",
-                    String.valueOf(kpis.getPersonasActivas()),
-                    imgWidgetPersonas
-            );
-
-            actualizarWidget(widgetCarga,
-                    "Carga Promedio",
-                    String.format("%.0f%%", kpis.getCargaPromedioEquipo() * 100),
-                    imgWidgetCarga
-            );
-
+            actualizarWidget(widgetProyectos, "Proyectos Activos",
+                    String.valueOf(kpis.getProyectosActivos()), IMG_PROYECTOS);
+            actualizarWidget(widgetTareas, "Tareas Pendientes",
+                    String.valueOf(kpis.getTareasPendientes()), IMG_TAREAS);
+            actualizarWidget(widgetPersonas, "Personas Activas",
+                    String.valueOf(kpis.getPersonasActivas()), IMG_PERSONAS);
+            actualizarWidget(widgetCarga, "Carga Promedio",
+                    String.format("%.0f%%", kpis.getCargaPromedioEquipo() * 100), IMG_CARGA);
         } catch (Exception e) {
-            System.err.println("Error cargando KPIs del dashboard: " + e.getMessage());
-            e.printStackTrace();
+            System.err.println("Error cargando KPIs: " + e.getMessage());
         }
     }
 
-    /**
-     * Actualiza los Labels dentro de un widget usando lookup
-     *
-     * @param widget VBox contenedor del widget
-     * @param titulo Texto para el título
-     * @param valor Valor numérico a mostrar
-     * @param rutaIcono Cadena que define la imagen que mostrará
-     */
     private void actualizarWidget(VBox widget, String titulo, String valor, String rutaIcono) {
         if (widget == null) {
-            System.err.println("⚠️ Widget es null, no se puede actualizar");
+            System.err.println("Widget null: " + titulo);
             return;
         }
-
-        // Buscar los Labels dentro del VBox usando sus fx:id
-        // Dado que se usa una plantilla del widget a mostrar en el Dashboard de Inicio,
-        // y cada inserción del fxml tiene asignado un id, los objetos internos a cada uno solo se pueden
-        // acceder usando lookup.
-        Label lblTitulo = (Label) widget.lookup("#lblTitle");
-        Label lblValor = (Label) widget.lookup("#lblValue");
+        Label lblTitulo    = (Label)     widget.lookup("#lblTitle");
+        Label lblValor     = (Label)     widget.lookup("#lblValue");
         ImageView imgIcono = (ImageView) widget.lookup("#imgIcon");
 
-        // 🎨 Actualizar ICONO
-        if (imgIcono != null && rutaIcono != null) {
+        if (lblTitulo != null) lblTitulo.setText(titulo);
+        if (lblValor  != null) lblValor.setText(valor);
+        if (imgIcono  != null && rutaIcono != null) {
             try {
-                Image imagen = new Image(getClass().getResourceAsStream(rutaIcono));
-                imgIcono.setImage(imagen);
+                imgIcono.setImage(new Image(getClass().getResourceAsStream(rutaIcono)));
             } catch (Exception e) {
-                System.err.println("No se ha podido cargar la imagen: " + rutaIcono);
-                e.printStackTrace();
+                System.err.println("No se pudo cargar icono: " + rutaIcono);
             }
-        } else if (imgIcono == null) {
-            System.err.println("No se encontró imgIcono en el widget");
-        }
-
-        // Actualizar textos si los Labels existen
-        if (lblTitulo != null) {
-            lblTitulo.setText(titulo);
-        } else {
-            System.err.println("No se encontró lblTitle en el widget");
-        }
-
-        if (lblValor != null) {
-            lblValor.setText(valor);
-        } else {
-            System.err.println("No se encontró lblValue en el widget");
-        }
-
-        if (lblValor != null) {
-            lblValor.setText(valor);
-        } else {
-            System.err.println("No se encontró lblValue en el widget");
         }
     }
 
-    /**
-     * Método público para refrescar los datos (opcional, para futuro)
-     */
+    // ─── GRÁFICA ───────────────────────────────────────────────────────────────
+
+    private void cargarGrafica() {
+        if (barChartRendimiento == null) {
+            System.err.println("barChartRendimiento es null — revisa fx:controller en el FXML");
+            return;
+        }
+        try {
+            List<RendimientoDiaDTO> datos = dashboardService.obtenerRendimientoUltimos7Dias();
+            XYChart.Series<String, Number> serie = new XYChart.Series<>();
+            serie.setName("Tareas completadas");
+            for (RendimientoDiaDTO dia : datos) {
+                serie.getData().add(
+                        new XYChart.Data<>(dia.getDiaSemana(), dia.getTareasCompletadas()));
+            }
+            barChartRendimiento.getData().clear();
+            barChartRendimiento.getData().add(serie);
+        } catch (Exception e) {
+            System.err.println("Error cargando gráfica: " + e.getMessage());
+        }
+    }
+
+    // ─── TABLAS ────────────────────────────────────────────────────────────────
+
+    // Las columnas no tienen fx:id en el FXML, se configuran por índice
+    @SuppressWarnings("unchecked")
+    private void configurarTablas() {
+        if (tblTareasPendientes != null && tblTareasPendientes.getColumns().size() >= 2) {
+            TableColumn<TareaPendienteDTO, String> colTarea =
+                    (TableColumn<TareaPendienteDTO, String>) tblTareasPendientes.getColumns().get(0);
+            TableColumn<TareaPendienteDTO, String> colSprint =
+                    (TableColumn<TareaPendienteDTO, String>) tblTareasPendientes.getColumns().get(1);
+            colTarea.setText("Tarea");
+            colTarea.setCellValueFactory(new PropertyValueFactory<>("nombreTarea"));
+            colSprint.setText("Sprint");
+            colSprint.setCellValueFactory(new PropertyValueFactory<>("nombreSprint"));
+        }
+
+        if (tblEquipoActivo != null && tblEquipoActivo.getColumns().size() >= 2) {
+            TableColumn<PersonaActivaDTO, String> colNombre =
+                    (TableColumn<PersonaActivaDTO, String>) tblEquipoActivo.getColumns().get(0);
+            TableColumn<PersonaActivaDTO, String> colCarga =
+                    (TableColumn<PersonaActivaDTO, String>) tblEquipoActivo.getColumns().get(1);
+            colNombre.setText("Profesional");
+            colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+            colCarga.setText("Carga");
+            colCarga.setCellValueFactory(new PropertyValueFactory<>("cargaFormateada"));
+        }
+    }
+
+    private void cargarTablas() {
+        if (tblTareasPendientes != null) {
+            try {
+                tblTareasPendientes.setItems(FXCollections.observableArrayList(
+                        dashboardService.obtenerTareasPendientes()));
+            } catch (Exception e) {
+                System.err.println("Error cargando tareas pendientes: " + e.getMessage());
+            }
+        }
+        if (tblEquipoActivo != null) {
+            try {
+                tblEquipoActivo.setItems(FXCollections.observableArrayList(
+                        dashboardService.obtenerEquipoActivo()));
+            } catch (Exception e) {
+                System.err.println("Error cargando equipo activo: " + e.getMessage());
+            }
+        }
+    }
+
     public void refrescarDatos() {
         cargarKPIs();
+        cargarGrafica();
+        cargarTablas();
     }
 }
