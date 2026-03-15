@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -31,6 +32,7 @@ public class RolSistema {
     private String descripcion;
 
     // Relación con Permisos (N:M)
+    @ToString.Exclude
     @ManyToMany
     @JoinTable(
             name = "roles_permisos",
@@ -40,6 +42,7 @@ public class RolSistema {
     private Set<Permiso> permisos = new HashSet<>();
 
     // Relación inversa con Personas
+    @ToString.Exclude
     @OneToMany(mappedBy = "rol", cascade = CascadeType.ALL)
     private Set<Persona> personas = new HashSet<>();
 }

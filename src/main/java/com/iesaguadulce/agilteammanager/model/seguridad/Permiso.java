@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -29,6 +30,7 @@ public class Permiso {
     private String descripcion;
 
     // Relación inversa con Roles
+    @ToString.Exclude
     @ManyToMany(mappedBy = "permisos")
     private Set<RolSistema> roles = new HashSet<>();
 }

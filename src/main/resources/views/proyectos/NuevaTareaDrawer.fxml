@@ -10,7 +10,6 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
 <!--
@@ -19,11 +18,7 @@
     El controller lo inyecta al pulsar "+ NUEVA TAREA"
 -->
 
-<VBox prefWidth="380.0" prefHeight="806.0" spacing="0"
-      style="-fx-background-color: white;"
-      xmlns="http://javafx.com/javafx/25"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.iesaguadulce.agilteammanager.controller.ui.proyectos.NuevaTareaController">
+<VBox prefHeight="806.0" prefWidth="380.0" spacing="0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iesaguadulce.agilteammanager.controller.ui.proyectos.NuevaTareaController">
 
     <stylesheets>
         <URL value="@../../css/primer-light.css" />
@@ -31,16 +26,9 @@
     </stylesheets>
 
     <!-- ── CABECERA: flecha cerrar + título ── -->
-    <HBox alignment="CENTER_LEFT" spacing="12.0"
-          style="-fx-background-color: -app-bg-header; -fx-padding: 16 16 16 16;">
-        <Button fx:id="btnCerrarTop" mnemonicParsing="false" onAction="#onCerrar"
-                prefHeight="36.0" prefWidth="36.0"
-                style="-fx-background-color: transparent; -fx-text-fill: -app-text-dark;
-                       -fx-font-size: 18px; -fx-cursor: hand; -fx-border-color: transparent;"
-                text="←" />
-        <Label styleClass="section-title"
-               style="-fx-text-fill: -app-text-dark;"
-               text="Nueva Tarea" />
+    <HBox alignment="CENTER_LEFT" spacing="12.0" style="-fx-background-color: -app-bg-header; -fx-padding: 16 16 16 16;">
+        <Button fx:id="btnCerrarTop" mnemonicParsing="false" onAction="#onCerrar" prefHeight="36.0" prefWidth="36.0" style="-fx-background-color: transparent; -fx-text-fill: -app-text-dark;                        -fx-font-size: 18px; -fx-cursor: hand; -fx-border-color: transparent;" text="←" />
+        <Label fx:id="tituloLabel" style="-fx-text-fill: -app-text-dark;" styleClass="section-title" text="Nueva Tarea" />
     </HBox>
 
     <Separator />
@@ -58,20 +46,17 @@
 
             <!-- DESCRIPCIÓN -->
             <Label styleClass="form-label" text="DESCRIPCIÓN" />
-            <TextArea fx:id="descripcionField" prefHeight="90.0" promptText="Descripción de la tarea..."
-                      wrapText="true" />
+            <TextArea fx:id="descripcionField" prefHeight="65.0" prefWidth="340.0" promptText="Descripción de la tarea..." wrapText="true" />
 
             <!-- ESTADO + PRIORIDAD (en la misma fila) -->
             <HBox spacing="16.0">
                 <VBox spacing="6.0" HBox.hgrow="ALWAYS">
                     <Label styleClass="form-label" text="ESTADO" />
-                    <ComboBox fx:id="estadoCombo" maxWidth="Infinity" prefHeight="36.0"
-                              promptText="Seleccionar..." HBox.hgrow="ALWAYS" />
+                    <ComboBox fx:id="estadoCombo" maxWidth="Infinity" prefHeight="36.0" promptText="Seleccionar..." HBox.hgrow="ALWAYS" />
                 </VBox>
                 <VBox spacing="6.0" HBox.hgrow="ALWAYS">
                     <Label styleClass="form-label" text="PRIORIDAD" />
-                    <ComboBox fx:id="prioridadCombo" maxWidth="Infinity" prefHeight="36.0"
-                              promptText="Seleccionar..." HBox.hgrow="ALWAYS" />
+                    <ComboBox fx:id="prioridadCombo" maxWidth="Infinity" prefHeight="36.0" promptText="Seleccionar..." HBox.hgrow="ALWAYS" />
                 </VBox>
             </HBox>
 
@@ -83,26 +68,19 @@
                 </VBox>
                 <VBox spacing="6.0" HBox.hgrow="ALWAYS">
                     <Label styleClass="form-label" text="FECHA COMIENZO" />
-                    <DatePicker fx:id="fechaComienzoDate" prefHeight="36.0" prefWidth="150.0"
-                                promptText="Fecha inicio" />
+                    <DatePicker fx:id="fechaComienzoDate" prefHeight="36.0" prefWidth="150.0" promptText="Fecha inicio" />
                 </VBox>
             </HBox>
 
         </children>
     </VBox>
-
-    <!-- ── SEPARADOR + BOTONES inferiores ── -->
-    <Separator />
+   <Separator layoutX="10.0" layoutY="715.0" />
     <HBox alignment="CENTER_RIGHT" spacing="12.0">
         <padding>
             <Insets bottom="20.0" left="20.0" right="20.0" top="16.0" />
         </padding>
-        <Button fx:id="btnCancelar" mnemonicParsing="false" onAction="#onCerrar"
-                prefHeight="40.0" prefWidth="120.0" styleClass="btn-secondary"
-                text="Cancelar" />
-        <Button fx:id="btnGuardar" mnemonicParsing="false" onAction="#onGuardar"
-                prefHeight="40.0" prefWidth="140.0" styleClass="primary"
-                text="Guardar Tarea" />
+        <Button fx:id="btnCancelar" mnemonicParsing="false" onAction="#onCerrar" prefHeight="40.0" prefWidth="120.0" styleClass="btn-secondary" text="Cancelar" />
+        <Button fx:id="btnGuardar" mnemonicParsing="false" onAction="#onGuardar" prefHeight="40.0" prefWidth="140.0" styleClass="primary" text="Guardar Tarea" />
     </HBox>
 
 </VBox>

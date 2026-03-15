@@ -94,24 +94,7 @@
                         </VBox>
                      </children>
                   </VBox>
-                        <VBox fx:id="rolesSection" prefHeight="400.0" prefWidth="100.0" spacing="12.0" style="-fx-background-color: -app-bg-card; -fx-background-radius: 8;">
-                            <padding>
-                                <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
-                            </padding>
-                            <children>
-                                <HBox fx:id="taskSectionHeader" alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="12.0">
-                                    <children>
-                                        <Label styleClass="section-title" text="Relación de Permisos Asociados al Rol Seleccionado" HBox.hgrow="ALWAYS" />
-                                    </children></HBox>
-                                <TableView fx:id="tasksTable" prefHeight="200.0" prefWidth="200.0">
-                                    <columns>
-                                        <TableColumn fx:id="prioColumn" prefWidth="250.0" text="NOMBRE" />
-                                        <TableColumn fx:id="tareaColumn" prefWidth="500.0" text="DESCRIPCIÓN" />
-                                    </columns>
-                                </TableView>
-                            </children>
-                        </VBox>
-                        <HBox fx:id="actionButtons" alignment="CENTER_RIGHT" layoutX="42.0" layoutY="42.0" prefHeight="80.0" prefWidth="200.0" spacing="16.0">
+<HBox fx:id="actionButtons" alignment="CENTER_RIGHT" layoutX="42.0" layoutY="42.0" prefHeight="80.0" prefWidth="200.0" spacing="16.0">
                             <children>
                                 <Button fx:id="btnDelete" mnemonicParsing="false" prefHeight="40.0" prefWidth="180.0" style="-fx-background-color: -app-error; -fx-text-fill: white;" text="Borrar Profesional" />
                                 <Button fx:id="btnSave" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="180.0" styleClass="primary" text="Guardar Cambios" />

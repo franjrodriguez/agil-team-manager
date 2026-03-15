@@ -2,6 +2,7 @@ package com.iesaguadulce.agilteammanager.controller.ui.proyectos;
 
 import com.iesaguadulce.agilteammanager.config.SpringContext;
 import com.iesaguadulce.agilteammanager.model.proyectos.Proyecto;
+import com.iesaguadulce.agilteammanager.model.proyectos.Sprint;
 import com.iesaguadulce.agilteammanager.service.proyectos.SprintService;
 
 import javafx.collections.FXCollections;
@@ -12,13 +13,14 @@ import java.util.List;
 
 /**
  * Controller de NuevoSprintDrawer.fxml
- * Se inyecta dinámicamente dentro del drawerContenido del ProyectosController.
+ * Modo creación : sprintAEditar == null
+ * Modo edición  : sprintAEditar != null  (rellena campos y llama a actualizar)
  */
 public class NuevoSprintController implements DrawerChildController {
 
     // ── Campos del formulario ────────────────────────────────
+    @FXML private Label            tituloLabel;
     @FXML private TextField        objetivoField;
-    @FXML private TextArea         descripcionField;
     @FXML private ComboBox<String> estadoCombo;
     @FXML private DatePicker       fechaInicioDate;
     @FXML private DatePicker       fechaFinDate;
@@ -31,6 +33,7 @@ public class NuevoSprintController implements DrawerChildController {
     // ── Contexto ─────────────────────────────────────────────
     private ProyectosController parentController;
     private Proyecto            proyectoActual;
+    private Sprint              sprintAEditar;   // null → crear, no null → editar
     private SprintService       sprintService;
 
     // ════════════════════════════════════════════════════════
@@ -60,6 +63,19 @@ public class NuevoSprintController implements DrawerChildController {
         this.proyectoActual = proyecto;
     }
 
+    @Override
+    public void setSprintAEditar(Sprint sprint) {
+        this.sprintAEditar = sprint;
+        if (sprint != null) {
+            tituloLabel.setText("Editar Sprint");
+            btnGuardar.setText("Guardar Cambios");
+            objetivoField.setText(sprint.getObjetivo() != null ? sprint.getObjetivo() : "");
+            estadoCombo.setValue(sprint.getEstado() != null ? sprint.getEstado() : "planificacion");
+            fechaInicioDate.setValue(sprint.getFechaInicio());
+            fechaFinDate.setValue(sprint.getFechaFin());
+        }
+    }
+
     // ════════════════════════════════════════════════════════
     //  ACCIONES FXML
     // ════════════════════════════════════════════════════════
@@ -73,12 +89,24 @@ public class NuevoSprintController implements DrawerChildController {
     public void onGuardar() {
         if (!validar()) return;
 
-        sprintService.crear(
-                proyectoActual.getId(),
-                objetivoField.getText().trim(),
-                fechaInicioDate.getValue(),
-                fechaFinDate.getValue()
-        );
+        if (sprintAEditar != null) {
+            // ── MODO EDICIÓN ──
+            sprintService.actualizar(
+                    sprintAEditar.getId(),
+                    objetivoField.getText().trim(),
+                    fechaInicioDate.getValue(),
+                    fechaFinDate.getValue(),
+                    estadoCombo.getValue()
+            );
+        } else {
+            // ── MODO CREACIÓN ──
+            sprintService.crear(
+                    proyectoActual.getId(),
+                    objetivoField.getText().trim(),
+                    fechaInicioDate.getValue(),
+                    fechaFinDate.getValue()
+            );
+        }
 
         if (parentController != null) parentController.refrescarDatos();
     }
@@ -92,7 +120,7 @@ public class NuevoSprintController implements DrawerChildController {
             mostrarError("El objetivo del sprint es obligatorio.");
             return false;
         }
-        if (proyectoActual == null) {
+        if (sprintAEditar == null && proyectoActual == null) {
             mostrarError("No hay ningún proyecto seleccionado.");
             return false;
         }

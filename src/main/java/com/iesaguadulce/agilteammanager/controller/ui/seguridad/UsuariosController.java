@@ -2,7 +2,6 @@ package com.iesaguadulce.agilteammanager.controller.ui.seguridad;
 
 import com.iesaguadulce.agilteammanager.config.SpringContext;
 import com.iesaguadulce.agilteammanager.model.personas.Persona;
-import com.iesaguadulce.agilteammanager.model.seguridad.Permiso;
 import com.iesaguadulce.agilteammanager.model.seguridad.RolSistema;
 import com.iesaguadulce.agilteammanager.service.seguridad.PermisoService;
 import com.iesaguadulce.agilteammanager.service.seguridad.UsuarioService;
@@ -88,21 +87,6 @@ public class UsuariosController implements Initializable {
     @FXML private ComboBox<String> systemRoleComboBox;
 
     // ─────────────────────────────────────────────────────────
-    // REFERENCIAS AL FXML — Tabla de permisos del rol
-    //
-    // La tabla muestra los permisos asociados al rol del usuario seleccionado.
-    // El FXML la llama "tasksTable" pero en este contexto contiene Permisos.
-    // ─────────────────────────────────────────────────────────
-
-    @FXML private TableView<Permiso> tasksTable;
-
-    /** Columna NOMBRE → muestra Permiso.codigo */
-    @FXML private TableColumn<Permiso, String> prioColumn;
-
-    /** Columna DESCRIPCIÓN → muestra Permiso.descripcion */
-    @FXML private TableColumn<Permiso, String> tareaColumn;
-
-    // ─────────────────────────────────────────────────────────
     // REFERENCIAS AL FXML — Botones de acción
     // ─────────────────────────────────────────────────────────
 
@@ -140,7 +124,6 @@ public class UsuariosController implements Initializable {
 
         configurarFiltros();
         configurarListView();
-        configurarTablaPermisos();
         configurarBotones();
         cargarUsuarios();
 
@@ -206,22 +189,6 @@ public class UsuariosController implements Initializable {
                         mostrarDetalle(newVal);
                     }
                 });
-    }
-
-    /**
-     * Configura las columnas de la tabla de permisos:
-     *   NOMBRE      → Permiso.codigo (identificador único del permiso)
-     *   DESCRIPCIÓN → Permiso.descripcion
-     */
-    private void configurarTablaPermisos() {
-        prioColumn.setCellValueFactory(cell ->
-                new SimpleStringProperty(cell.getValue().getCodigo())
-        );
-
-        tareaColumn.setCellValueFactory(cell -> {
-            String desc = cell.getValue().getDescripcion();
-            return new SimpleStringProperty(desc != null ? desc : "");
-        });
     }
 
     /**
@@ -327,8 +294,6 @@ public class UsuariosController implements Initializable {
             systemRoleComboBox.setValue(persona.getRol().getNombre());
         }
 
-        // Tabla: permisos del rol del usuario
-        cargarPermisosDelRol(persona);
     }
 
     /**
@@ -345,23 +310,6 @@ public class UsuariosController implements Initializable {
             }
         } catch (Exception e) {
             System.err.println("No se pudo cargar el avatar: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Carga en la tabla los permisos asociados al rol del usuario seleccionado.
-     */
-    private void cargarPermisosDelRol(Persona persona) {
-        if (persona.getRol() == null) {
-            tasksTable.setItems(FXCollections.emptyObservableList());
-            return;
-        }
-        try {
-            List<Permiso> permisos = permisoService.obtenerPermisosPorRol(persona.getRol().getId());
-            tasksTable.setItems(FXCollections.observableArrayList(permisos));
-        } catch (Exception e) {
-            System.err.println("Error al cargar permisos del rol: " + e.getMessage());
-            tasksTable.setItems(FXCollections.emptyObservableList());
         }
     }
 
@@ -451,7 +399,6 @@ public class UsuariosController implements Initializable {
         emailField.clear();
         passwordField.clear();
         systemRoleComboBox.setValue(null);
-        tasksTable.setItems(FXCollections.emptyObservableList());
     }
 
     // =========================================================================

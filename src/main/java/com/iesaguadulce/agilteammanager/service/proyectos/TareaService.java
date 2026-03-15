@@ -32,7 +32,7 @@ public class TareaService {
      * Crea una nueva tarea
      */
     public Tarea crear(Long proyectoId, Long sprintId, String titulo, String descripcion,
-                       Integer estimacionHoras, BigDecimal prioridad) {
+                       Integer estimacionHoras, BigDecimal prioridad, LocalDateTime fechaCreacion) {
 
         Proyecto proyecto = proyectoRepository.findById(proyectoId)
                 .orElseThrow(() -> new RuntimeException("Proyecto no encontrado"));
@@ -57,7 +57,7 @@ public class TareaService {
         tarea.setEstimacionHoras(estimacionHoras);
         tarea.setPrioridad(prioridad != null ? prioridad : BigDecimal.valueOf(0.5));
         tarea.setEstado("pendiente");
-        tarea.setFechaCreacion(LocalDateTime.now());
+        tarea.setFechaCreacion(fechaCreacion != null ? fechaCreacion : LocalDateTime.now());
 
         return tareaRepository.save(tarea);
     }
@@ -66,7 +66,8 @@ public class TareaService {
      * Actualiza una tarea existente
      */
     public Tarea actualizar(Long id, String titulo, String descripcion,
-                            Integer estimacionHoras, BigDecimal prioridad, String estado) {
+                            Integer estimacionHoras, BigDecimal prioridad, String estado,
+                            LocalDateTime fechaCreacion) {
 
         Tarea tarea = tareaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Tarea no encontrada"));
@@ -91,6 +92,9 @@ public class TareaService {
         }
         if (estado != null) {
             tarea.setEstado(estado);
+        }
+        if (fechaCreacion != null) {
+            tarea.setFechaCreacion(fechaCreacion);
         }
 
         return tareaRepository.save(tarea);

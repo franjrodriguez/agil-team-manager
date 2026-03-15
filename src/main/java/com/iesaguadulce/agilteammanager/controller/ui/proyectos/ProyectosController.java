@@ -1,11 +1,15 @@
 package com.iesaguadulce.agilteammanager.controller.ui.proyectos;
 
 import com.iesaguadulce.agilteammanager.config.SpringContext;
+import com.iesaguadulce.agilteammanager.model.personas.Competencia;
 import com.iesaguadulce.agilteammanager.model.proyectos.Proyecto;
 import com.iesaguadulce.agilteammanager.model.proyectos.Sprint;
 import com.iesaguadulce.agilteammanager.model.proyectos.Tarea;
+import com.iesaguadulce.agilteammanager.model.proyectos.TareaCompetencia;
+import com.iesaguadulce.agilteammanager.service.personas.CompetenciaService;
 import com.iesaguadulce.agilteammanager.service.proyectos.ProyectoService;
 import com.iesaguadulce.agilteammanager.service.proyectos.SprintService;
+import com.iesaguadulce.agilteammanager.service.proyectos.TareaCompetenciaService;
 import com.iesaguadulce.agilteammanager.service.proyectos.TareaService;
 
 import javafx.animation.FadeTransition;
@@ -15,15 +19,19 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.util.Duration;
+import javafx.util.StringConverter;
 
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,9 +79,16 @@ public class ProyectosController {
     @FXML private TableColumn<Tarea, String>    tituloTareasColumn;
     @FXML private TableColumn<Tarea, String>    estadoTareasColumn;
     @FXML private TableColumn<Tarea, String>    prioridadTareasColumn;
-    @FXML private TableColumn<Tarea, Integer>   tiempoTareasColumn;
+    @FXML private TableColumn<Tarea, Integer>   tiempoTareasColumn;   // oculta en FXML, no eliminar
     @FXML private TableColumn<Tarea, Void>      accionesTareasColumn;
     @FXML private Button btnAddTask;
+
+    // ── Tabla Competencias requeridas por la tarea ───────────
+    @FXML private TableView<TareaCompetencia>              competenciasTable;
+    @FXML private TableColumn<TareaCompetencia, String>    tituloTablaCompetencias;
+    @FXML private TableColumn<TareaCompetencia, String>    pesoTablaCompetencias;
+    @FXML private TableColumn<TareaCompetencia, Void>      accionesTablaCompetencias;
+    @FXML private Button btnAddCompetencia;
 
     // ── Botones acción ───────────────────────────────────────
     @FXML private Button btnDelete;
@@ -86,12 +101,16 @@ public class ProyectosController {
     @FXML private StackPane drawerContenido;
 
     // ── Servicios ────────────────────────────────────────────
-    private ProyectoService proyectoService;
-    private SprintService   sprintService;
-    private TareaService    tareaService;
+    private ProyectoService          proyectoService;
+    private SprintService            sprintService;
+    private TareaService             tareaService;
+    private TareaCompetenciaService  tareaCompetenciaService;
+    private CompetenciaService       competenciaService;
 
     // ── Estado actual ────────────────────────────────────────
     private Proyecto proyectoSeleccionado;
+    private Sprint   sprintSeleccionado;
+    private Tarea    tareaSeleccionada;
 
     // ════════════════════════════════════════════════════════
     //  INICIALIZACIÓN
@@ -99,17 +118,30 @@ public class ProyectosController {
 
     @FXML
     public void initialize() {
-        proyectoService = SpringContext.getBean(ProyectoService.class);
-        sprintService   = SpringContext.getBean(SprintService.class);
-        tareaService    = SpringContext.getBean(TareaService.class);
+        proyectoService         = SpringContext.getBean(ProyectoService.class);
+        sprintService           = SpringContext.getBean(SprintService.class);
+        tareaService            = SpringContext.getBean(TareaService.class);
+        tareaCompetenciaService = SpringContext.getBean(TareaCompetenciaService.class);
+        competenciaService      = SpringContext.getBean(CompetenciaService.class);
 
         configurarComboEstados();
         configurarColumnasSprints();
         configurarColumnasTareas();
+        configurarColumnasCompetencias();
         cargarListaProyectos();
         configurarSeleccionProyecto();
+        configurarSeleccionSprint();
+        configurarSeleccionTarea();
         configurarBuscador();
         configurarFiltroEstado();
+
+        btnAddProyecto.setOnAction(e -> onNuevoProyecto());
+
+        // Sin sprint seleccionado, los botones de tarea y competencia permanecen desactivados
+        btnAddTask.setDisable(true);
+        btnAddCompetencia.setDisable(true);
+        tareasTable.setPlaceholder(new Label("Selecciona un sprint para ver sus tareas."));
+        competenciasTable.setPlaceholder(new Label("Selecciona una tarea para ver sus competencias."));
     }
 
     // ════════════════════════════════════════════════════════
@@ -132,18 +164,42 @@ public class ProyectosController {
                 new SimpleStringProperty(c.getValue().getObjetivo()));
         estadoColumn.setCellValueFactory(c ->
                 new SimpleStringProperty(c.getValue().getEstado()));
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         inicioColumn.setCellValueFactory(c ->
                 new SimpleObjectProperty<>(c.getValue().getFechaInicio()));
+        inicioColumn.setCellFactory(col -> new TableCell<>() {
+            @Override protected void updateItem(LocalDate item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? null : item.format(fmt));
+            }
+        });
         finColumn.setCellValueFactory(c ->
                 new SimpleObjectProperty<>(c.getValue().getFechaFin()));
+        finColumn.setCellFactory(col -> new TableCell<>() {
+            @Override protected void updateItem(LocalDate item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? null : item.format(fmt));
+            }
+        });
         configurarColumnaBorrarSprint();
     }
 
     private void configurarColumnaBorrarSprint() {
         accionesColumn.setCellFactory(col -> new TableCell<>() {
+            private final Button btnEditar = new Button("Editar");
             private final Button btnBorrar = new Button("Borrar");
+            private final HBox   acciones  = new HBox(4, btnEditar, btnBorrar);
             {
-                btnBorrar.setStyle("-fx-background-color: -app-error; -fx-text-fill: white;");
+                String smallBtn = "-fx-font-size: 11px; -fx-padding: 4 8 4 8;";
+                btnEditar.setPrefHeight(26);
+                btnEditar.setStyle(smallBtn + "-fx-background-color: -app-info; -fx-text-fill: white;");
+                btnBorrar.setPrefHeight(26);
+                btnBorrar.setStyle(smallBtn + "-fx-background-color: -app-error; -fx-text-fill: white;");
+
+                btnEditar.setOnAction(e -> {
+                    Sprint sprint = getTableView().getItems().get(getIndex());
+                    abrirDrawerEditarSprint(sprint);
+                });
                 btnBorrar.setOnAction(e -> {
                     Sprint sprint = getTableView().getItems().get(getIndex());
                     Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
@@ -161,7 +217,7 @@ public class ProyectosController {
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                setGraphic(empty ? null : btnBorrar);
+                setGraphic(empty ? null : acciones);
             }
         });
     }
@@ -181,9 +237,20 @@ public class ProyectosController {
 
     private void configurarColumnaBorrarTarea() {
         accionesTareasColumn.setCellFactory(col -> new TableCell<>() {
+            private final Button btnEditar = new Button("Editar");
             private final Button btnBorrar = new Button("Borrar");
+            private final HBox   acciones  = new HBox(4, btnEditar, btnBorrar);
             {
-                btnBorrar.setStyle("-fx-background-color: -app-error; -fx-text-fill: white;");
+                String smallBtn = "-fx-font-size: 11px; -fx-padding: 4 8 4 8;";
+                btnEditar.setPrefHeight(26);
+                btnEditar.setStyle(smallBtn + "-fx-background-color: -app-info; -fx-text-fill: white;");
+                btnBorrar.setPrefHeight(26);
+                btnBorrar.setStyle(smallBtn + "-fx-background-color: -app-error; -fx-text-fill: white;");
+
+                btnEditar.setOnAction(e -> {
+                    Tarea tarea = getTableView().getItems().get(getIndex());
+                    abrirDrawerEditarTarea(tarea);
+                });
                 btnBorrar.setOnAction(e -> {
                     Tarea tarea = getTableView().getItems().get(getIndex());
                     Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
@@ -192,7 +259,7 @@ public class ProyectosController {
                     confirm.showAndWait().ifPresent(btn -> {
                         if (btn == ButtonType.YES) {
                             tareaService.eliminar(tarea.getId());
-                            if (proyectoSeleccionado != null) cargarTareas(proyectoSeleccionado);
+                            if (sprintSeleccionado != null) cargarTareasDeSprint(sprintSeleccionado);
                         }
                     });
                 });
@@ -201,9 +268,70 @@ public class ProyectosController {
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                setGraphic(empty ? null : btnBorrar);
+                setGraphic(empty ? null : acciones);
             }
         });
+    }
+
+    private void configurarColumnasCompetencias() {
+        tituloTablaCompetencias.setCellValueFactory(c ->
+                new SimpleStringProperty(c.getValue().getCompetencia().getNombre()));
+
+        pesoTablaCompetencias.setCellValueFactory(c ->
+                new SimpleStringProperty(
+                        c.getValue().getPeso() != null
+                                ? c.getValue().getPeso().toPlainString()
+                                : "—"));
+
+        accionesTablaCompetencias.setCellFactory(col -> new TableCell<>() {
+            private final Button btnQuitar = new Button("Quitar");
+            {
+                btnQuitar.setPrefHeight(26);
+                btnQuitar.setStyle("-fx-font-size: 11px; -fx-padding: 4 8 4 8;" +
+                        "-fx-background-color: -app-error; -fx-text-fill: white;");
+                btnQuitar.setOnAction(e -> {
+                    TareaCompetencia tc = getTableView().getItems().get(getIndex());
+                    Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
+                            "¿Quitar la competencia \"" + tc.getCompetencia().getNombre() + "\" de esta tarea?",
+                            ButtonType.YES, ButtonType.NO);
+                    confirm.showAndWait().ifPresent(btn -> {
+                        if (btn == ButtonType.YES) {
+                            tareaCompetenciaService.eliminar(
+                                    tc.getTarea().getId(),
+                                    tc.getCompetencia().getId());
+                            if (tareaSeleccionada != null)
+                                cargarCompetenciasDeTarea(tareaSeleccionada);
+                        }
+                    });
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : btnQuitar);
+            }
+        });
+    }
+
+    private void configurarSeleccionTarea() {
+        tareasTable.getSelectionModel().selectedItemProperty().addListener(
+                (obs, anterior, nuevo) -> {
+                    if (nuevo != null) {
+                        tareaSeleccionada = nuevo;
+                        cargarCompetenciasDeTarea(nuevo);
+                        btnAddCompetencia.setDisable(false);
+                        competenciasTable.setPlaceholder(
+                                new Label("Esta tarea no tiene competencias asignadas."));
+                    } else {
+                        tareaSeleccionada = null;
+                        competenciasTable.setItems(FXCollections.emptyObservableList());
+                        btnAddCompetencia.setDisable(true);
+                        competenciasTable.setPlaceholder(
+                                new Label("Selecciona una tarea para ver sus competencias."));
+                    }
+                }
+        );
     }
 
     private void configurarSeleccionProyecto() {
@@ -222,6 +350,24 @@ public class ProyectosController {
                 setText(empty || item == null ? null : item.getNombre());
             }
         });
+    }
+
+    private void configurarSeleccionSprint() {
+        sprintsTable.getSelectionModel().selectedItemProperty().addListener(
+                (obs, anterior, nuevo) -> {
+                    if (nuevo != null) {
+                        sprintSeleccionado = nuevo;
+                        cargarTareasDeSprint(nuevo);
+                        btnAddTask.setDisable(false);
+                        tareasTable.setPlaceholder(new Label("Este sprint no tiene tareas todavía."));
+                    } else {
+                        sprintSeleccionado = null;
+                        tareasTable.setItems(FXCollections.emptyObservableList());
+                        btnAddTask.setDisable(true);
+                        tareasTable.setPlaceholder(new Label("Selecciona un sprint para ver sus tareas."));
+                    }
+                }
+        );
     }
 
     private void configurarBuscador() {
@@ -268,8 +414,17 @@ public class ProyectosController {
         fechafinDate.setValue(p.getFechaFin());
         if (p.getEstado() != null) statusComboBox.setValue(p.getEstado());
 
+        // Resetear sprint, tareas y competencias al cambiar de proyecto
+        sprintSeleccionado = null;
+        tareaSeleccionada  = null;
+        tareasTable.setItems(FXCollections.emptyObservableList());
+        competenciasTable.setItems(FXCollections.emptyObservableList());
+        btnAddTask.setDisable(true);
+        btnAddCompetencia.setDisable(true);
+        tareasTable.setPlaceholder(new Label("Selecciona un sprint para ver sus tareas."));
+        competenciasTable.setPlaceholder(new Label("Selecciona una tarea para ver sus competencias."));
+
         cargarSprints(p);
-        cargarTareas(p);
     }
 
     private void cargarSprints(Proyecto p) {
@@ -277,18 +432,46 @@ public class ProyectosController {
         sprintsTable.setItems(FXCollections.observableArrayList(sprints));
     }
 
-    private void cargarTareas(Proyecto p) {
-        List<Tarea> tareas = tareaService.obtenerPorProyecto(p.getId());
+    private void cargarTareasDeSprint(Sprint s) {
+        List<Tarea> tareas = tareaService.obtenerPorSprint(s.getId());
         tareasTable.setItems(FXCollections.observableArrayList(tareas));
+        // Al cambiar sprint, limpiar selección de tarea y tabla competencias
+        tareaSeleccionada = null;
+        competenciasTable.setItems(FXCollections.emptyObservableList());
+        btnAddCompetencia.setDisable(true);
+    }
+
+    private void cargarCompetenciasDeTarea(Tarea t) {
+        List<TareaCompetencia> lista = tareaCompetenciaService.obtenerPorTarea(t.getId());
+        competenciasTable.setItems(FXCollections.observableArrayList(lista));
     }
 
     // ════════════════════════════════════════════════════════
     //  ACCIONES FXML — Proyecto
     // ════════════════════════════════════════════════════════
 
+    private void onNuevoProyecto() {
+        proyectoSeleccionado = null;
+        projectName.setText("Nuevo Proyecto");
+        projectDescriptionBreve.setText("");
+        nombreField.clear();
+        descripcionField.clear();
+        fechacomienzoDate.setValue(null);
+        fechafinDate.setValue(null);
+        statusComboBox.setValue("planificacion");
+        sprintsTable.setItems(FXCollections.emptyObservableList());
+        tareasTable.setItems(FXCollections.emptyObservableList());
+        btnAddTask.setDisable(true);
+        nombreField.requestFocus();
+    }
+
     @FXML
     private void onGuardarProyecto() {
-        if (proyectoSeleccionado == null) return;
+        String nombre = nombreField.getText() != null ? nombreField.getText().trim() : "";
+        if (nombre.isBlank()) {
+            mostrarError("El nombre del proyecto es obligatorio.");
+            return;
+        }
 
         // Validación: fecha fin no puede ser anterior a fecha comienzo
         LocalDate inicio = fechacomienzoDate.getValue();
@@ -299,14 +482,25 @@ public class ProyectosController {
         }
 
         try {
-            proyectoSeleccionado = proyectoService.actualizar(
-                    proyectoSeleccionado.getId(),
-                    nombreField.getText(),
-                    descripcionField.getText(),
-                    inicio,
-                    fin,
-                    statusComboBox.getValue()
-            );
+            if (proyectoSeleccionado == null) {
+                // ── MODO CREACIÓN ──
+                proyectoSeleccionado = proyectoService.crear(
+                        nombre,
+                        descripcionField.getText(),
+                        inicio,
+                        fin
+                );
+            } else {
+                // ── MODO EDICIÓN ──
+                proyectoSeleccionado = proyectoService.actualizar(
+                        proyectoSeleccionado.getId(),
+                        nombre,
+                        descripcionField.getText(),
+                        inicio,
+                        fin,
+                        statusComboBox.getValue()
+                );
+            }
             cargarListaProyectos();
             mostrarInfo("Proyecto \"" + proyectoSeleccionado.getNombre() + "\" guardado correctamente.");
         } catch (Exception e) {
@@ -355,7 +549,84 @@ public class ProyectosController {
             new Alert(Alert.AlertType.WARNING, "Selecciona primero un proyecto.", ButtonType.OK).showAndWait();
             return;
         }
+        if (sprintSeleccionado == null) {
+            new Alert(Alert.AlertType.WARNING, "Selecciona primero un sprint para asociar la tarea.", ButtonType.OK).showAndWait();
+            return;
+        }
         abrirDrawer("/views/proyectos/NuevaTareaDrawer.fxml");
+    }
+
+    @FXML
+    public void onNuevaCompetencia() {
+        if (tareaSeleccionada == null) {
+            new Alert(Alert.AlertType.WARNING,
+                    "Selecciona primero una tarea.", ButtonType.OK).showAndWait();
+            return;
+        }
+
+        // ── ComboBox con el catálogo de competencias ──
+        List<Competencia> catalogo = competenciaService.obtenerTodas();
+        ComboBox<Competencia> cbCompetencia = new ComboBox<>(
+                FXCollections.observableArrayList(catalogo));
+        cbCompetencia.setPromptText("Selecciona una competencia");
+        cbCompetencia.setPrefWidth(260);
+        cbCompetencia.setConverter(new StringConverter<>() {
+            @Override public String toString(Competencia c) {
+                return c == null ? "" : c.getNombre() + "  [" + c.getTipo() + "]";
+            }
+            @Override public Competencia fromString(String s) { return null; }
+        });
+
+        // ── TextField para el peso ──
+        TextField tfPeso = new TextField();
+        tfPeso.setPromptText("Peso (0.00 – 1.00)");
+        tfPeso.setPrefWidth(120);
+
+        // ── Layout del diálogo ──
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(12);
+        grid.setPadding(new Insets(16));
+        grid.add(new Label("Competencia:"), 0, 0);
+        grid.add(cbCompetencia,            1, 0);
+        grid.add(new Label("Peso:"),       0, 1);
+        grid.add(tfPeso,                   1, 1);
+
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Añadir competencia requerida");
+        dialog.setHeaderText("Tarea: " + tareaSeleccionada.getTitulo());
+        dialog.getDialogPane().setContent(grid);
+        dialog.getDialogPane().getButtonTypes()
+                .addAll(ButtonType.OK, ButtonType.CANCEL);
+
+        dialog.showAndWait().ifPresent(result -> {
+            if (result != ButtonType.OK) return;
+
+            Competencia competenciaElegida = cbCompetencia.getValue();
+            if (competenciaElegida == null) {
+                mostrarError("Debes seleccionar una competencia.");
+                return;
+            }
+
+            String pesoTexto = tfPeso.getText() != null ? tfPeso.getText().trim() : "";
+            if (pesoTexto.isBlank()) {
+                mostrarError("El peso no puede estar vacío.");
+                return;
+            }
+
+            try {
+                BigDecimal peso = new BigDecimal(pesoTexto.replace(",", "."));
+                tareaCompetenciaService.añadir(
+                        tareaSeleccionada.getId(),
+                        competenciaElegida.getId(),
+                        peso);
+                cargarCompetenciasDeTarea(tareaSeleccionada);
+            } catch (NumberFormatException ex) {
+                mostrarError("El peso debe ser un número decimal (ej: 0.75).");
+            } catch (RuntimeException ex) {
+                mostrarError(ex.getMessage());
+            }
+        });
     }
 
     @FXML
@@ -367,7 +638,21 @@ public class ProyectosController {
     //  ANIMACIÓN DRAWER
     // ════════════════════════════════════════════════════════
 
+    /** Abre el drawer de Sprint en modo edición con el sprint indicado. */
+    private void abrirDrawerEditarSprint(Sprint sprint) {
+        abrirDrawer("/views/proyectos/NuevoSprintDrawer.fxml", null, sprint, null);
+    }
+
+    /** Abre el drawer de Tarea en modo edición con la tarea indicada. */
+    private void abrirDrawerEditarTarea(Tarea tarea) {
+        abrirDrawer("/views/proyectos/NuevaTareaDrawer.fxml", null, null, tarea);
+    }
+
     private void abrirDrawer(String fxmlPath) {
+        abrirDrawer(fxmlPath, sprintSeleccionado, null, null);
+    }
+
+    private void abrirDrawer(String fxmlPath, Sprint sprintCtx, Sprint sprintEditar, Tarea tareaEditar) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Node contenido = loader.load();
@@ -376,6 +661,9 @@ public class ProyectosController {
             if (childController instanceof DrawerChildController hijo) {
                 hijo.setParentController(this);
                 hijo.setProyectoActual(proyectoSeleccionado);
+                hijo.setSprintActual(sprintCtx);
+                hijo.setSprintAEditar(sprintEditar);
+                hijo.setTareaAEditar(tareaEditar);
             }
 
             drawerContenido.getChildren().setAll(contenido);
@@ -438,7 +726,9 @@ public class ProyectosController {
     public void refrescarDatos() {
         if (proyectoSeleccionado != null) {
             cargarSprints(proyectoSeleccionado);
-            cargarTareas(proyectoSeleccionado);
+        }
+        if (sprintSeleccionado != null) {
+            cargarTareasDeSprint(sprintSeleccionado);
         }
         cerrarDrawer();
     }

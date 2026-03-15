@@ -328,15 +328,17 @@ public class RolesPermisosController implements Initializable {
             return;
         }
 
-        if (rolSeleccionado == null) {
-            // TODO: permisoService.crearRol(nombre, descripcion);
-            System.out.println("(FRANDEV) --> Crear nuevo rol - pendiente de implementar en PermisoService");
-        } else {
-            // TODO: permisoService.actualizarRol(rolSeleccionado.getId(), nombre, descripcion);
-            System.out.println("(FRANDEV) --> Actualizar rol - pendiente de implementar en PermisoService");
+        try {
+            if (rolSeleccionado == null) {
+                permisoService.crearRol(nombre, descripcion);
+            } else {
+                permisoService.actualizarRol(rolSeleccionado.getId(), nombre, descripcion);
+            }
+            cargarRoles();
+            mostrarAlerta(Alert.AlertType.INFORMATION, "Guardado", "Rol guardado correctamente.");
+        } catch (RuntimeException e) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Error al guardar", e.getMessage());
         }
-
-        cargarRoles();
     }
 
     /**
@@ -356,15 +358,20 @@ public class RolesPermisosController implements Initializable {
 
         confirmacion.showAndWait().ifPresent(respuesta -> {
             if (respuesta == ButtonType.OK) {
-                // TODO: permisoService.eliminarRol(rolSeleccionado.getId());
-                System.out.println("(FRANDEV) --> Eliminar rol - pendiente de implementar en PermisoService");
+                try {
+                    permisoService.eliminarRol(rolSeleccionado.getId());
+                    limpiarFormulario();
+                    cargarRoles();
+                } catch (RuntimeException e) {
+                    mostrarAlerta(Alert.AlertType.ERROR, "Error al eliminar", e.getMessage());
+                }
             }
         });
     }
 
     /**
-     * Abre un diálogo para seleccionar un permiso disponible y asignárselo al rol.
-     * Solo muestra los permisos que el rol aún no tiene asignados.
+     * Abre un diálogo para crear un nuevo permiso y asignarlo al rol seleccionado.
+     * Solicita: código (nombre) y descripción.
      */
     private void onAgregarPermiso() {
         if (rolSeleccionado == null) {
@@ -373,50 +380,58 @@ public class RolesPermisosController implements Initializable {
             return;
         }
 
-        // Obtener todos los permisos disponibles
-        List<Permiso> todosLosPermisos = permisoService.obtenerTodosLosPermisos();
+        // ── Campos del formulario ──
+        TextField codigoField = new TextField();
+        codigoField.setPromptText("ej: CREAR_PROYECTO");
+        codigoField.setMaxWidth(Double.MAX_VALUE);
 
-        // Filtrar los que el rol ya tiene
-        Set<Long> yaAsignados = listaPermisos.stream()
-                .map(Permiso::getId)
-                .collect(Collectors.toSet());
+        TextArea descripcionField = new TextArea();
+        descripcionField.setPromptText("Descripción del permiso...");
+        descripcionField.setPrefRowCount(3);
+        descripcionField.setWrapText(true);
+        descripcionField.setMaxWidth(Double.MAX_VALUE);
 
-        List<Permiso> disponibles = todosLosPermisos.stream()
-                .filter(p -> !yaAsignados.contains(p.getId()))
-                .toList();
+        VBox contenido = new VBox(8,
+                new Label("NOMBRE / CÓDIGO"),
+                codigoField,
+                new Label("DESCRIPCIÓN"),
+                descripcionField
+        );
+        contenido.setPadding(new javafx.geometry.Insets(8, 0, 0, 0));
 
-        if (disponibles.isEmpty()) {
-            mostrarAlerta(Alert.AlertType.INFORMATION, "Sin permisos disponibles",
-                    "Este rol ya tiene todos los permisos asignados.");
-            return;
-        }
+        // ── Dialog ──
+        Dialog<ButtonType> dialogo = new Dialog<>();
+        dialogo.setResizable(true);
+        dialogo.setTitle("Nuevo Permiso");
+        dialogo.setHeaderText("Añadir permiso al rol \"" + rolSeleccionado.getNombre() + "\"");
+        dialogo.getDialogPane().setContent(contenido);
+        dialogo.getDialogPane().setMinWidth(460);
+        dialogo.getDialogPane().setPrefWidth(460);
+        dialogo.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-        // Diálogo de selección
-        ChoiceDialog<Permiso> dialogo = new ChoiceDialog<>(disponibles.get(0), disponibles);
-        dialogo.setTitle("Agregar permiso");
-        dialogo.setHeaderText("Selecciona el permiso a añadir al rol '" + rolSeleccionado.getNombre() + "':");
-        dialogo.setContentText("Permiso:");
+        // Renombramos los botones
+        ((Button) dialogo.getDialogPane().lookupButton(ButtonType.OK)).setText("Guardar");
+        ((Button) dialogo.getDialogPane().lookupButton(ButtonType.CANCEL)).setText("Cancelar");
 
-        // Mostramos el código del permiso en el diálogo
-        dialogo.getItems().clear();
-        dialogo.getItems().addAll(disponibles);
-
-        dialogo.showAndWait().ifPresent(permisoElegido -> {
-            // Añadir a la lista visual
-            listaPermisos.add(permisoElegido);
-
-            // Persistir: construimos el Set actualizado de IDs y lo guardamos
-            Set<Long> nuevosIds = listaPermisos.stream()
-                    .map(Permiso::getId)
-                    .collect(Collectors.toSet());
-
-            try {
-                permisoService.asignarPermisosARol(rolSeleccionado.getId(), nuevosIds);
-                System.out.println("(FRANDEV) --> Permiso '" + permisoElegido.getCodigo() + "' agregado al rol.");
-            } catch (Exception e) {
-                // Revertimos el cambio visual si falla la persistencia
-                listaPermisos.remove(permisoElegido);
-                mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo asignar el permiso: " + e.getMessage());
+        dialogo.showAndWait().ifPresent(respuesta -> {
+            if (respuesta == ButtonType.OK) {
+                String codigo = codigoField.getText() != null ? codigoField.getText().trim() : "";
+                if (codigo.isBlank()) {
+                    mostrarAlerta(Alert.AlertType.WARNING, "Campo requerido",
+                            "El código del permiso es obligatorio.");
+                    return;
+                }
+                try {
+                    Permiso nuevo = permisoService.crearPermisoYAsignarARol(
+                            rolSeleccionado.getId(),
+                            codigo,
+                            descripcionField.getText()
+                    );
+                    listaPermisos.add(nuevo);
+                    System.out.println("(FRANDEV) --> Permiso '" + nuevo.getCodigo() + "' creado y asignado al rol.");
+                } catch (RuntimeException e) {
+                    mostrarAlerta(Alert.AlertType.ERROR, "Error", e.getMessage());
+                }
             }
         });
     }
