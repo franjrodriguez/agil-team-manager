@@ -13,4 +13,3 @@ public class AgilteammanagerApplication {
         Application.launch(JavaFxApplication.class, args);
 	}
 }
-

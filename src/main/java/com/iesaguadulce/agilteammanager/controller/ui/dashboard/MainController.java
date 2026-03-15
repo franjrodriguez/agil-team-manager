@@ -118,7 +118,8 @@ public class MainController {
     private static final String FXML_PROFESIONALES   = "/views/profesionales/PersonasView.fxml";
 
     private static final String FXML_PROYECTOS       = "/views/proyectos/ProyectosTareasView.fxml";
-    private static final String FXML_MOTOR           = "/views/proyectos/MotorAsignacionView.fxml";
+
+    private static final String FXML_MOTOR           = "/views/asignaciones/MotorAsignacionView.fxml";
 
     private static final String FXML_MIS_TAREAS      = "/views/perfil/MisTareasView.fxml";
 

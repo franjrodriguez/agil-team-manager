@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<!--
+╔══════════════════════════════════════════════════════════════════╗
+║  MotorAsignacionView.fxml  –  1200 × 806 px                     ║
+║  Estilos: primer-light.css  +  agilteam-styles.css              ║
+║                                                                  ║
+║  ESTRUCTURA:                                                     ║
+║                                                                  ║
+║  VBox (root)                                                     ║
+║  ├── HBox  cabecera (80px)                                       ║
+║  └── HBox  contenido principal (vgrow=ALWAYS)                   ║
+║       ├── VBox  panelTareas   (460px fijo)                      ║
+║       │    └── TableView tareasTable                            ║
+║       └── VBox  panelCandidatos (hgrow=ALWAYS)                  ║
+║            └── StackPane                                        ║
+║                 ├── VBox panelPlaceholder  (sin tarea)          ║
+║                 └── ScrollPane scrollCandidatos (con tarea)     ║
+║                      └── VBox contenedorCandidatos              ║
+║                           (el controller añade cards aquí)      ║
+║                                                                  ║
+║  Columnas tabla tareas (428px):                                 ║
+║    titulo(155) proyecto(90) sprint(80) prioridad(60) comp(43)   ║
+╚══════════════════════════════════════════════════════════════════╝
+-->
+
+<VBox xmlns="http://javafx.com/javafx/17.0.12"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.iesaguadulce.agilteammanager.controller.ui.asignaciones.MotorAsignacionController"
+      prefHeight="806.0" prefWidth="1200.0"
+      style="-fx-background-color: -app-bg-workspace;">
+
+    <stylesheets>
+        <URL value="@../../css/primer-light.css" />
+        <URL value="@../../css/agilteam-styles.css" />
+    </stylesheets>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         CABECERA
+         ═══════════════════════════════════════════════════════════ -->
+    <HBox alignment="CENTER_LEFT" prefHeight="80.0" spacing="16.0"
+          style="-fx-background-color: -app-bg-card;
+                 -fx-border-color: -app-border-soft;
+                 -fx-border-width: 0 0 1 0;">
+        <padding>
+            <Insets left="28.0" right="28.0" />
+        </padding>
+        <children>
+            <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true"
+                       style="-fx-effect: dropshadow(gaussian, #00000019, 8, 0, 0, 2);">
+                <image><Image url="@../../icons/project.png" /></image>
+            </ImageView>
+            <VBox alignment="CENTER_LEFT" spacing="3.0" HBox.hgrow="ALWAYS">
+                <children>
+                    <Label styleClass="page-title" text="Motor de Asignación Inteligente" />
+                    <Label styleClass="page-subtitle"
+                           text="Calcula y sugiere los mejores profesionales para cada tarea pendiente" />
+                </children>
+            </VBox>
+            <!-- Badge de estado: el controller cambia text y style según estado -->
+            <Label fx:id="lblEstadoMotor" text="✓  Listo"
+                   style="-fx-background-color: #ECFDF5;
+                          -fx-text-fill: #065F46;
+                          -fx-background-radius: 20;
+                          -fx-border-color: #A7F3D0;
+                          -fx-border-radius: 20;
+                          -fx-border-width: 1;
+                          -fx-padding: 4 14 4 14;
+                          -fx-font-size: 12px;
+                          -fx-font-weight: bold;" />
+            <Button fx:id="btnCalcular"
+                    mnemonicParsing="false"
+                    onAction="#onCalcular"
+                    prefHeight="40.0" prefWidth="220.0"
+                    styleClass="primary"
+                    text="🚀  Calcular Asignaciones" />
+        </children>
+    </HBox>
+    <!-- ═══ FIN CABECERA ══════════════════════════════════════════ -->
+
+
+    <!-- ═══════════════════════════════════════════════════════════
+         CONTENIDO PRINCIPAL (dos columnas)
+         ═══════════════════════════════════════════════════════════ -->
+    <HBox spacing="16.0" VBox.vgrow="ALWAYS">
+        <padding>
+            <Insets bottom="20.0" left="24.0" right="24.0" top="20.0" />
+        </padding>
+        <children>
+
+            <!-- ── IZQUIERDA: panel lista de tareas pendientes ── -->
+            <VBox fx:id="panelTareas" prefWidth="460.0" spacing="0.0"
+                  style="-fx-background-color: -app-bg-card;
+                         -fx-background-radius: 8;
+                         -fx-border-color: -app-border-soft;
+                         -fx-border-radius: 8;
+                         -fx-border-width: 1;">
+
+                <!-- Cabecera del panel -->
+                <HBox alignment="CENTER_LEFT" spacing="10.0"
+                      style="-fx-padding: 14 16 10 16;">
+                    <children>
+                        <ImageView fitHeight="24.0" fitWidth="24.0"
+                                   pickOnBounds="true" preserveRatio="true">
+                            <image><Image url="@../../icons/tareas.png" /></image>
+                        </ImageView>
+                        <Label styleClass="section-title"
+                               text="Tareas Pendientes" HBox.hgrow="ALWAYS" />
+                        <!-- badge con el número de tareas; el controller actualiza el texto -->
+                        <Label fx:id="lblTotalTareas"
+                               text="0 tareas"
+                               style="-fx-background-color: #EFF6FF;
+                                      -fx-text-fill: #1D4ED8;
+                                      -fx-background-radius: 20;
+                                      -fx-padding: 2 10 2 10;
+                                      -fx-font-size: 11px;
+                                      -fx-font-weight: bold;" />
+                    </children>
+                </HBox>
+
+                <Separator />
+
+                <!--
+                    Tabla de tareas pendientes de asignación.
+                    460px panel − 0 padding lateral (tabla ocupa todo) = 460px
+                    Columnas: titulo(155) proyecto(90) sprint(80) prioridad(60) comp(43) + ~32px scrollbar → ≈460
+                -->
+                <TableView fx:id="tareasTable" VBox.vgrow="ALWAYS"
+                           style="-fx-background-color: transparent;
+                                  -fx-border-color: transparent;">
+                    <columns>
+                        <TableColumn fx:id="tituloTareaColumn"
+                                     prefWidth="155.0" text="TAREA" />
+                        <TableColumn fx:id="proyectoTareaColumn"
+                                     prefWidth="90.0" text="PROYECTO" />
+                        <TableColumn fx:id="sprintTareaColumn"
+                                     prefWidth="80.0" text="SPRINT" />
+                        <TableColumn fx:id="prioridadTareaColumn"
+                                     prefWidth="60.0" text="PRIOR." />
+                        <TableColumn fx:id="compTareaColumn"
+                                     prefWidth="43.0" text="COMP." />
+                    </columns>
+                    <placeholder>
+                        <Label style="-fx-text-fill: -app-text-secondary; -fx-font-size: 13px;"
+                               text="Pulsa 'Calcular Asignaciones' para cargar las tareas." />
+                    </placeholder>
+                </TableView>
+
+                <!-- Pie de panel: pista de uso -->
+                <Label text="💡  Haz clic en una tarea para ver los candidatos"
+                       style="-fx-padding: 8 16 8 16;
+                              -fx-font-size: 11px;
+                              -fx-text-fill: -app-text-secondary;
+                              -fx-background-color: #F9FAFB;
+                              -fx-border-color: -app-border-soft;
+                              -fx-border-width: 1 0 0 0;" />
+            </VBox>
+            <!-- ── FIN panel tareas ── -->
+
+
+            <!-- ── DERECHA: panel de candidatos sugeridos ── -->
+            <VBox fx:id="panelCandidatos" spacing="0.0" HBox.hgrow="ALWAYS"
+                  style="-fx-background-color: -app-bg-card;
+                         -fx-background-radius: 8;
+                         -fx-border-color: -app-border-soft;
+                         -fx-border-radius: 8;
+                         -fx-border-width: 1;">
+
+                <!-- Cabecera del panel -->
+                <HBox alignment="CENTER_LEFT" spacing="10.0"
+                      style="-fx-padding: 14 16 10 16;">
+                    <children>
+                        <ImageView fitHeight="24.0" fitWidth="24.0"
+                                   pickOnBounds="true" preserveRatio="true">
+                            <image><Image url="@../../icons/sprints.png" /></image>
+                        </ImageView>
+                        <!-- El controller actualiza este label con el nombre de la tarea seleccionada -->
+                        <Label fx:id="lblNombreTareaSeleccionada"
+                               styleClass="section-title"
+                               text="Candidatos sugeridos" />
+                    </children>
+                </HBox>
+
+                <Separator />
+
+                <!--
+                    StackPane para alternar entre:
+                      · panelPlaceholder  → visible cuando no hay tarea seleccionada
+                      · scrollCandidatos  → visible cuando hay candidatos calculados
+                    El controller maneja .setVisible() y .setManaged() en ambos.
+                -->
+                <StackPane VBox.vgrow="ALWAYS">
+                    <children>
+
+                        <!-- Estado inicial / sin selección -->
+                        <VBox fx:id="panelPlaceholder" alignment="CENTER" spacing="12.0">
+                            <children>
+                                <Label text="👈"
+                                       style="-fx-font-size: 42px;" />
+                                <Label text="Selecciona una tarea para ver los candidatos"
+                                       style="-fx-font-size: 14px;
+                                              -fx-text-fill: -app-text-secondary;" />
+                                <Label text="(Primero pulsa 'Calcular Asignaciones' si la tabla está vacía)"
+                                       style="-fx-font-size: 11px;
+                                              -fx-text-fill: -app-text-secondary;" />
+                            </children>
+                        </VBox>
+
+                        <!-- Panel con los candidatos calculados -->
+                        <ScrollPane fx:id="scrollCandidatos"
+                                    fitToWidth="true" hbarPolicy="NEVER"
+                                    visible="false" managed="false"
+                                    style="-fx-background-color: transparent;
+                                           -fx-border-color: transparent;">
+                            <content>
+                                <!--
+                                    El controller construye aquí las cards de candidatos
+                                    dinámicamente mediante buildCandidatoCard().
+                                    Cada card es un VBox con:
+                                      · HBox  cabecera (medalla + nombre + score)
+                                      · HBox  stats    (score técnico, disponibilidad, carga)
+                                      · VBox  barras   (una ProgressBar por competencia)
+                                      · HBox  footer   (botón Asignar)
+                                -->
+                                <VBox fx:id="contenedorCandidatos" spacing="14.0">
+                                    <padding>
+                                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                                    </padding>
+                                </VBox>
+                            </content>
+                        </ScrollPane>
+
+                        <!-- Indicador de carga mientras el motor calcula -->
+                        <VBox fx:id="panelCalculando" alignment="CENTER" spacing="10.0"
+                              visible="false" managed="false">
+                            <children>
+                                <Label text="⚙"
+                                       style="-fx-font-size: 42px;" />
+                                <Label text="Calculando asignaciones..."
+                                       style="-fx-font-size: 14px;
+                                              -fx-text-fill: -app-text-secondary;" />
+                            </children>
+                        </VBox>
+
+                    </children>
+                </StackPane>
+
+            </VBox>
+            <!-- ── FIN panel candidatos ── -->
+
+        </children>
+    </HBox>
+    <!-- ═══ FIN CONTENIDO PRINCIPAL ══════════════════════════════ -->
+
+</VBox>

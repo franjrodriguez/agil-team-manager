@@ -79,7 +79,7 @@ public class DashboardAdminController implements Initializable {
 
     @FXML
     private void mostrarRoles() {
-        mainController.mostrarRoles();
+        mainController.mostrarRolesPermisos();
     }
 
     @FXML
