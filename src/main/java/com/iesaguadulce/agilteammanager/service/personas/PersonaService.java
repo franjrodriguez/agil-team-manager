@@ -3,6 +3,7 @@ package com.iesaguadulce.agilteammanager.service.personas;
 import com.iesaguadulce.agilteammanager.model.personas.Persona;
 import com.iesaguadulce.agilteammanager.repository.personas.PersonaRepository;
 import lombok.RequiredArgsConstructor;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -116,5 +117,20 @@ public class PersonaService {
     @Transactional(readOnly = true)
     public long contarTotal() {
         return personaRepository.count();
+    }
+
+    /**
+     * Resetea la contraseña de TODOS los usuarios al valor indicado.
+     * Cada persona recibe su propio hash (salt distinto).
+     *
+     * @return número de usuarios actualizados
+     */
+    public int resetearPasswordsTodas(String nuevaPassword) {
+        List<Persona> todas = personaRepository.findAll();
+        for (Persona p : todas) {
+            p.setPassword(BCrypt.hashpw(nuevaPassword, BCrypt.gensalt()));
+        }
+        personaRepository.saveAll(todas);
+        return todas.size();
     }
 }

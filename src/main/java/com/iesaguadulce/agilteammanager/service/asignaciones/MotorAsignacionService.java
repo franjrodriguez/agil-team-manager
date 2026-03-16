@@ -11,6 +11,7 @@ import com.iesaguadulce.agilteammanager.repository.personas.PersonaRepository;
 import com.iesaguadulce.agilteammanager.repository.proyectos.TareaCompetenciaRepository;
 import com.iesaguadulce.agilteammanager.repository.proyectos.TareaRepository;
 import com.iesaguadulce.agilteammanager.service.personas.DisponibilidadService;
+import com.iesaguadulce.agilteammanager.service.seguridad.ConfiguracionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -45,6 +46,7 @@ public class MotorAsignacionService {
     private final PersonaCompetenciaRepository personaCompetenciaRepository;
     private final AsignacionSugeridaRepository asignacionSugeridaRepository;
     private final DisponibilidadService disponibilidadService;
+    private final ConfiguracionService configuracionService;
 
     /**
      * Calcula y genera sugerencias de asignación para una tarea
@@ -77,16 +79,44 @@ public class MotorAsignacionService {
             normalizarPesos(competenciasRequeridas);
         }
 
-        // 3. Obtener personas activas
-        List<Persona> candidatos = personaRepository.findActivasWithCompetencias();
+        // 3. Leer parámetros de configuración
+        BigDecimal cargaMaxima = BigDecimal.valueOf(configuracionService.obtenerCargaMaxima())
+                .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+        int competenciaMinima = configuracionService.obtenerCompetenciaMinima();
+        int candidatosMax     = configuracionService.obtenerCandidatosMaximos();
+
+        log.info("⚙️  Params — carga máx: {}%  competencia mín: {}  candidatos máx: {}",
+                configuracionService.obtenerCargaMaxima(), competenciaMinima, candidatosMax);
+
+        // 4. Obtener personas activas y filtrar por carga máxima
+        List<Persona> candidatos = personaRepository.findActivasWithCompetencias().stream()
+                .filter(p -> disponibilidadService.obtenerCargaActual(p.getId())
+                        .compareTo(cargaMaxima) < 0)
+                .collect(Collectors.toList());
 
         if (candidatos.isEmpty()) {
-            throw new RuntimeException("No hay personas activas disponibles");
+            throw new RuntimeException("No hay personas activas disponibles con carga < " +
+                    configuracionService.obtenerCargaMaxima() + "%");
         }
 
-        log.info("📊 Evaluando {} candidatos", candidatos.size());
+        // 5. Filtrar por nivel mínimo de competencia (al menos una competencia requerida en nivel >= mínimo)
+        final int nivelMin = competenciaMinima;
+        candidatos = candidatos.stream()
+                .filter(p -> competenciasRequeridas.stream().anyMatch(tc -> {
+                    Optional<Integer> nivel = personaCompetenciaRepository
+                            .findNivelActual(p.getId(), tc.getCompetencia().getId());
+                    return nivel.isPresent() && nivel.get() >= nivelMin;
+                }))
+                .collect(Collectors.toList());
 
-        // 4. Calcular scores para cada candidato
+        if (candidatos.isEmpty()) {
+            throw new RuntimeException("Ningún candidato supera el nivel mínimo de competencia (" +
+                    nivelMin + ")");
+        }
+
+        log.info("📊 Evaluando {} candidatos tras filtros", candidatos.size());
+
+        // 6. Calcular scores para cada candidato
         List<AsignacionSugerida> sugerencias = new ArrayList<>();
 
         for (Persona persona : candidatos) {
@@ -94,16 +124,17 @@ public class MotorAsignacionService {
             sugerencias.add(sugerencia);
         }
 
-        // 5. Ordenar por score ajustado descendente
+        // 7. Ordenar por score ajustado descendente y limitar al máximo configurado
         sugerencias.sort((s1, s2) -> s2.getScoreAjustado().compareTo(s1.getScoreAjustado()));
+        sugerencias = sugerencias.stream().limit(candidatosMax).collect(Collectors.toList());
 
-        // 6. Eliminar sugerencias antiguas de esta tarea
+        // 8. Eliminar sugerencias antiguas de esta tarea
         asignacionSugeridaRepository.deleteByTareaId(tareaId);
 
-        // 7. Guardar nuevas sugerencias
+        // 9. Guardar nuevas sugerencias
         sugerencias = asignacionSugeridaRepository.saveAll(sugerencias);
 
-        log.info("✅ Cálculo completado. Top 3:");
+        log.info("✅ Cálculo completado. Top {}:", Math.min(3, sugerencias.size()));
         sugerencias.stream().limit(3).forEach(s ->
                 log.info("  - {} → Score: {}",
                         s.getPersona().getNombre(),

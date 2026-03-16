@@ -1,39 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" prefHeight="600" prefWidth="450" spacing="20" style="-fx-background-color: #1a1a2e; -fx-padding: 60;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iesaguadulce.agilteammanager.controller.ui.login.LoginController">
+<!--
+╔══════════════════════════════════════════════════════════════════╗
+║  LoginView.fxml  –  450 × 600 px                                ║
+║  Fondo oscuro (app-bg-header) + tarjeta blanca central          ║
+╚══════════════════════════════════════════════════════════════════╝
+-->
 
-    <!-- Logo / Título -->
-    <Label style="-fx-font-size: 32px; -fx-text-fill: #00d4ff; -fx-font-weight: bold;" text="AgilTeam Manager" />
+<StackPane prefHeight="600.0" prefWidth="450.0" style="-fx-background-color: #0F1419;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iesaguadulce.agilteammanager.controller.ui.login.LoginController">
 
-    <Label style="-fx-text-fill: #aaa; -fx-font-size: 14px;" text="Gestión Inteligente de Equipos Ágiles" />
+    <stylesheets>
+        <URL value="@../../css/primer-light.css" />
+        <URL value="@../../css/agilteam-styles.css" />
+    </stylesheets>
 
-    <!-- Espaciador -->
-    <Region VBox.vgrow="SOMETIMES" />
+    <!-- Contenido centrado verticalmente -->
+    <VBox alignment="CENTER" spacing="0.0">
+        <padding><Insets bottom="32" left="40" right="40" top="32" /></padding>
 
-    <!-- Campo Usuario -->
-    <VBox spacing="8">
-        <Label style="-fx-text-fill: white;" text="Usuario" />
-        <TextField fx:id="txtUsuario" promptText="Introduce tu usuario" style="-fx-pref-height: 45px; -fx-font-size: 14px;" />
+        <!-- ── Logo ── -->
+        <ImageView fitHeight="80.0" fitWidth="320.0" pickOnBounds="true" preserveRatio="true">
+            <image><Image url="@../../assets/logo_oscuro.png" /></image>
+        </ImageView>
+
+        <Label style="-fx-text-fill: #6B7280; -fx-font-size: 13px; -fx-padding: 6 0 28 0;" text="Gestión Inteligente de Equipos Ágiles" />
+
+        <!-- ── Tarjeta blanca del formulario ── -->
+        <VBox spacing="16.0" style="-fx-background-color: white;                      -fx-background-radius: 12;                      -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 24, 0, 0, 8);                      -fx-padding: 28 28 24 28;">
+
+            <!-- Usuario -->
+            <VBox spacing="6.0">
+                <Label style="-fx-text-fill: #374151;" styleClass="form-label" text="USUARIO" />
+                <TextField fx:id="txtUsuario" prefHeight="42.0" promptText="Introduce tu usuario" />
+            </VBox>
+
+            <!-- Contraseña -->
+            <VBox spacing="6.0">
+                <Label style="-fx-text-fill: #374151;" styleClass="form-label" text="CONTRASEÑA" />
+                <PasswordField fx:id="txtPassword" prefHeight="42.0" promptText="Introduce tu contraseña" />
+            </VBox>
+
+            <!-- Botón Iniciar Sesión -->
+            <Button fx:id="btnLogin" defaultButton="true" maxWidth="1.7976931348623157E308" onAction="#onLoginClick" prefHeight="44.0" style="-fx-background-color: #00D4FF;                            -fx-text-fill: #0F1419;                            -fx-font-weight: 700;                            -fx-font-size: 14px;                            -fx-background-radius: 8;                            -fx-cursor: hand;" text="Iniciar Sesión" />
+
+            <!-- Separador visual -->
+            <Region prefHeight="2.0" />
+
+            <!-- Botón Salir -->
+            <Button fx:id="btnCancel" cancelButton="true" maxWidth="1.7976931348623157E308" onAction="#onCancelClick" prefHeight="38.0" style="-fx-background-color: transparent;                            -fx-text-fill: #6B7280;                            -fx-font-size: 13px;                            -fx-border-color: #E5E7EB;                            -fx-border-radius: 8;                            -fx-background-radius: 8;                            -fx-cursor: hand;" text="Salir" />
+        </VBox>
+
+        <!-- ── Footer ── -->
+        <HBox alignment="CENTER" spacing="8.0">
+            <padding><Insets top="20" /></padding>
+            <Label style="-fx-text-fill: #374151; -fx-font-size: 11px;" text="AgilTeam Manager · v1.0" />
+            <Label style="-fx-text-fill: #374151;" text="·" />
+            <Label style="-fx-text-fill: #374151; -fx-font-size: 11px;" text="FP DAM 2025/26" />
+        </HBox>
+
     </VBox>
 
-    <!-- Campo Contraseña -->
-    <VBox spacing="8">
-        <Label style="-fx-text-fill: white;" text="Contraseña" />
-        <PasswordField fx:id="txtPassword" promptText="Introduce tu contraseña" style="-fx-pref-height: 45px; -fx-font-size: 14px;" />
-    </VBox>
-
-    <!-- Botón Login -->
-    <Button fx:id="btnLogin" defaultButton="true" onAction="#onLoginClick" style="-fx-background-color: #00d4ff;                    -fx-text-fill: #1a1a2e;                    -fx-font-weight: bold;                    -fx-font-size: 16px;                    -fx-pref-height: 50px;                    -fx-background-radius: 25;                    -fx-cursor: hand;" text="Iniciar Sesión" />
-    <!-- Botón Login -->
-    <Button fx:id="btnCancel" cancelButton="true" onAction="#onCancelClick" prefWidth="122.0" style="-fx-background-color: #00d4ff;                    -fx-text-fill: #1a1a2e;                    -fx-font-weight: bold;                    -fx-font-size: 16px;                    -fx-pref-height: 50px;                    -fx-background-radius: 25;                    -fx-cursor: hand;" text="Salir" />
-
-    <!-- Espaciador -->
-    <Region VBox.vgrow="SOMETIMES" />
-
-    <!-- Footer -->
-    <Label style="-fx-text-fill: #555; -fx-font-size: 10px;" text="v1.0 • FP DAM 2025" />
-
-</VBox>
+</StackPane>

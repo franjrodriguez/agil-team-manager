@@ -17,156 +17,207 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="806.0" prefWidth="1200.0" styleClass="bg-default" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iesaguadulce.agilteammanager.controller.ui.perfil.MisTareasController">
-   <stylesheets>
-      <URL value="@../../css/primer-light.css" />
-      <URL value="@../../css/agilteam-styles.css" />
-   </stylesheets>
-   <left>
-      <VBox fx:id="sidebarPanel" prefHeight="806.0" prefWidth="380.0" spacing="16.0" styleClass="app-sidebar" BorderPane.alignment="CENTER">
-         <children>
-            <VBox fx:id="topBox" prefWidth="100.0" spacing="8.0"
-                  style="-fx-background-color: white; -fx-background-radius: 8; -fx-padding: 12 12 12 12; -fx-effect: dropshadow(gaussian, #0000001A, 6, 0, 0, 2);">
-               <children>
-                  <ImageView fx:id="profileAvatar" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true"
-                             style="-fx-effect: dropshadow(gaussian, #00000019, 8, 0, 0, 2);" />
-                  <Label fx:id="profileName" prefWidth="356.0" styleClass="page-title" text="Carlos Rodriguez" />
-                  <HBox fx:id="hboxHeader" prefWidth="356.0" spacing="8.0">
-                     <children>
-                        <Label fx:id="profileRole" prefWidth="173.0" styleClass="page-subtitle" text="Software Arquitect" />
-                        <Separator prefHeight="20.0" prefWidth="8.0" visible="false" />
-                        <Label fx:id="profileStatus" styleClass="page-subtitle" text="ACTIVO" />
-                     </children>
-                  </HBox>
-               </children>
+<!--
+╔══════════════════════════════════════════════════════════════════╗
+║  MisTareasView.fxml  –  1200 × 806 px                           ║
+║  Estilos: primer-light.css  +  agilteam-styles.css              ║
+╚══════════════════════════════════════════════════════════════════╝
+-->
+<BorderPane fx:id="rootPane"
+            prefHeight="806.0" prefWidth="1200.0"
+            xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.iesaguadulce.agilteammanager.controller.ui.perfil.MisTareasController">
+
+    <stylesheets>
+        <URL value="@../../css/primer-light.css" />
+        <URL value="@../../css/agilteam-styles.css" />
+    </stylesheets>
+
+    <!-- ═══════════════════════════════════════════════════════
+         TOP — Cabecera fija
+         ═══════════════════════════════════════════════════════ -->
+    <top>
+        <HBox fx:id="headerBox" alignment="CENTER_LEFT" prefHeight="72.0" spacing="14.0"
+              style="-fx-background-color: -app-bg-card;
+                     -fx-border-color: -app-border-soft;
+                     -fx-border-width: 0 0 1 0;">
+            <padding><Insets top="0" right="24" bottom="0" left="24" /></padding>
+
+            <ImageView fx:id="profileAvatar1" fitHeight="40.0" fitWidth="40.0"
+                       pickOnBounds="true" preserveRatio="true">
+                <image><Image url="@../../icons/tareas.png" /></image>
+            </ImageView>
+
+            <VBox alignment="CENTER_LEFT" spacing="2.0" HBox.hgrow="ALWAYS">
+                <Label styleClass="section-title" text="Mis Tareas" />
+                <Label styleClass="page-subtitle" text="Tareas asignadas a tu perfil" />
             </VBox>
-            <TextField fx:id="searchField" prefHeight="40.0" promptText="Buscar tarea..." />
-            <ListView fx:id="tasksListView" onMouseClicked="#seleccionarTarea" VBox.vgrow="ALWAYS" />
-         </children>
-         <padding>
-            <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
-         </padding>
-      </VBox>
-   </left>
-   <center>
-      <ScrollPane fx:id="detailScrollPane" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" style="-fx-fit-to-width: true;;" BorderPane.alignment="CENTER">
-         <content>
-            <VBox fx:id="detailPane" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefHeight="200.0" spacing="24.0" style="-fx-background-color: -app-bg-workspace;;">
-               <padding>
-                  <Insets bottom="32.0" left="32.0" right="32.0" top="32.0" />
-               </padding>
-               <children>
-                  <HBox fx:id="headerBox" alignment="CENTER_LEFT" prefHeight="80.0" prefWidth="200.0" spacing="16.0">
-                     <children>
-                        <VBox fx:id="headerInfo" alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="100.0" spacing="4.0" HBox.hgrow="ALWAYS">
-                           <children>
-                              <HBox prefHeight="100.0" prefWidth="200.0">
-                                 <children>
-                                    <ImageView fx:id="profileAvatar1" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" style="-fx-effect: dropshadow(gaussian, #00000019, 8, 0, 0, 2);;">
-                                       <image>
-                                          <Image url="@../../icons/tareas.png" />
-                                       </image>
-                                    </ImageView>
-                                    <Label styleClass="page-title" text="Mis Tareas" />
-                                 </children>
-                              </HBox>
-                           </children>
-                        </VBox>
-                     </children>
-                  </HBox>
-                  <VBox fx:id="taskSection" prefHeight="200.0" prefWidth="100.0" spacing="12.0" style="-fx-background-color: -app-bg-card; -fx-background-radius: 8;">
-                     <padding>
-                        <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
-                     </padding>
-                     <children>
-                        <HBox fx:id="taskSectionHeader" alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="12.0">
-                           <children>
-                              <Label styleClass="section-title" text="📋 Detalle de la Tarea" HBox.hgrow="ALWAYS" />
-                           </children></HBox>
-                        <VBox fx:id="nombreBox">
-                           <children>
-                              <Label fx:id="labelNombre" style="-fx-text-fill: -app-text-secondary;;" styleClass="form-label" text="TÍTULO" />
-                              <TextField fx:id="nombreField" prefHeight="36.0" promptText="nombre de la competencia" />
-                           </children>
-                        </VBox>
-                        <VBox fx:id="descripcionBox" prefWidth="100.0">
-                           <children>
-                              <Label fx:id="descripcionLabel" style="-fx-text-fill: -app-text-secondary;" styleClass="form-label" text="DESCRIPCION DETALLADA" />
-                              <TextArea fx:id="descripcionField" prefHeight="100.0" prefWidth="756.0" promptText="descripción detallada de la competencia" VBox.vgrow="ALWAYS" />
-                           </children>
-                        </VBox>
-                        <GridPane fx:id="personalDataGrid" hgap="24.0" style="-fx-background-color: -app-bg-card;; -fx-background-radius: 8;;" vgap="16.0">
-                          <columnConstraints>
-                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                          </columnConstraints>
-                          <rowConstraints>
-                            <RowConstraints />
-                            <RowConstraints />
-                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                          </rowConstraints>
-                           <padding>
-                              <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
-                           </padding>
-                           <children>
-                              <Label style="-fx-text-fill: -app-text-secondary;;" styleClass="form-label" text="PROYECTO" />
-                              <Label style="-fx-text-fill: -app-text-secondary;" styleClass="form-label" text="SPRINT" GridPane.columnIndex="1" />
-                              <Label style="-fx-text-fill: -app-text-secondary;" styleClass="form-label" text="ESTIMACIÓN" GridPane.rowIndex="2">
-                                 <GridPane.margin>
-                                    <Insets bottom="8.0" top="8.0" />
-                                 </GridPane.margin>
-                              </Label>
-                              <Label style="-fx-text-fill: -app-text-secondary;" styleClass="form-label" text="FECHA DE ASIGNACIÓN" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                                 <GridPane.margin>
-                                    <Insets bottom="8.0" top="8.0" />
-                                 </GridPane.margin>
-                              </Label>
-                              <HBox fx:id="estimationLabel" alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="12.0" GridPane.rowIndex="3">
-                                 <children>
-                                    <Label prefHeight="20.0" prefWidth="335.0" style="-fx-text-fill: -app-text-secondary;;" styleClass="form-label" text="8 horas" />
-                                 </children>
-                              </HBox>
-                              <DatePicker fx:id="asignDatePicker" prefHeight="36.0" prefWidth="150.0" promptText="12 May 2021" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                              <Label fx:id="proyectNameLabel" layoutX="26.0" layoutY="26.0" style="-fx-text-fill: -app-text-secondary;;" styleClass="form-label" text="AgilTeam Manager" GridPane.rowIndex="1" />
-                              <Label fx:id="sprintTitleLabel" layoutX="384.0" layoutY="26.0" prefHeight="20.0" prefWidth="330.0" style="-fx-text-fill: -app-text-secondary;" styleClass="form-label" text="Sprint 3" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                           </children>
-                        </GridPane>
-                     </children>
-                  </VBox>
-                  <VBox fx:id="competenciesSection" layoutX="42.0" layoutY="315.0" prefHeight="200.0" prefWidth="100.0" spacing="12.0" style="-fx-background-color: -app-bg-card; -fx-background-radius: 8;">
-                     <padding>
-                        <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
-                     </padding>
-                     <children>
-                        <HBox fx:id="taskSectionHeader1" alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="12.0">
-                           <children>
-                              <Label styleClass="section-title" text="⚡  Cambiar Estado de la Tarea" HBox.hgrow="ALWAYS" />
-                           </children>
+
+            <Button fx:id="btnDelete" mnemonicParsing="false" onAction="#onCancelar"
+                    prefHeight="36.0" prefWidth="140.0"
+                    style="-fx-background-color: #E5E7EB; -fx-text-fill: #374151;
+                           -fx-background-radius: 6; -fx-font-weight: 600;"
+                    text="Cancelar" />
+            <Button fx:id="btnSave" mnemonicParsing="false" onAction="#onGuardarEstado"
+                    prefHeight="36.0" prefWidth="160.0"
+                    styleClass="primary" text="Guardar Cambios" />
+        </HBox>
+    </top>
+
+    <!-- ═══════════════════════════════════════════════════════
+         LEFT — Panel lateral con perfil + lista de tareas
+         ═══════════════════════════════════════════════════════ -->
+    <left>
+        <VBox fx:id="sidebarPanel" prefHeight="734.0" prefWidth="380.0" spacing="12.0"
+              styleClass="app-panel" BorderPane.alignment="CENTER">
+            <padding><Insets top="16" right="16" bottom="16" left="16" /></padding>
+
+            <!-- Mini-card de perfil del usuario -->
+            <VBox fx:id="topBox" spacing="8.0"
+                  style="-fx-background-color: -app-bg-workspace;
+                         -fx-background-radius: 8;
+                         -fx-border-color: -app-border-soft;
+                         -fx-border-radius: 8;
+                         -fx-border-width: 1;
+                         -fx-padding: 12;">
+                <ImageView fx:id="profileAvatar" fitHeight="48.0" fitWidth="48.0"
+                           pickOnBounds="true" preserveRatio="true" />
+                <Label fx:id="profileName" styleClass="section-title" text="Tu Nombre" />
+                <HBox fx:id="hboxHeader" spacing="8.0" alignment="CENTER_LEFT">
+                    <Label fx:id="profileRole" styleClass="page-subtitle" text="Puesto" />
+                    <Separator prefHeight="16.0" prefWidth="8.0" visible="false" />
+                    <Label fx:id="profileStatus" styleClass="page-subtitle" text="ACTIVO" />
+                </HBox>
+            </VBox>
+
+            <TextField fx:id="searchField" prefHeight="38.0"
+                       promptText="Buscar tarea..." />
+
+            <ListView fx:id="tasksListView" onMouseClicked="#seleccionarTarea"
+                      VBox.vgrow="ALWAYS" />
+        </VBox>
+    </left>
+
+    <!-- ═══════════════════════════════════════════════════════
+         CENTER — Detalle de la tarea seleccionada
+         ═══════════════════════════════════════════════════════ -->
+    <center>
+        <ScrollPane fx:id="detailScrollPane" hbarPolicy="NEVER" fitToWidth="true"
+                    BorderPane.alignment="CENTER">
+            <content>
+                <VBox fx:id="detailPane" spacing="16.0"
+                      style="-fx-background-color: -app-bg-workspace;">
+                    <padding><Insets top="28" right="32" bottom="32" left="32" /></padding>
+
+                    <!-- Detalle de la tarea -->
+                    <VBox fx:id="taskSection" spacing="16.0"
+                          style="-fx-background-color: -app-bg-card;
+                                 -fx-background-radius: 8;
+                                 -fx-border-color: -app-border-soft;
+                                 -fx-border-radius: 8;
+                                 -fx-border-width: 1;
+                                 -fx-padding: 16;">
+
+                        <HBox fx:id="taskSectionHeader" alignment="CENTER_LEFT">
+                            <Label styleClass="section-title" text="Detalle de la Tarea"
+                                   HBox.hgrow="ALWAYS" />
                         </HBox>
-                        <VBox prefHeight="200.0" prefWidth="100.0">
-                           <children>
-                              <Label text="Nuevo estado (Pendiente/En progreso/Revisión/Completada/Bloqueada)):" />
-                              <ComboBox fx:id="statusTaskCombobox" prefHeight="36.0" prefWidth="255.0" promptText="Selecciona su estado" />
-                           </children>
+
+                        <Separator />
+
+                        <VBox fx:id="nombreBox" spacing="6.0">
+                            <Label fx:id="labelNombre" styleClass="form-label" text="TÍTULO" />
+                            <TextField fx:id="nombreField" prefHeight="36.0"
+                                       promptText="Título de la tarea" />
                         </VBox>
-                     </children>
-                  </VBox>
-                  <HBox fx:id="actionButtons" alignment="CENTER_RIGHT" layoutX="42.0" layoutY="42.0" prefHeight="80.0" prefWidth="200.0" spacing="16.0">
-                     <children>
-                        <Button fx:id="btnDelete" cancelButton="true" mnemonicParsing="false" onAction="#onCancelar" prefHeight="40.0" prefWidth="180.0" styleClass="primary" text="Cancelar" />
-                        <Button fx:id="btnSave" defaultButton="true" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onGuardarEstado" prefHeight="40.0" prefWidth="180.0" styleClass="primary" text="Guardar Cambios" />
-                     </children>
-                     <padding>
-                        <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
-                     </padding>
-                  </HBox>
-               </children>
-            </VBox>
-         </content>
-      </ScrollPane>
-   </center>
+
+                        <VBox fx:id="descripcionBox" spacing="6.0">
+                            <Label fx:id="descripcionLabel" styleClass="form-label"
+                                   text="DESCRIPCIÓN" />
+                            <TextArea fx:id="descripcionField" prefHeight="100.0"
+                                      wrapText="true"
+                                      promptText="Descripción detallada de la tarea..." />
+                        </VBox>
+
+                        <!-- Metadatos: proyecto, sprint, estimación, fecha -->
+                        <GridPane fx:id="personalDataGrid" hgap="24.0" vgap="12.0">
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" />
+                                <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" />
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints />
+                                <RowConstraints />
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            </rowConstraints>
+
+                            <Label styleClass="form-label" text="PROYECTO" />
+                            <Label styleClass="form-label" text="SPRINT"
+                                   GridPane.columnIndex="1" />
+
+                            <Label fx:id="proyectNameLabel" styleClass="form-label"
+                                   text="—" GridPane.rowIndex="1" />
+                            <Label fx:id="sprintTitleLabel" styleClass="form-label"
+                                   text="—" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                            <Label styleClass="form-label" text="ESTIMACIÓN"
+                                   GridPane.rowIndex="2">
+                                <GridPane.margin><Insets top="8.0" /></GridPane.margin>
+                            </Label>
+                            <Label styleClass="form-label" text="FECHA ASIGNACIÓN"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                <GridPane.margin><Insets top="8.0" /></GridPane.margin>
+                            </Label>
+
+                            <HBox fx:id="estimationLabel" alignment="CENTER_LEFT"
+                                  GridPane.rowIndex="3">
+                                <Label prefWidth="335.0" styleClass="form-label" text="—" />
+                            </HBox>
+                            <DatePicker fx:id="asignDatePicker" prefHeight="36.0" prefWidth="150.0"
+                                        promptText="Fecha asignación"
+                                        GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                        </GridPane>
+                    </VBox>
+
+                    <!-- Cambiar estado -->
+                    <VBox fx:id="competenciesSection" spacing="12.0"
+                          style="-fx-background-color: -app-bg-card;
+                                 -fx-background-radius: 8;
+                                 -fx-border-color: -app-border-soft;
+                                 -fx-border-radius: 8;
+                                 -fx-border-width: 1;
+                                 -fx-padding: 16;">
+
+                        <HBox fx:id="taskSectionHeader1" alignment="CENTER_LEFT">
+                            <Label styleClass="section-title" text="Cambiar Estado"
+                                   HBox.hgrow="ALWAYS" />
+                        </HBox>
+
+                        <Separator />
+
+                        <VBox spacing="6.0">
+                            <Label styleClass="form-label"
+                                   text="NUEVO ESTADO" />
+                            <ComboBox fx:id="statusTaskCombobox" prefHeight="36.0"
+                                      maxWidth="1.7976931348623157E308"
+                                      promptText="Pendiente / En progreso / Revisión / Completada / Bloqueada" />
+                        </VBox>
+                    </VBox>
+
+                    <Region VBox.vgrow="ALWAYS" />
+
+                    <!-- Nodo fantasma -->
+                    <HBox fx:id="actionButtons" visible="false" managed="false" />
+
+                </VBox>
+            </content>
+        </ScrollPane>
+    </center>
+
 </BorderPane>

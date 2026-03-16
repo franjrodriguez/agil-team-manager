@@ -157,6 +157,16 @@ CREATE TABLE disponibilidad (
   carga NUMERIC(3,2) CHECK (carga BETWEEN 0 AND 1)
 );
 
+-- ============================================================
+-- TABLA DE DISPONIBILIDAD (HISTÓRICO)
+-- ============================================================
+
+CREATE TABLE configuracion (
+    clave       VARCHAR(100)  NOT NULL,
+    valor       VARCHAR(255)  NOT NULL,
+    descripcion VARCHAR(500),
+    PRIMARY KEY (clave)
+);
 
 -- ============================================================
 -- ÍNDICES BÁSICOS
@@ -242,3 +252,8 @@ INSERT INTO personas (
   1   -- rol ADMIN
 );
 
+-- Valores default para configuración del sistema
+INSERT INTO configuracion (clave, valor, descripcion) VALUES
+  ('motor.carga.maxima',       '80', '% máximo de carga de trabajo para considerar un profesional como candidato'),
+  ('motor.competencia.minima', '1',  'Nivel mínimo de competencia requerido (1-5)'),
+  ('motor.candidatos.maximos', '5',  'Número máximo de candidatos a mostrar en el motor');

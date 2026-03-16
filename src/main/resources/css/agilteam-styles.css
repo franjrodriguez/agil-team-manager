@@ -124,6 +124,38 @@
     -fx-border-width:       0 1 0 0;
 }
 
+/* Panel lateral claro — para vistas de contenido (NO la nav principal) */
+.app-panel {
+    -fx-background-color: -app-bg-card;
+    -fx-border-color:     -app-border-soft;
+    -fx-border-width:     0 1 0 0;
+    -fx-padding:          16;
+}
+
+.app-panel .text-field,
+.app-panel .text-input {
+    -fx-background-color: #F9FAFB;
+    -fx-border-color:     -app-border-soft;
+    -fx-border-radius:    6;
+    -fx-background-radius:6;
+}
+
+.app-panel .list-view {
+    -fx-background-color: #F9FAFB;
+    -fx-border-color:     -app-border-soft;
+    -fx-background-radius:6;
+    -fx-border-radius:    6;
+}
+
+.app-panel .list-view .list-cell:filled:hover {
+    -fx-background-color: #EFF6FF;
+}
+
+.app-panel .list-view .list-cell:filled:selected {
+    -fx-background-color: -app-primary;
+    -fx-text-fill:        white;
+}
+
 /* =====================================================
    TEXTO Y TIPOGRAFÍA (según Penpot)
    ===================================================== */
@@ -239,4 +271,66 @@
 
 .btn-secondary:hover {
     -fx-background-color: #D0D0D0;
+}
+
+
+/* =====================================================
+   TIPOGRAFÍA BASE — 1pt más grande
+   ===================================================== */
+
+.root {
+    -fx-font-size: 14px;
+}
+
+
+/* =====================================================
+   TABLAS — Overrides sobre primer-light
+   ===================================================== */
+
+/* Fondo del área de cabeceras */
+.table-view > .column-header-background {
+    -fx-background-color: #E5E7EB, #F3F4F6;
+    -fx-background-insets: 0, 0 0 1 0;
+}
+
+/* Cada cabecera de columna: menos alta, sin negrita exagerada */
+.table-view > .column-header-background .column-header {
+    -fx-size: 30px;
+    -fx-background-color: transparent;
+    -fx-border-color: #E5E7EB;
+    -fx-border-width: 0 1 0 0;
+    -fx-font-weight: 600;
+}
+
+/* Texto de la cabecera */
+.table-view > .column-header-background .column-header .label {
+    -fx-text-fill: #6B7280;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 8 0 8;
+}
+
+/* Filler (zona vacía a la derecha de las columnas) */
+.table-view > .column-header-background > .filler {
+    -fx-background-color: #F3F4F6;
+    -fx-border-color: #E5E7EB;
+    -fx-border-width: 0 0 1 0;
+}
+
+/* Filas: altura más compacta */
+.table-view .table-row-cell {
+    -fx-cell-size: 36px;
+}
+
+/* Separador entre filas más sutil */
+.table-view .table-row-cell > .table-cell {
+    -fx-border-color: transparent transparent #F3F4F6 transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 0 8 0 8;
+}
+
+/* Hover en fila */
+.table-view .table-row-cell:filled:hover {
+    -fx-background-color: #F0F9FF;
 }

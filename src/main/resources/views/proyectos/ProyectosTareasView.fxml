@@ -72,8 +72,8 @@
 
         <!-- ── IZQUIERDA: Panel lista de proyectos ── -->
         <left>
-            <VBox fx:id="sidebarPanel" prefWidth="380.0" spacing="16.0"
-                  styleClass="app-sidebar" BorderPane.alignment="TOP_LEFT">
+            <VBox fx:id="sidebarPanel" prefWidth="380.0" spacing="12.0"
+                  styleClass="app-panel" BorderPane.alignment="TOP_LEFT">
                 <padding>
                     <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
                 </padding>
@@ -94,6 +94,39 @@
             </VBox>
         </left>
 
+        <!-- ── TOP: Cabecera fija del proyecto ── -->
+        <top>
+            <HBox fx:id="headerBox" alignment="CENTER_LEFT" prefHeight="72.0" spacing="14.0"
+                  style="-fx-background-color: -app-bg-card;
+                         -fx-border-color: -app-border-soft;
+                         -fx-border-width: 0 0 1 0;">
+                <padding><Insets top="0" right="24" bottom="0" left="24" /></padding>
+
+                <ImageView fx:id="profileAvatar" fitHeight="40.0" fitWidth="40.0"
+                           pickOnBounds="true" preserveRatio="true">
+                    <image><Image url="@../../icons/project.png" /></image>
+                </ImageView>
+
+                <VBox fx:id="headerInfo" alignment="CENTER_LEFT" spacing="2.0" HBox.hgrow="ALWAYS">
+                    <Label fx:id="projectName" styleClass="section-title" text="Proyectos y Tareas" />
+                    <Label fx:id="projectDescriptionBreve" styleClass="page-subtitle"
+                           text="Selecciona un proyecto" />
+                </VBox>
+
+                <ComboBox fx:id="statusComboBox" prefHeight="34.0" prefWidth="140.0"
+                          promptText="Estado" />
+
+                <Button fx:id="btnDelete" mnemonicParsing="false" onAction="#onBorrarProyecto"
+                        prefHeight="36.0" prefWidth="150.0"
+                        style="-fx-background-color: -app-error; -fx-text-fill: white;
+                               -fx-background-radius: 6; -fx-font-weight: 600;"
+                        text="Borrar Proyecto" />
+                <Button fx:id="btnSave" mnemonicParsing="false" onAction="#onGuardarProyecto"
+                        prefHeight="36.0" prefWidth="160.0"
+                        styleClass="primary" text="Guardar Cambios" />
+            </HBox>
+        </top>
+
         <!-- ── CENTRO: Detalle del proyecto ── -->
         <center>
             <ScrollPane fx:id="detailScrollPane" fitToWidth="true" hbarPolicy="NEVER"
@@ -106,30 +139,6 @@
                         </padding>
                         <children>
 
-                            <!-- ·· Cabecera: icono + nombre + estado ·· -->
-                            <HBox fx:id="headerBox" alignment="CENTER_LEFT"
-                                  prefHeight="80.0" spacing="16.0">
-                                <children>
-                                    <ImageView fx:id="profileAvatar" fitHeight="64.0" fitWidth="64.0"
-                                               pickOnBounds="true" preserveRatio="true"
-                                               style="-fx-effect: dropshadow(gaussian, #00000019, 8, 0, 0, 2);">
-                                        <image><Image url="@../../icons/project.png" /></image>
-                                    </ImageView>
-                                    <VBox fx:id="headerInfo" alignment="CENTER_LEFT"
-                                          spacing="4.0" HBox.hgrow="ALWAYS">
-                                        <children>
-                                            <Label fx:id="projectName" styleClass="page-title"
-                                                   text="AgilTeam Manager" />
-                                            <Label fx:id="projectDescriptionBreve" styleClass="page-subtitle"
-                                                   text="Sistema de Gestión de Equipos Ágiles" />
-                                        </children>
-                                    </VBox>
-                                    <ComboBox fx:id="statusComboBox" prefHeight="36.0" prefWidth="150.0"
-                                              promptText="Activo"
-                                              style="-fx-background-color: -app-success;" />
-                                </children>
-                            </HBox>
-
                             <!-- ·· Card datos del proyecto ·· -->
                             <!--
                                 GridPane 3 columnas, 4 filas:
@@ -139,7 +148,11 @@
                                 F3 (campo):   TextArea (colspan=3)
                             -->
                             <GridPane fx:id="personalDataGrid" hgap="24.0" vgap="12.0"
-                                      style="-fx-background-color: -app-bg-card; -fx-background-radius: 8;">
+                                      style="-fx-background-color: -app-bg-card;
+                                             -fx-background-radius: 8;
+                                             -fx-border-color: -app-border-soft;
+                                             -fx-border-radius: 8;
+                                             -fx-border-width: 1;">
                                 <columnConstraints>
                                     <ColumnConstraints hgrow="ALWAYS" minWidth="180.0" prefWidth="260.0" />
                                     <ColumnConstraints hgrow="SOMETIMES" minWidth="140.0" prefWidth="180.0" />
@@ -202,7 +215,11 @@
 
                                 <!-- ── IZQUIERDA: Card Sprints ── -->
                                 <VBox fx:id="sprintsSection" spacing="12.0" minWidth="320.0"
-                                      style="-fx-background-color: -app-bg-card; -fx-background-radius: 8;"
+                                      style="-fx-background-color: -app-bg-card;
+                                             -fx-background-radius: 8;
+                                             -fx-border-color: -app-border-soft;
+                                             -fx-border-radius: 8;
+                                             -fx-border-width: 1;"
                                       HBox.hgrow="ALWAYS">
                                     <padding>
                                         <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
@@ -252,7 +269,11 @@
 
                                     <!-- ·· Card Tareas ·· -->
                                     <VBox fx:id="tareasSeccion" spacing="12.0"
-                                          style="-fx-background-color: -app-bg-card; -fx-background-radius: 8;"
+                                          style="-fx-background-color: -app-bg-card;
+                                                 -fx-background-radius: 8;
+                                                 -fx-border-color: -app-border-soft;
+                                                 -fx-border-radius: 8;
+                                                 -fx-border-width: 1;"
                                           VBox.vgrow="ALWAYS">
                                         <padding>
                                             <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
@@ -298,7 +319,11 @@
 
                                     <!-- ·· Card Competencias requeridas por la tarea ·· -->
                                     <VBox fx:id="competenciasSeccion" spacing="12.0"
-                                          style="-fx-background-color: -app-bg-card; -fx-background-radius: 8;"
+                                          style="-fx-background-color: -app-bg-card;
+                                                 -fx-background-radius: 8;
+                                                 -fx-border-color: -app-border-soft;
+                                                 -fx-border-radius: 8;
+                                                 -fx-border-width: 1;"
                                           VBox.vgrow="ALWAYS">
                                         <padding>
                                             <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
@@ -346,23 +371,8 @@
                             </HBox>
                             <!-- ── FIN bloque dos columnas ── -->
 
-                            <!-- ·· Botones acción del proyecto ·· -->
-                            <HBox fx:id="actionButtons" alignment="CENTER_RIGHT" spacing="16.0">
-                                <padding>
-                                    <Insets left="16.0" right="16.0" />
-                                </padding>
-                                <children>
-                                    <Button fx:id="btnDelete" mnemonicParsing="false"
-                                            onAction="#onBorrarProyecto"
-                                            prefHeight="40.0" prefWidth="180.0"
-                                            style="-fx-background-color: -app-error; -fx-text-fill: white;"
-                                            text="Borrar Proyecto" />
-                                    <Button fx:id="btnSave" mnemonicParsing="false"
-                                            onAction="#onGuardarProyecto"
-                                            prefHeight="40.0" prefWidth="180.0"
-                                            styleClass="primary" text="Guardar Cambios" />
-                                </children>
-                            </HBox>
+                            <!-- Nodo fantasma -->
+                            <HBox fx:id="actionButtons" visible="false" managed="false" />
 
                         </children>
                     </VBox>
