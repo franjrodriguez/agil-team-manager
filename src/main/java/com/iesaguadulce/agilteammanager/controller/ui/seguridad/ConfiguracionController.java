@@ -13,32 +13,42 @@ import org.springframework.stereotype.Component;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Controlador UI para configuración del sistema.
+ *
+ * <p>Gestiona parámetros del motor de asignación y utilidades de seguridad.</p>
+ *
+ * @author Francisco José Rodríguez Ruiz
+ * @version 1.0
+ */
 @Component
 public class ConfiguracionController implements Initializable {
 
     private ConfiguracionService configuracionService;
     private PersonaService personaService;
 
-    // ── Sección A: Seguridad ─────────────────────────────────
+    // Sección Seguridad
     @FXML private Label lblResetEstado;
 
-    // ── Sección B: Motor de Asignación ───────────────────────
+    // Sección Motor de Asignación
     @FXML private Spinner<Integer> spinnerCargaMaxima;
     @FXML private Spinner<Integer> spinnerCompetenciaMinima;
     @FXML private Spinner<Integer> spinnerCandidatosMax;
     @FXML private Label lblMotorEstado;
 
+    /**
+     * Inicializa controlador obteniendo servicios y configurando componentes.
+     */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         configuracionService = SpringContext.getBean(ConfiguracionService.class);
-        personaService       = SpringContext.getBean(PersonaService.class);
+        personaService = SpringContext.getBean(PersonaService.class);
 
         inicializarSpinners();
         cargarParamMotor();
     }
 
-    // ── Inicialización ───────────────────────────────────────
-
+    /** Configura rangos y valores por defecto de los spinners. */
     private void inicializarSpinners() {
         spinnerCargaMaxima.setValueFactory(
                 new SpinnerValueFactory.IntegerSpinnerValueFactory(10, 100, 80, 5));
@@ -48,21 +58,18 @@ public class ConfiguracionController implements Initializable {
                 new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 20, 5, 1));
     }
 
+    /** Carga parámetros actuales del motor desde configuración. */
     private void cargarParamMotor() {
         try {
-            spinnerCargaMaxima.getValueFactory()
-                    .setValue(configuracionService.obtenerCargaMaxima());
-            spinnerCompetenciaMinima.getValueFactory()
-                    .setValue(configuracionService.obtenerCompetenciaMinima());
-            spinnerCandidatosMax.getValueFactory()
-                    .setValue(configuracionService.obtenerCandidatosMaximos());
+            spinnerCargaMaxima.getValueFactory().setValue(configuracionService.obtenerCargaMaxima());
+            spinnerCompetenciaMinima.getValueFactory().setValue(configuracionService.obtenerCompetenciaMinima());
+            spinnerCandidatosMax.getValueFactory().setValue(configuracionService.obtenerCandidatosMaximos());
         } catch (Exception e) {
             System.err.println("Error cargando parámetros del motor: " + e.getMessage());
         }
     }
 
-    // ── Acciones ─────────────────────────────────────────────
-
+    /** Resetea todas las contraseñas a valor por defecto. */
     @FXML
     public void onResetearPasswords() {
         try {
@@ -75,14 +82,14 @@ public class ConfiguracionController implements Initializable {
         }
     }
 
+    /** Guarda parámetros del motor de asignación. */
     @FXML
     public void onGuardarMotor() {
         try {
             configuracionService.guardarMotorParams(
                     spinnerCargaMaxima.getValue(),
                     spinnerCompetenciaMinima.getValue(),
-                    spinnerCandidatosMax.getValue()
-            );
+                    spinnerCandidatosMax.getValue());
             lblMotorEstado.setStyle("-fx-text-fill: #16A34A; -fx-font-size: 13px;");
             lblMotorEstado.setText("✓ Parámetros guardados correctamente");
         } catch (Exception e) {

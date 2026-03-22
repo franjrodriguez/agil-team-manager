@@ -112,10 +112,8 @@ public class ProyectosController {
     private Sprint   sprintSeleccionado;
     private Tarea    tareaSeleccionada;
 
-    // ════════════════════════════════════════════════════════
-    //  INICIALIZACIÓN
-    // ════════════════════════════════════════════════════════
 
+    /** Inicializa servicios, tablas y listeners. */
     @FXML
     public void initialize() {
         proyectoService         = SpringContext.getBean(ProyectoService.class);
@@ -144,9 +142,9 @@ public class ProyectosController {
         competenciasTable.setPlaceholder(new Label("Selecciona una tarea para ver sus competencias."));
     }
 
-    // ════════════════════════════════════════════════════════
+    //
     //  CONFIGURACIÓN INICIAL
-    // ════════════════════════════════════════════════════════
+    //
 
     private void configurarComboEstados() {
         List<String> estados = List.of("planificacion", "activo", "completado", "cancelado");
@@ -186,15 +184,23 @@ public class ProyectosController {
 
     private void configurarColumnaBorrarSprint() {
         accionesColumn.setCellFactory(col -> new TableCell<>() {
-            private final Button btnEditar = new Button("Editar");
-            private final Button btnBorrar = new Button("Borrar");
-            private final HBox   acciones  = new HBox(4, btnEditar, btnBorrar);
+            private final Button btnEditar = new Button("✏");
+            private final Button btnBorrar = new Button("✕");
+            private final HBox   acciones  = new HBox(6, btnEditar, btnBorrar);
             {
-                String smallBtn = "-fx-font-size: 11px; -fx-padding: 4 8 4 8;";
+                btnEditar.setPrefWidth(28);
                 btnEditar.setPrefHeight(26);
-                btnEditar.setStyle(smallBtn + "-fx-background-color: -app-info; -fx-text-fill: white;");
+                btnEditar.setStyle("-fx-font-size: 13px; -fx-padding: 2 4 2 4;" +
+                        "-fx-background-color: -app-info; -fx-text-fill: white;" +
+                        "-fx-background-radius: 4; -fx-cursor: hand;");
+
+                btnBorrar.setPrefWidth(28);
                 btnBorrar.setPrefHeight(26);
-                btnBorrar.setStyle(smallBtn + "-fx-background-color: -app-error; -fx-text-fill: white;");
+                btnBorrar.setStyle("-fx-font-size: 13px; -fx-padding: 2 4 2 4;" +
+                        "-fx-background-color: -app-error; -fx-text-fill: white;" +
+                        "-fx-background-radius: 4; -fx-cursor: hand;");
+
+                acciones.setAlignment(javafx.geometry.Pos.CENTER);
 
                 btnEditar.setOnAction(e -> {
                     Sprint sprint = getTableView().getItems().get(getIndex());
@@ -237,15 +243,23 @@ public class ProyectosController {
 
     private void configurarColumnaBorrarTarea() {
         accionesTareasColumn.setCellFactory(col -> new TableCell<>() {
-            private final Button btnEditar = new Button("Editar");
-            private final Button btnBorrar = new Button("Borrar");
-            private final HBox   acciones  = new HBox(4, btnEditar, btnBorrar);
+            private final Button btnEditar = new Button("✏");
+            private final Button btnBorrar = new Button("✕");
+            private final HBox   acciones  = new HBox(6, btnEditar, btnBorrar);
             {
-                String smallBtn = "-fx-font-size: 11px; -fx-padding: 4 8 4 8;";
+                btnEditar.setPrefWidth(28);
                 btnEditar.setPrefHeight(26);
-                btnEditar.setStyle(smallBtn + "-fx-background-color: -app-info; -fx-text-fill: white;");
+                btnEditar.setStyle("-fx-font-size: 13px; -fx-padding: 2 4 2 4;" +
+                        "-fx-background-color: -app-info; -fx-text-fill: white;" +
+                        "-fx-background-radius: 4; -fx-cursor: hand;");
+
+                btnBorrar.setPrefWidth(28);
                 btnBorrar.setPrefHeight(26);
-                btnBorrar.setStyle(smallBtn + "-fx-background-color: -app-error; -fx-text-fill: white;");
+                btnBorrar.setStyle("-fx-font-size: 13px; -fx-padding: 2 4 2 4;" +
+                        "-fx-background-color: -app-error; -fx-text-fill: white;" +
+                        "-fx-background-radius: 4; -fx-cursor: hand;");
+
+                acciones.setAlignment(javafx.geometry.Pos.CENTER);
 
                 btnEditar.setOnAction(e -> {
                     Tarea tarea = getTableView().getItems().get(getIndex());
@@ -501,8 +515,24 @@ public class ProyectosController {
                         statusComboBox.getValue()
                 );
             }
+
+            // Capturamos id y nombre ANTES de recargar la lista,
+            // porque setItems() puede disparar el listener y sobreescribir proyectoSeleccionado.
+            final Long   idGuardado     = proyectoSeleccionado.getId();
+            final String nombreGuardado = proyectoSeleccionado.getNombre();
+
             cargarListaProyectos();
-            mostrarInfo("Proyecto \"" + proyectoSeleccionado.getNombre() + "\" guardado correctamente.");
+
+            // Re-seleccionamos el proyecto que acabamos de guardar
+            proyectoListView.getItems().stream()
+                    .filter(p -> p.getId().equals(idGuardado))
+                    .findFirst()
+                    .ifPresent(p -> {
+                        proyectoListView.getSelectionModel().select(p);
+                        proyectoListView.scrollTo(p);
+                    });
+
+            mostrarInfo("Proyecto \"" + nombreGuardado + "\" guardado correctamente.");
         } catch (Exception e) {
             mostrarError("Error al guardar el proyecto: " + e.getMessage());
         }

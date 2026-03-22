@@ -8,13 +8,22 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.util.Objects;
 
+/**
+ * Clave primaria compuesta para TareaCompetencia.
+ *
+ * @author Francisco José Rodríguez Ruiz
+ * @version 1.0
+ */
 @Embeddable
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class TareaCompetenciaId implements Serializable {
 
+    /** ID de la tarea. */
     private Long tareaId;
+
+    /** ID de la competencia. */
     private Long competenciaId;
 
     @Override

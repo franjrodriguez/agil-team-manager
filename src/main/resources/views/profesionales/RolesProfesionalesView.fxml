@@ -6,7 +6,8 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
@@ -22,11 +23,8 @@
 ║  Estilos: primer-light.css  +  agilteam-styles.css              ║
 ╚══════════════════════════════════════════════════════════════════╝
 -->
-<BorderPane fx:id="rootPane"
-            prefHeight="806.0" prefWidth="1200.0"
-            xmlns="http://javafx.com/javafx/17.0.12"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.iesaguadulce.agilteammanager.controller.ui.personas.RolesProfesionalesController">
+
+<BorderPane fx:id="rootPane" prefHeight="806.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iesaguadulce.agilteammanager.controller.ui.personas.RolesProfesionalesController">
 
     <stylesheets>
         <URL value="@../../css/primer-light.css" />
@@ -37,14 +35,10 @@
          TOP — Cabecera fija (igual que MotorAsignacionView)
          ═══════════════════════════════════════════════════════ -->
     <top>
-        <HBox fx:id="headerBox" alignment="CENTER_LEFT" prefHeight="72.0" spacing="16.0"
-              style="-fx-background-color: -app-bg-card;
-                     -fx-border-color: -app-border-soft;
-                     -fx-border-width: 0 0 1 0;">
-            <padding><Insets top="0" right="24" bottom="0" left="24" /></padding>
+        <HBox fx:id="headerBox" alignment="CENTER_LEFT" prefHeight="72.0" spacing="16.0" style="-fx-background-color: -app-bg-card;                      -fx-border-color: -app-border-soft;                      -fx-border-width: 0 0 1 0;">
+            <padding><Insets bottom="0" left="24" right="24" top="0" /></padding>
 
-            <ImageView fx:id="profileAvatar" fitHeight="40.0" fitWidth="40.0"
-                       pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="profileAvatar" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                 <image><Image url="@../../icons/role.png" /></image>
             </ImageView>
 
@@ -54,14 +48,8 @@
             </VBox>
 
             <!-- Botones en la cabecera -->
-            <Button fx:id="btnDelete" mnemonicParsing="false" onAction="#borrarPuesto"
-                    prefHeight="36.0" prefWidth="160.0"
-                    style="-fx-background-color: -app-error; -fx-text-fill: white;
-                           -fx-background-radius: 6; -fx-font-weight: 600;"
-                    text="Borrar Puesto" />
-            <Button fx:id="btnSave" mnemonicParsing="false" onAction="#guardarPuesto"
-                    prefHeight="36.0" prefWidth="160.0"
-                    styleClass="primary" text="Guardar Cambios" />
+            <Button fx:id="btnDelete" mnemonicParsing="false" onAction="#borrarPuesto" prefHeight="36.0" prefWidth="160.0" style="-fx-background-color: -app-error; -fx-text-fill: white;                            -fx-background-radius: 6; -fx-font-weight: 600;" text="Borrar Puesto" />
+            <Button fx:id="btnSave" mnemonicParsing="false" onAction="#guardarPuesto" prefHeight="36.0" prefWidth="160.0" styleClass="primary" text="Guardar Cambios" />
         </HBox>
     </top>
 
@@ -69,19 +57,14 @@
          LEFT — Sidebar oscuro con búsqueda y lista
          ═══════════════════════════════════════════════════════ -->
     <left>
-        <VBox fx:id="sidebarPanel" prefHeight="734.0" prefWidth="380.0" spacing="12.0"
-              styleClass="app-panel" BorderPane.alignment="CENTER">
-            <padding><Insets top="16" right="16" bottom="16" left="16" /></padding>
+        <VBox fx:id="sidebarPanel" prefHeight="734.0" prefWidth="380.0" spacing="12.0" styleClass="app-panel" BorderPane.alignment="CENTER">
+            <padding><Insets bottom="16" left="16" right="16" top="16" /></padding>
 
-            <TextField fx:id="searchField" onKeyReleased="#filtrarLista"
-                       prefHeight="38.0" promptText="Buscar puesto de trabajo..." />
+            <TextField fx:id="searchField" onKeyReleased="#filtrarLista" prefHeight="38.0" promptText="Buscar puesto de trabajo..." />
 
-            <Button fx:id="btnAddPuestoTrabajo" mnemonicParsing="false" onAction="#nuevoPuesto"
-                    prefHeight="38.0" prefWidth="400.0" styleClass="primary"
-                    text="Añadir Puesto" />
+            <Button fx:id="btnAddPuestoTrabajo" mnemonicParsing="false" onAction="#nuevoPuesto" prefHeight="38.0" prefWidth="400.0" styleClass="primary" text="Añadir Puesto" />
 
-            <ListView fx:id="puestotrabajoListView" onMouseClicked="#seleccionarPuesto"
-                      VBox.vgrow="ALWAYS" />
+            <ListView fx:id="puestotrabajoListView" onMouseClicked="#seleccionarPuesto" VBox.vgrow="ALWAYS" />
         </VBox>
     </left>
 
@@ -89,71 +72,41 @@
          CENTER — Área de trabajo con formulario
          ═══════════════════════════════════════════════════════ -->
     <center>
-        <ScrollPane fx:id="detailScrollPane" hbarPolicy="NEVER" fitToWidth="true"
-                    BorderPane.alignment="CENTER">
+        <ScrollPane fx:id="detailScrollPane" fitToWidth="true" hbarPolicy="NEVER" BorderPane.alignment="CENTER">
             <content>
-                <VBox fx:id="detailPane" spacing="16.0"
-                      style="-fx-background-color: -app-bg-workspace;">
-                    <padding><Insets top="28" right="32" bottom="32" left="32" /></padding>
+                <VBox fx:id="detailPane" spacing="16.0" style="-fx-background-color: -app-bg-workspace;">
+                    <padding><Insets bottom="32" left="32" right="32" top="28" /></padding>
 
                     <!-- Nombre del puesto -->
-                    <VBox spacing="6.0"
-                          style="-fx-background-color: -app-bg-card;
-                                 -fx-background-radius: 8;
-                                 -fx-border-color: -app-border-soft;
-                                 -fx-border-radius: 8;
-                                 -fx-border-width: 1;
-                                 -fx-padding: 16;">
+                    <VBox spacing="6.0" style="-fx-background-color: -app-bg-card;                                  -fx-background-radius: 8;                                  -fx-border-color: -app-border-soft;                                  -fx-border-radius: 8;                                  -fx-border-width: 1;                                  -fx-padding: 16;">
                         <Label styleClass="form-label" text="NOMBRE DEL PUESTO" />
-                        <TextField fx:id="nombreField" prefHeight="36.0"
-                                   promptText="Nombre del puesto de trabajo" />
+                        <TextField fx:id="nombreField" prefHeight="36.0" promptText="Nombre del puesto de trabajo" />
                     </VBox>
 
                     <!-- Descripción -->
-                    <VBox fx:id="descripcionBox" spacing="6.0"
-                          style="-fx-background-color: -app-bg-card;
-                                 -fx-background-radius: 8;
-                                 -fx-border-color: -app-border-soft;
-                                 -fx-border-radius: 8;
-                                 -fx-border-width: 1;
-                                 -fx-padding: 16;">
-                        <Label fx:id="descripcionLabel" styleClass="form-label"
-                               text="DESCRIPCIÓN DETALLADA" />
-                        <TextArea fx:id="descripcionField" prefHeight="120.0"
-                                  promptText="Descripción detallada del puesto de trabajo..."
-                                  wrapText="true" />
-                    </VBox>
-
-                    <!-- Elementos relacionados -->
-                    <VBox fx:id="relationSection" spacing="12.0"
-                          style="-fx-background-color: -app-bg-card;
-                                 -fx-background-radius: 8;
-                                 -fx-border-color: -app-border-soft;
-                                 -fx-border-radius: 8;
-                                 -fx-border-width: 1;
-                                 -fx-padding: 16;">
-
-                        <HBox fx:id="taskSectionHeader" alignment="CENTER_LEFT" spacing="10.0">
-                            <ImageView fitHeight="24.0" fitWidth="24.0"
-                                       pickOnBounds="true" preserveRatio="true">
-                                <image><Image url="@../../icons/relacionado.png" /></image>
-                            </ImageView>
-                            <Label styleClass="section-title" text="Elementos Relacionados"
-                                   HBox.hgrow="ALWAYS" />
-                        </HBox>
-
-                        <Separator />
-
-                        <Label styleClass="page-subtitle"
-                               text="Las personas y competencias asociadas a este puesto aparecerán aquí." />
+                    <VBox fx:id="descripcionBox" spacing="6.0" style="-fx-background-color: -app-bg-card;                                  -fx-background-radius: 8;                                  -fx-border-color: -app-border-soft;                                  -fx-border-radius: 8;                                  -fx-border-width: 1;                                  -fx-padding: 16;">
+                        <Label fx:id="descripcionLabel" styleClass="form-label" text="DESCRIPCIÓN DETALLADA" />
+                        <TextArea fx:id="descripcionField" prefHeight="120.0" promptText="Descripción detallada del puesto de trabajo..." wrapText="true" />
                     </VBox>
 
                     <!-- Spacer -->
                     <Region VBox.vgrow="ALWAYS" />
 
                     <!-- fx:id fantasma para el controller (label no visible) -->
-                    <Label fx:id="labelNombre" visible="false" managed="false" />
-                    <HBox fx:id="actionButtons" visible="false" managed="false" />
+                    <Label fx:id="labelNombre" managed="false" visible="false" />
+                    <HBox fx:id="actionButtons" managed="false" visible="false" />
+               <VBox fx:id="tablaEquipoActivo" prefHeight="300.0">
+                  <children>
+                     <Label styleClass="section-title" text="Profesionales en este puesto" />
+                     <TableView fx:id="tblEquipoActivo" prefHeight="300.0" VBox.vgrow="ALWAYS">
+                        <columns>
+                           <TableColumn prefWidth="95.0" text="\% Carga" />
+                           <TableColumn prefWidth="338.0" text="Profesional" />
+                           <TableColumn prefWidth="113.0" text="Imagen" />
+                        </columns>
+                     </TableView>
+                  </children>
+               </VBox>
 
                 </VBox>
             </content>

@@ -21,10 +21,18 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+/**
+ * Controller del dashboard de usuario estándar.
+ *
+ * <p>Visualiza KPIs de proyectos, tareas y equipo mediante widgets,
+ * gráficas de rendimiento y tablas de datos.</p>
+ *
+ * @see DashboardService
+ */
 @Component
 public class DashboardController {
 
-    // SpringContext.getBean() NO puede llamarse aquí (el contexto aún no existe).
+    // SpringContext.getBean() NO puede llamarse aquí (sin la NASA el contexto aún no existe).
     // Se asigna en initialize(), que JavaFX invoca cuando el FXML ya está cargado.
     private DashboardService dashboardService;
 
@@ -47,6 +55,7 @@ public class DashboardController {
     private static final String IMG_PERSONAS  = "/icons/professional.png";
     private static final String IMG_CARGA     = "/icons/charge.png";
 
+    /** Inicializa el servicio y carga todos los componentes del dashboard. */
     @FXML
     public void initialize() {
         // Obtener el service aquí, no en el campo — el contexto ya está listo
@@ -58,8 +67,7 @@ public class DashboardController {
         cargarTablas();
     }
 
-    // ─── KPIs ──────────────────────────────────────────────────────────────────
-
+    /** Carga y muestra los KPIs en los widgets. */
     private void cargarKPIs() {
         try {
             DashboardKPIs kpis = dashboardService.obtenerKPIs();
@@ -96,8 +104,7 @@ public class DashboardController {
         }
     }
 
-    // ─── GRÁFICA ───────────────────────────────────────────────────────────────
-
+    /** Carga la gráfica de rendimiento de los últimos 7 días. */
     private void cargarGrafica() {
         if (barChartRendimiento == null) {
             System.err.println("barChartRendimiento es null — revisa fx:controller en el FXML");
@@ -118,10 +125,8 @@ public class DashboardController {
         }
     }
 
-    // ─── TABLAS ────────────────────────────────────────────────────────────────
+    /** Configura las columnas de las tablas de tareas y equipo. */
 
-    // Las columnas no tienen fx:id en el FXML, se configuran por índice
-    @SuppressWarnings("unchecked")
     private void configurarTablas() {
         if (tblTareasPendientes != null && tblTareasPendientes.getColumns().size() >= 2) {
             TableColumn<TareaPendienteDTO, String> colTarea =
@@ -134,18 +139,54 @@ public class DashboardController {
             colSprint.setCellValueFactory(new PropertyValueFactory<>("nombreSprint"));
         }
 
-        if (tblEquipoActivo != null && tblEquipoActivo.getColumns().size() >= 2) {
-            TableColumn<PersonaActivaDTO, String> colNombre =
-                    (TableColumn<PersonaActivaDTO, String>) tblEquipoActivo.getColumns().get(0);
+        if (tblEquipoActivo != null && tblEquipoActivo.getColumns().size() >= 3) {
             TableColumn<PersonaActivaDTO, String> colCarga =
+                    (TableColumn<PersonaActivaDTO, String>) tblEquipoActivo.getColumns().get(0);
+            TableColumn<PersonaActivaDTO, String> colNombre =
                     (TableColumn<PersonaActivaDTO, String>) tblEquipoActivo.getColumns().get(1);
+            TableColumn<PersonaActivaDTO, Void> colFoto =
+                    (TableColumn<PersonaActivaDTO, Void>) tblEquipoActivo.getColumns().get(2);
+
+            colCarga.setText("% Carga");
+            colCarga.setCellValueFactory(new PropertyValueFactory<>("cargaFormateada"));
             colNombre.setText("Profesional");
             colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
-            colCarga.setText("Carga");
-            colCarga.setCellValueFactory(new PropertyValueFactory<>("cargaFormateada"));
+
+            colFoto.setText("Foto");
+            colFoto.setCellFactory(col -> new javafx.scene.control.TableCell<>() {
+                private final ImageView imgView = new ImageView();
+                {
+                    imgView.setFitWidth(32);
+                    imgView.setFitHeight(32);
+                    imgView.setPreserveRatio(true);
+                }
+                @Override
+                protected void updateItem(Void item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || getTableRow() == null || getTableRow().getItem() == null) {
+                        setGraphic(null);
+                        return;
+                    }
+                    String fotoPath = getTableRow().getItem().getFotoPath();
+                    try {
+                        if (fotoPath != null && !fotoPath.isBlank()) {
+                            imgView.setImage(new Image(fotoPath, true));
+                        } else {
+                            imgView.setImage(new Image(
+                                    getClass().getResourceAsStream("/icons/professional.png")));
+                        }
+                    } catch (Exception e) {
+                        imgView.setImage(new Image(
+                                getClass().getResourceAsStream("/icons/professional.png")));
+                    }
+                    setGraphic(imgView);
+                    setAlignment(javafx.geometry.Pos.CENTER);
+                }
+            });
         }
     }
 
+    /** Carga los datos en las tablas. */
     private void cargarTablas() {
         if (tblTareasPendientes != null) {
             try {
@@ -165,6 +206,7 @@ public class DashboardController {
         }
     }
 
+    /** Refresca todos los datos del dashboard. */
     public void refrescarDatos() {
         cargarKPIs();
         cargarGrafica();

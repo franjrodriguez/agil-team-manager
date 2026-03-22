@@ -11,11 +11,18 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repositorio para historial de disponibilidad y carga de trabajo.
+ *
+ * @author Francisco José Rodríguez Ruiz
+ * @version 1.0
+ */
 @Repository
 public interface DisponibilidadRepository extends JpaRepository<Disponibilidad, Long> {
 
     /**
-     * Obtiene la última carga registrada de una persona
+     * Obtiene registros de una persona ordenados por fecha.
+     * @param personaId ID de la persona
      */
     @Query("SELECT d FROM Disponibilidad d " +
             "WHERE d.persona.id = :personaId " +
@@ -23,7 +30,8 @@ public interface DisponibilidadRepository extends JpaRepository<Disponibilidad, 
     List<Disponibilidad> findByPersonaIdOrderByFechaDesc(@Param("personaId") Long personaId);
 
     /**
-     * Obtiene la carga actual de una persona (registro más reciente)
+     * Obtiene carga actual (registro más reciente) de una persona.
+     * @param personaId ID de la persona
      */
     @Query("SELECT d.carga FROM Disponibilidad d " +
             "WHERE d.persona.id = :personaId " +
@@ -32,7 +40,10 @@ public interface DisponibilidadRepository extends JpaRepository<Disponibilidad, 
     Optional<BigDecimal> findCargaActualByPersonaId(@Param("personaId") Long personaId);
 
     /**
-     * Obtiene el historial de disponibilidad de una persona
+     * Obtiene historial de disponibilidad en rango de fechas.
+     * @param personaId ID de la persona
+     * @param desde fecha inicio
+     * @param hasta fecha fin
      */
     @Query("SELECT d FROM Disponibilidad d " +
             "WHERE d.persona.id = :personaId " +
@@ -45,7 +56,10 @@ public interface DisponibilidadRepository extends JpaRepository<Disponibilidad, 
     );
 
     /**
-     * Obtiene la carga promedio de una persona en un período
+     * Calcula carga promedio de una persona en período.
+     * @param personaId ID de la persona
+     * @param desde fecha inicio
+     * @param hasta fecha fin
      */
     @Query("SELECT AVG(d.carga) FROM Disponibilidad d " +
             "WHERE d.persona.id = :personaId " +
@@ -84,11 +98,12 @@ public interface DisponibilidadRepository extends JpaRepository<Disponibilidad, 
     Double promedioUltimaCarga();
 
     /**
-     * Obtiene la última carga registrada de una persona
+     * Obtiene última carga registrada de una persona.
+     * @param personaId ID de la persona
      */
     @Query("SELECT d.carga FROM Disponibilidad d " +
             "WHERE d.persona.id = :personaId " +
             "ORDER BY d.fecha DESC LIMIT 1")
-    Double findUltimaCargaByPersonaId(@Param("personaId") Long personaId);
+    BigDecimal findUltimaCargaByPersonaId(@Param("personaId") Long personaId);
 
 }

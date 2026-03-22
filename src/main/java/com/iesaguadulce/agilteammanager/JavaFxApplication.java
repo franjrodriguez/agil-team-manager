@@ -10,10 +10,20 @@ import javafx.stage.Stage;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 
+/**
+ * Aplicación JavaFX que integra el contexto de Spring Boot.
+ * Gestiona el ciclo de vida de ambos frameworks.
+ *
+ * @author Francisco José Rodríguez Ruiz
+ * @since 1.0
+ */
 public class JavaFxApplication extends Application {
 
     private ConfigurableApplicationContext springContext;
 
+    /**
+     * Inicia el contexto de Spring Boot antes de cargar la UI.
+     */
     @Override
     public void init() throws Exception {
         // Arrancar Spring Boot ANTES de la UI
@@ -30,6 +40,9 @@ public class JavaFxApplication extends Application {
                 springContext.getBeanDefinitionCount() + " beans cargados)");
     }
 
+    /**
+     * Carga y muestra la ventana de login.
+     */
     @Override
     public void start(Stage primaryStage) throws Exception{
         System.out.println("(FRANDEV)---> Iniciando interfaz JavaFX...");
@@ -50,7 +63,9 @@ public class JavaFxApplication extends Application {
 
         System.out.println("Ventana Login mostrada");
     }
-
+    /**
+     * Cierra el contexto Spring y la aplicación JavaFX al salir.
+     */
     @Override
     public void stop() {
         // Cerrar contexto Spring al salir

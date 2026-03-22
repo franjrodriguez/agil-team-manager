@@ -1,13 +1,18 @@
 package com.iesaguadulce.agilteammanager.controller.ui.personas;
 
 import com.iesaguadulce.agilteammanager.config.SpringContext;
+import com.iesaguadulce.agilteammanager.model.personas.Persona;
 import com.iesaguadulce.agilteammanager.model.personas.Puesto;
+import com.iesaguadulce.agilteammanager.service.personas.PersonaService;
 import com.iesaguadulce.agilteammanager.service.personas.PuestoService;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,9 +23,8 @@ import java.util.ResourceBundle;
 
 /**
  * ═══════════════════════════════════════════════════════════════
- * RoleProfesionalesController — Controlador UI de Puestos de Trabajo
+ * RolesProfesionalesController — Controlador UI de Puestos de Trabajo
  * ───────────────────────────────────────────────────────────────
- * UBICACIÓN: src/main/java/.../ui/personas/RoleProfesionalesController.java
  *
  * ¿QUÉ HACE?
  *   Gestiona toda la interacción de la pantalla RolesProfesionalesView.fxml:
@@ -33,11 +37,13 @@ import java.util.ResourceBundle;
  *
  * PATRÓN:
  *   Este controlador NO accede directamente a la BD.
- *   Delega toda la lógica en PuestoService.
+ *   Delega toda la lógica en PuestoService ( → Puesto de trabajo).
  *
  * FLUJO:
  *   FXML (evento) → este Controller → PuestoService → PuestoRepository → BD
- * ═══════════════════════════════════════════════════════════════
+ *
+ * @author FRANDEV
+ * @see PuestoService
  */
 @Component  // Spring lo gestiona como bean (necesario para inyección de dependencias)
 public class RolesProfesionalesController implements Initializable {
@@ -48,6 +54,8 @@ public class RolesProfesionalesController implements Initializable {
     // ─────────────────────────────────────────────────────────
     @Autowired
     private PuestoService puestoService;
+
+    private PersonaService personaService;
 
 
     // ─────────────────────────────────────────────────────────
@@ -73,6 +81,9 @@ public class RolesProfesionalesController implements Initializable {
     /** Botón de borrar (oculto si no hay selección) */
     @FXML private Button btnDelete;
 
+    /** Tabla de profesionales del puesto seleccionado */
+    @FXML private TableView<Persona> tblEquipoActivo;
+
     // ─────────────────────────────────────────────────────────
     // ESTADO INTERNO DEL CONTROLADOR
     // ─────────────────────────────────────────────────────────
@@ -95,8 +106,10 @@ public class RolesProfesionalesController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         System.out.println("(FRANDEV) --> Entramos en RolesProfesionalesController");
         this.puestoService = SpringContext.getBean(PuestoService.class);
+        this.personaService = SpringContext.getBean(PersonaService.class);
 
         configurarListView();
+        configurarTablaEquipo();
         System.out.println("(FRANDEV) --> REGRESAMOS DE PREPARAR AL LISTVIEW...");
 
         cargarTodosLosPuestos();
@@ -304,6 +317,8 @@ public class RolesProfesionalesController implements Initializable {
 
         // Mostrar botón borrar solo cuando hay un puesto seleccionado
         btnDelete.setVisible(true);
+
+        cargarProfesionalesDelPuesto(puesto);
     }
 
     /**
@@ -314,6 +329,7 @@ public class RolesProfesionalesController implements Initializable {
         nombreField.clear();
         descripcionField.clear();
         // btnDelete.setVisible(false);  // Ocultamos el botón borrar
+        tblEquipoActivo.getItems().clear();
     }
 
     /**
@@ -323,6 +339,61 @@ public class RolesProfesionalesController implements Initializable {
     private void seleccionarEnLista(Puesto puesto) {
         puestotrabajoListView.getSelectionModel().select(puesto);
         puestotrabajoListView.scrollTo(puesto);
+    }
+
+    /**
+     * Configura las columnas de la tabla de profesionales.
+     * Columna 1 → nombre. Columna 2 → foto (patrón idéntico al DashboardController).
+     */
+    @SuppressWarnings("unchecked")
+    private void configurarTablaEquipo() {
+        // Columna 1: nombre del profesional
+        TableColumn<Persona, String> colNombre =
+                (TableColumn<Persona, String>) tblEquipoActivo.getColumns().get(1);
+        colNombre.setCellValueFactory(data ->
+                new SimpleStringProperty(data.getValue().getNombre()));
+
+        // Columna 2: foto — Void para leer el item completo desde la fila
+        TableColumn<Persona, Void> colFoto =
+                (TableColumn<Persona, Void>) tblEquipoActivo.getColumns().get(2);
+        colFoto.setCellFactory(col -> new TableCell<>() {
+            private final ImageView iv = new ImageView();
+            {
+                iv.setFitWidth(32);
+                iv.setFitHeight(32);
+                iv.setPreserveRatio(true);
+            }
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || getTableRow() == null || getTableRow().getItem() == null) {
+                    setGraphic(null);
+                    return;
+                }
+                String fotoPath = getTableRow().getItem().getFotoPath();
+                try {
+                    if (fotoPath != null && !fotoPath.isBlank()) {
+                        iv.setImage(new Image(fotoPath, true));
+                    } else {
+                        iv.setImage(new Image(
+                                getClass().getResourceAsStream("/icons/professional.png")));
+                    }
+                } catch (Exception e) {
+                    iv.setImage(new Image(
+                            getClass().getResourceAsStream("/icons/professional.png")));
+                }
+                setGraphic(iv);
+                setAlignment(javafx.geometry.Pos.CENTER);
+            }
+        });
+    }
+
+    /**
+     * Carga en la tabla los profesionales que tienen asignado el puesto recibido.
+     */
+    private void cargarProfesionalesDelPuesto(Puesto puesto) {
+        List<Persona> personas = personaService.obtenerPorPuesto(puesto.getId());
+        tblEquipoActivo.setItems(FXCollections.observableArrayList(personas));
     }
 
     /**

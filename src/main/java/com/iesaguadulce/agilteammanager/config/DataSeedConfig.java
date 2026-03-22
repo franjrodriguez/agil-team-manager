@@ -11,9 +11,25 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Configuración de datos iniciales de la aplicación.
+ * Crea roles, puestos y usuario admin al arrancar si la BD está vacía.
+ *
+ * @author Francisco José Rodríguez Ruiz
+ * @since 1.0
+ */
 @Configuration
 public class DataSeedConfig {
 
+    /**
+     * Carga datos iniciales: rol ADMIN, puesto Administrador y usuario admin/admin123.
+     * Solo ejecuta si no existen datos previos (rolRepo.count() == 0).
+     *
+     * @param rolRepo repositorio de roles
+     * @param puestoRepo repositorio de puestos
+     * @param personaRepo repositorio de personas
+     * @return CommandLineRunner con la lógica de seed
+     */
     @Bean
     public CommandLineRunner loadInitialData(
             RolSistemaRepository rolRepo,
@@ -41,10 +57,10 @@ public class DataSeedConfig {
             puestoAdmin.setDescripcion("Administrador del sistema");
             puestoRepo.save(puestoAdmin);
 
-            // Crear usuario admin (password: "admin123" con jBCrypt)
+            // Crear usuario admin (password: "1234" con jBCrypt)
             Persona admin = new Persona();
             admin.setUsuario("admin");
-            admin.setPassword(BCrypt.hashpw("admin123", BCrypt.gensalt())); // ← jBCrypt
+            admin.setPassword(BCrypt.hashpw("1234", BCrypt.gensalt())); // ← jBCrypt
             admin.setNombre("Administrador del Sistema");
             admin.setEmail("admin@agilteam.com");
             admin.setEstado("activo");
@@ -53,7 +69,7 @@ public class DataSeedConfig {
             personaRepo.save(admin);
 
             System.out.println("✅ Datos iniciales cargados");
-            System.out.println("   Usuario: admin / Password: admin123");
+            System.out.println("   Usuario: admin / Password: 1234");
         };
     }
 }

@@ -22,7 +22,10 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Servicio para gestión de asignaciones reales de tareas
+ * Gestiona asignaciones reales de tareas a personas.
+ *
+ * @author Francisco José Rodríguez Ruiz
+ * @version 1.0
  */
 @Slf4j
 @Service
@@ -99,7 +102,8 @@ public class AsignacionService {
     }
 
     /**
-     * Completa una asignación (marca tarea como completada)
+     * Marca una asignación como completada con valoración opcional.
+     * @param valoracion entre 0 y 10
      */
     public Asignacion completar(Long asignacionId, BigDecimal valoracion, String observaciones) {
 

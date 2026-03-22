@@ -24,15 +24,17 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * ⭐ SERVICIO CORE DEL SISTEMA
+ * Motor de recomendación inteligente para asignación de tareas.
  *
- * Implementa el motor de recomendación inteligente para asignación de tareas.
+ * <p>Algoritmo:
+ * <ol>
+ *   <li>Score base = Σ(nivel × peso)</li>
+ *   <li>Score ajustado = (score/100) × (1-carga) × prioridad</li>
+ *   <li>Ordena por score descendente</li>
+ * </ol></p>
  *
- * Algoritmo:
- * 1. Calcula score_base = Σ(nivel_persona × peso_competencia)
- * 2. Calcula score_ajustado = (score_base / 100) × (1 - carga) × prioridad
- * 3. Ordena candidatos por score_ajustado descendente
- * 4. Genera sugerencias con explicación detallada
+ * @author Francisco José Rodríguez Ruiz
+ * @version 1.0
  */
 @Slf4j
 @Service
@@ -49,10 +51,9 @@ public class MotorAsignacionService {
     private final ConfiguracionService configuracionService;
 
     /**
-     * Calcula y genera sugerencias de asignación para una tarea
-     *
-     * @param tareaId ID de la tarea
-     * @return Lista de sugerencias ordenadas por idoneidad (mejor primero)
+     * Calcula sugerencias de asignación para una tarea.
+     * @return lista ordenada por idoneidad (mejor primero)
+     * @throws RuntimeException si no hay candidatos válidos
      */
     public List<AsignacionSugerida> calcularAsignaciones(Long tareaId) {
 
@@ -172,9 +173,7 @@ public class MotorAsignacionService {
 
     /**
      * Calcula el score base (aptitud técnica)
-     *
      * Formula: score_base = Σ(nivel_actual × peso)
-     *
      * @return Score entre 0 y 100
      */
     private BigDecimal calcularScoreBase(Persona persona, List<TareaCompetencia> competenciasRequeridas) {
@@ -201,9 +200,7 @@ public class MotorAsignacionService {
 
     /**
      * Calcula el score ajustado (idoneidad final)
-     *
      * Formula: score_ajustado = (score_base / 100) × (1 - carga) × prioridad
-     *
      * @return Score entre 0 y 1
      */
     private BigDecimal calcularScoreAjustado(BigDecimal scoreBase, BigDecimal carga,

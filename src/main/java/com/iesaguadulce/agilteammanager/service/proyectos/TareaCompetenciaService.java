@@ -21,6 +21,9 @@ import java.util.List;
  * Gestiona las competencias técnicas requeridas por cada tarea.
  * NO confundir con CompetenciaService, que gestiona el catálogo maestro
  * de competencias (entidad Competencia en model/personas/).
+ *
+ * @author Francisco José Rodríguez Ruiz
+ * @since 1.0
  */
 @Service
 @Transactional
@@ -30,10 +33,6 @@ public class TareaCompetenciaService {
     private final TareaCompetenciaRepository tareaCompetenciaRepository;
     private final TareaRepository             tareaRepository;
     private final CompetenciaRepository       competenciaRepository;
-
-    // ══════════════════════════════════════════════════════════════
-    //  CONSULTA
-    // ══════════════════════════════════════════════════════════════
 
     /**
      * Devuelve todas las TareaCompetencia de una tarea (ordenadas por peso desc).
@@ -45,10 +44,6 @@ public class TareaCompetenciaService {
         lista.forEach(tc -> Hibernate.initialize(tc.getCompetencia()));
         return lista;
     }
-
-    // ══════════════════════════════════════════════════════════════
-    //  AÑADIR
-    // ══════════════════════════════════════════════════════════════
 
     /**
      * Añade una competencia requerida a una tarea.
@@ -85,10 +80,6 @@ public class TareaCompetenciaService {
         return tareaCompetenciaRepository.save(tc);
     }
 
-    // ══════════════════════════════════════════════════════════════
-    //  ELIMINAR
-    // ══════════════════════════════════════════════════════════════
-
     /**
      * Elimina una competencia requerida de una tarea.
      */
@@ -103,9 +94,6 @@ public class TareaCompetenciaService {
         tareaCompetenciaRepository.deleteById(id);
     }
 
-    // ══════════════════════════════════════════════════════════════
-    //  UTILIDADES PRIVADAS
-    // ══════════════════════════════════════════════════════════════
 
     private void validarPeso(BigDecimal peso) {
         if (peso == null

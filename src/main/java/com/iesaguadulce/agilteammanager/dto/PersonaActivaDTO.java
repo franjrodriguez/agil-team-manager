@@ -1,7 +1,11 @@
 package com.iesaguadulce.agilteammanager.dto;
 
 /**
- * DTO para mostrar personas activas en la tabla del equipo
+ * DTO para mostrar personas activas en la tabla del equipo.
+ * Calcula automáticamente el color del indicador según la carga de trabajo.
+ *
+ * @author Francisco José Rodríguez Ruiz
+ * @since 1.0
  */
 public class PersonaActivaDTO {
     private String nombre;
@@ -12,6 +16,11 @@ public class PersonaActivaDTO {
     // Campos calculados
     private String colorIndicador;   // "verde", "amarillo", "rojo"
 
+    /**
+     * Constructor. Calcula el color del indicador automáticamente.
+     *
+     * @param cargaPorcentaje valor entre 0.0 y 1.0 (0.75 = 75%)
+     */
     public PersonaActivaDTO(String nombre, double cargaPorcentaje, int numTareasActivas, String fotoPath) {
         this.nombre = nombre;
         this.cargaPorcentaje = cargaPorcentaje;
@@ -45,7 +54,9 @@ public class PersonaActivaDTO {
     public void setColorIndicador(String colorIndicador) { this.colorIndicador = colorIndicador; }
 
     /**
-     * Devuelve la carga como texto formateado (75%)
+     * Devuelve la carga formateada como porcentaje (ej: "75%").
+     *
+     * @return cadena con formato "##%"
      */
     public String getCargaFormateada() {
         return String.format("%.0f%%", cargaPorcentaje * 100);

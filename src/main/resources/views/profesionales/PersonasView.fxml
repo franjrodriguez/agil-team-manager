@@ -19,6 +19,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
 <!--
@@ -47,9 +48,6 @@
                      -fx-border-color: -app-border-soft;
                      -fx-border-width: 0 0 1 0;">
             <padding><Insets top="0" right="24" bottom="0" left="24" /></padding>
-
-            <ImageView fx:id="profileAvatar" fitHeight="40.0" fitWidth="40.0"
-                       pickOnBounds="true" preserveRatio="true" />
 
             <VBox fx:id="headerInfo" alignment="CENTER_LEFT" spacing="2.0" HBox.hgrow="ALWAYS">
                 <Label fx:id="profileName" styleClass="section-title" text="Profesionales" />
@@ -81,14 +79,8 @@
             <TextField fx:id="searchField" prefHeight="38.0"
                        promptText="Buscar profesional..." />
 
-            <HBox fx:id="filterBox" spacing="6.0">
-                <ComboBox fx:id="deptFilter" prefHeight="34.0" promptText="Dpto."
-                          HBox.hgrow="ALWAYS" maxWidth="1.7976931348623157E308" />
-                <ComboBox fx:id="statusFilter" prefHeight="34.0" promptText="Estado"
-                          HBox.hgrow="ALWAYS" maxWidth="1.7976931348623157E308" />
-                <ComboBox fx:id="roleFilter" prefHeight="34.0" promptText="Rol"
-                          HBox.hgrow="ALWAYS" maxWidth="1.7976931348623157E308" />
-            </HBox>
+            <ComboBox fx:id="statusFilter" prefHeight="34.0" promptText="Estado"
+                      maxWidth="1.7976931348623157E308" />
 
             <Button fx:id="btnAddProfessional" mnemonicParsing="false"
                     prefHeight="38.0" prefWidth="400.0" styleClass="primary"
@@ -118,8 +110,9 @@
                                      -fx-border-width: 1;
                                      -fx-padding: 16;">
                         <columnConstraints>
-                            <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" />
-                            <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" />
+                            <ColumnConstraints hgrow="ALWAYS" percentWidth="38" minWidth="10.0" />
+                            <ColumnConstraints hgrow="ALWAYS" percentWidth="38" minWidth="10.0" />
+                            <ColumnConstraints hgrow="NEVER" minWidth="160.0" prefWidth="190.0" maxWidth="220.0" />
                         </columnConstraints>
                         <rowConstraints>
                             <RowConstraints />
@@ -175,6 +168,17 @@
                                   maxWidth="1.7976931348623157E308"
                                   promptText="Rol de sistema"
                                   GridPane.columnIndex="1" GridPane.rowIndex="5" />
+
+                        <!-- Columna derecha: foto del profesional -->
+                        <VBox alignment="CENTER" spacing="12.0"
+                              GridPane.columnIndex="2" GridPane.rowSpan="6">
+                            <ImageView fx:id="profileAvatar" fitHeight="150.0" fitWidth="150.0"
+                                       pickOnBounds="true" preserveRatio="true" />
+                            <Button fx:id="btnCambiarFoto" mnemonicParsing="false"
+                                    onAction="#onCambiarFoto" text="📷 Cambiar foto"
+                                    prefHeight="34.0" prefWidth="160.0"
+                                    style="-fx-font-size: 12px;" />
+                        </VBox>
                     </GridPane>
 
                     <!-- Competencias técnicas -->

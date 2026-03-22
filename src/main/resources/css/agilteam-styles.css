@@ -37,7 +37,8 @@
 }
 
 .kpi-label {
-    -fx-font-size: 13px;
+    -fx-font-size: 18px;
+    -fx-font-weight: 600;
     -fx-text-fill: -app-text-secondary;
 }
 
@@ -333,4 +334,22 @@
 /* Hover en fila */
 .table-view .table-row-cell:filled:hover {
     -fx-background-color: #F0F9FF;
+}
+
+/* =====================================================
+   FONDOS DE VISTAS (cover responsive)
+   ===================================================== */
+
+.bg-fondoclaro {
+    -fx-background-image: url('../assets/fondoclaro.png');
+    -fx-background-size: cover;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+
+.bg-fondopunteado {
+    -fx-background-image: url('../assets/fondopunteado.jpg');
+    -fx-background-size: cover;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
 }

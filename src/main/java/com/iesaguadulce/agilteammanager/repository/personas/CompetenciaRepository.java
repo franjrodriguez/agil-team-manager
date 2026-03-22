@@ -9,6 +9,12 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repositorio para gestión de competencias.
+ *
+ * @author Francisco José Rodríguez Ruiz
+ * @version 1.0
+ */
 @Repository
 public interface CompetenciaRepository extends JpaRepository<Competencia, Long> {
 
@@ -39,7 +45,8 @@ public interface CompetenciaRepository extends JpaRepository<Competencia, Long> 
     List<String> findDistinctTipos();
 
     /**
-     * Obtiene competencias requeridas por una tarea
+     * Obtiene competencias requeridas por una tarea.
+     * @param tareaId ID de la tarea
      */
     @Query("SELECT c FROM Competencia c " +
             "JOIN c.tareasCompetencias tc " +
@@ -47,7 +54,8 @@ public interface CompetenciaRepository extends JpaRepository<Competencia, Long> 
     List<Competencia> findByTareaId(@Param("tareaId") Long tareaId);
 
     /**
-     * Busca competencias que tiene una persona
+     * Obtiene competencias de una persona.
+     * @param personaId ID de la persona
      */
     @Query("SELECT c FROM Competencia c " +
             "JOIN c.personasCompetencias pc " +

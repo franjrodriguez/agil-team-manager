@@ -60,7 +60,7 @@
             <Region prefHeight="2.0" />
 
             <!-- Botón Salir -->
-            <Button fx:id="btnCancel" cancelButton="true" maxWidth="1.7976931348623157E308" onAction="#onCancelClick" prefHeight="38.0" style="-fx-background-color: transparent;                            -fx-text-fill: #6B7280;                            -fx-font-size: 13px;                            -fx-border-color: #E5E7EB;                            -fx-border-radius: 8;                            -fx-background-radius: 8;                            -fx-cursor: hand;" text="Salir" />
+            <Button fx:id="btnCancel" cancelButton="true" maxWidth="1.7976931348623157E308" onAction="#onCancelClick" prefHeight="38.0" style="-fx-background-color: #FEE2E2;                            -fx-text-fill: #B91C1C;                            -fx-font-size: 13px;                            -fx-font-weight: 600;                            -fx-border-color: #FECACA;                            -fx-border-radius: 8;                            -fx-background-radius: 8;                            -fx-cursor: hand;" text="Salir" />
         </VBox>
 
         <!-- ── Footer ── -->

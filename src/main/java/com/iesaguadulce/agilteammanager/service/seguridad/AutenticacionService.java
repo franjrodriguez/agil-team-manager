@@ -8,9 +8,20 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+/**
+ * Servicio de autenticación con BCrypt.
+ *
+ * @author Francisco José Rodríguez Ruiz
+ * @since 1.0
+ */
 @Service
 public class AutenticacionService {
 
+    /**
+     * Autentica un usuario por username y password.
+     *
+     * @return Persona si es válida y activa, null en caso contrario
+     */
     @Autowired
     private PersonaRepository personaRepository;
 
@@ -39,13 +50,19 @@ public class AutenticacionService {
         return persona;
     }
 
+    /**
+     * Verifica si la persona tiene rol ADMIN.
+     */
     public boolean esAdministrador(Persona persona) {
         return persona != null &&
                 "ADMIN".equalsIgnoreCase(persona.getRol().getNombre());
     }
 
     /**
-     * Método auxiliar para encriptar contraseñas (útil para crear usuarios)
+     * Genera hash BCrypt de una contraseña.
+     *
+     * @param password contraseña en texto plano
+     * @return hash BCrypt
      */
     public String encriptarPassword(String password) {
         return BCrypt.hashpw(password, BCrypt.gensalt());

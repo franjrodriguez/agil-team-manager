@@ -25,18 +25,17 @@
                <children>
                   <VBox fx:id="widgetProyectos" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="140.0" prefWidth="256.0" spacing="10.0">
                      <children>
-                        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="8.0">
+                        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="16.0">
                            <children>
-                              <Label fx:id="lblValue" prefHeight="47.0" prefWidth="70.0" styleClass="kpi-value" text="00" />
-                              <Separator prefHeight="25.0" prefWidth="103.0" visible="false" />
                               <ImageView fx:id="imgIcon" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
                                     <Image url="@../../icons/project.png" />
                                  </image>
                               </ImageView>
+                              <Label fx:id="lblValue" styleClass="kpi-value" text="00" />
                            </children>
                         </HBox>
-                        <Label fx:id="lblTitle" prefHeight="19.0" prefWidth="247.0" styleClass="kpi-label" text="Proyectos Activos" />
+                        <Label fx:id="titleProyectos" prefHeight="19.0" prefWidth="247.0" styleClass="kpi-label" text="Proyectos Activos" />
                      </children>
                      <padding>
                         <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
@@ -53,18 +52,17 @@
                   <Separator prefWidth="200.0" visible="false" />
                   <VBox fx:id="widgetTareas" alignment="CENTER" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="140.0" prefWidth="256.0" spacing="10.0">
                      <children>
-                        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="8.0">
+                        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="16.0">
                            <children>
-                              <Label fx:id="lblValue" prefHeight="53.0" prefWidth="70.0" styleClass="kpi-value" text="00" />
-                              <Separator prefHeight="25.0" prefWidth="103.0" visible="false" />
                               <ImageView fx:id="imgIcon" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
                                     <Image url="@../../icons/tareas.png" />
                                  </image>
                               </ImageView>
+                              <Label fx:id="lblValue" styleClass="kpi-value" text="00" />
                            </children>
                         </HBox>
-                        <Label fx:id="lblTitle" prefHeight="19.0" prefWidth="265.0" styleClass="kpi-label" text="Tareas Pendientes" />
+                        <Label fx:id="titleTareas" prefHeight="19.0" prefWidth="265.0" styleClass="kpi-label" text="Tareas Pendientes" />
                      </children>
                      <padding>
                         <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
@@ -81,18 +79,17 @@
                   <Separator layoutX="266.0" layoutY="10.0" prefWidth="200.0" visible="false" />
                   <VBox fx:id="widgetPersonas" alignment="CENTER" layoutX="266.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="140.0" prefWidth="256.0" spacing="10.0">
                      <children>
-                        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="8.0">
+                        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="16.0">
                            <children>
-                              <Label fx:id="lblValue" prefHeight="47.0" prefWidth="70.0" styleClass="kpi-value" text="00" />
-                              <Separator prefHeight="25.0" prefWidth="103.0" visible="false" />
                               <ImageView fx:id="imgIcon" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
                                     <Image url="@../../icons/professional.png" />
                                  </image>
                               </ImageView>
+                              <Label fx:id="lblValue" styleClass="kpi-value" text="00" />
                            </children>
                         </HBox>
-                        <Label fx:id="lblTitle" prefHeight="19.0" prefWidth="270.0" styleClass="kpi-label" text="Profesionales Activos" />
+                        <Label fx:id="titleProfesionales" prefHeight="19.0" prefWidth="270.0" styleClass="kpi-label" text="Profesionales Activos" />
                      </children>
                      <padding>
                         <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
@@ -109,18 +106,17 @@
                   <Separator layoutX="590.0" layoutY="10.0" prefWidth="200.0" visible="false" />
                   <VBox fx:id="widgetCarga" alignment="CENTER" layoutX="522.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="140.0" prefWidth="256.0" spacing="10.0">
                      <children>
-                        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="8.0">
+                        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="16.0">
                            <children>
-                              <Label fx:id="lblValue" prefHeight="47.0" prefWidth="85.0" styleClass="kpi-value" text="100%" />
-                              <Separator prefHeight="25.0" prefWidth="51.0" visible="false" />
                               <ImageView fx:id="imgIcon" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
                                     <Image url="@../../icons/carga.png" />
                                  </image>
                               </ImageView>
+                              <Label fx:id="lblValue" styleClass="kpi-value" text="100%" />
                            </children>
                         </HBox>
-                        <Label fx:id="lblTitle" prefHeight="19.0" prefWidth="248.0" styleClass="kpi-label" text="Carga Promedio del Equipo" />
+                        <Label fx:id="titleCarga" prefHeight="19.0" prefWidth="248.0" styleClass="kpi-label" text="Carga Promedio del Equipo" />
                      </children>
                      <padding>
                         <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
@@ -136,17 +132,17 @@
                   </VBox>
                </children>
                <VBox.margin>
-                  <Insets top="5.0" />
+                  <Insets top="16.0" />
                </VBox.margin>
             </HBox>
-            <HBox fx:id="seccionGraficaNotificaciones" prefHeight="380.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+            <HBox fx:id="seccionGraficaNotificaciones" prefHeight="290.0" spacing="16.0">
                <children>
-                  <VBox prefHeight="300.0" prefWidth="694.0" style="-fx-background-color: -app-bg-card; -fx-background-radius: 8;">
+                  <VBox style="-fx-background-color: -app-bg-card; -fx-background-radius: 8;" HBox.hgrow="ALWAYS">
                      <children>
-                        <Label prefHeight="25.0" prefWidth="694.0" styleClass="section-title" text="Rendimiento del Equipo (Últimos 7 Días)" />
-                        <BarChart fx:id="barChartRendimiento" prefHeight="356.0">
+                        <Label styleClass="section-title" text="Rendimiento del Equipo (Últimos 7 Días)" />
+                        <BarChart fx:id="barChartRendimiento" VBox.vgrow="ALWAYS">
                           <xAxis>
-                            <CategoryAxis prefHeight="24.0" prefWidth="637.0" side="BOTTOM" />
+                            <CategoryAxis side="BOTTOM" />
                           </xAxis>
                           <yAxis>
                             <NumberAxis side="LEFT" />
@@ -158,11 +154,10 @@
                         </BarChart>
                      </children>
                   </VBox>
-                  <Separator prefHeight="25.0" prefWidth="36.0" visible="false" />
-                  <VBox layoutX="10.0" layoutY="10.0" prefHeight="200.0" style="-fx-background-color: -app-bg-card; -fx-background-radius: 8;">
+                  <VBox prefWidth="380.0" style="-fx-background-color: -app-bg-card; -fx-background-radius: 8;">
                      <children>
                         <Label styleClass="section-title" text="Notificaciones" />
-                        <ListView prefHeight="371.0" prefWidth="392.0">
+                        <ListView prefHeight="330.0" prefWidth="360.0" VBox.vgrow="ALWAYS">
                            <styleClass>
                               <String fx:value="striped" />
                               <String fx:value="dense" />
@@ -175,31 +170,30 @@
                   <Insets top="16.0" />
                </VBox.margin>
             </HBox>
-            <HBox fx:id="seccionTablasInformativas" prefHeight="240.0" prefWidth="200.0">
+            <HBox fx:id="seccionTablasInformativas" prefHeight="305.0" spacing="16.0">
                <VBox.margin>
                   <Insets top="17.0" />
                </VBox.margin>
                <children>
-                  <VBox prefHeight="200.0" prefWidth="550.0">
+                  <VBox prefHeight="300.0" HBox.hgrow="ALWAYS">
                      <children>
                         <Label styleClass="section-title" text="Tareas Pendientes" />
-                        <TableView fx:id="tblTareasPendientes" prefHeight="200.0" prefWidth="530.0">
+                        <TableView fx:id="tblTareasPendientes" prefHeight="300.0" VBox.vgrow="ALWAYS">
                           <columns>
-                            <TableColumn prefWidth="440.0" text="Nombre Tarea y Sprint" />
-                            <TableColumn prefWidth="106.0" text="Acción" />
+                            <TableColumn prefWidth="350.0" text="Nombre Tarea y Sprint" />
+                            <TableColumn prefWidth="196.0" text="Acción" />
                           </columns>
                         </TableView>
                      </children>
                   </VBox>
-                  <Separator prefHeight="25.0" prefWidth="13.0" visible="false" />
-                  <VBox fx:id="tablaEquipoActivo" layoutX="10.0" layoutY="10.0" prefHeight="200.0" prefWidth="550.0">
+                  <VBox fx:id="tablaEquipoActivo" prefHeight="300.0" HBox.hgrow="ALWAYS">
                      <children>
                         <Label styleClass="section-title" text="Equipo Activo" />
-                        <TableView fx:id="tblEquipoActivo" prefHeight="200.0" prefWidth="530.0">
+                        <TableView fx:id="tblEquipoActivo" prefHeight="300.0" VBox.vgrow="ALWAYS">
                           <columns>
                             <TableColumn prefWidth="95.0" text="\% Carga" />
                             <TableColumn prefWidth="338.0" text="Profesional / Tareas" />
-                              <TableColumn prefWidth="113.0" text="Imagen" />
+                            <TableColumn prefWidth="113.0" text="Imagen" />
                           </columns>
                         </TableView>
                      </children>
@@ -208,7 +202,7 @@
             </HBox>
          </children>
          <padding>
-            <Insets left="40.0" right="40.0" />
+            <Insets bottom="16.0" left="40.0" right="40.0" top="0.0" />
          </padding>
       </VBox>
    </children>

@@ -15,7 +15,10 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Servicio para gestión de tareas
+ * Servicio de gestión de tareas.
+ *
+ * @author Francisco José Rodríguez Ruiz
+ * @since 1.0
  */
 @Service
 @Transactional
@@ -29,7 +32,9 @@ public class TareaService {
     private final CompetenciaRepository competenciaRepository;
 
     /**
-     * Crea una nueva tarea
+     * Crea una nueva tarea.
+     *
+     * @throws RuntimeException si la prioridad no está entre 0 y 1
      */
     public Tarea crear(Long proyectoId, Long sprintId, String titulo, String descripcion,
                        Integer estimacionHoras, BigDecimal prioridad, LocalDateTime fechaCreacion) {
@@ -92,6 +97,9 @@ public class TareaService {
         }
         if (estado != null) {
             tarea.setEstado(estado);
+            if ("completada".equals(estado) && tarea.getFechaTerminacion() == null) {
+                tarea.setFechaTerminacion(LocalDateTime.now());
+            }
         }
         if (fechaCreacion != null) {
             tarea.setFechaCreacion(fechaCreacion);
@@ -101,9 +109,10 @@ public class TareaService {
     }
 
     /**
-     * Asigna competencias requeridas a una tarea con sus pesos
+     * Asigna competencias requeridas a una tarea.
      *
-     * @param competenciasPesos Mapa competenciaId -> peso
+     * @param competenciasPesos mapa competenciaId -> peso
+     * @throws RuntimeException si la suma de pesos no es 1.0
      */
     public void asignarCompetencias(Long tareaId, Map<Long, BigDecimal> competenciasPesos) {
 
@@ -157,6 +166,9 @@ public class TareaService {
         }
 
         tarea.setEstado(nuevoEstado);
+        if ("completada".equals(nuevoEstado)) {
+            tarea.setFechaTerminacion(LocalDateTime.now());
+        }
         tareaRepository.save(tarea);
     }
 
@@ -203,11 +215,11 @@ public class TareaService {
     }
 
     /**
-     * Obtiene tareas sin asignar
+     * Obtiene tareas sin asignar con proyecto y sprint ya cargados.
      */
     @Transactional(readOnly = true)
     public List<Tarea> obtenerSinAsignar() {
-        return tareaRepository.findTareasSinAsignar();
+        return tareaRepository.findTareasSinAsignarConRelaciones();
     }
 
     /**

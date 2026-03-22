@@ -49,7 +49,7 @@
   HBox spacing 16px → dos columnas de ~370px cada una
   Card padding 16+16 = 32px → tabla interior ~338px
 
-  COLUMNAS SPRINTS   (338px): objetivo(105) estado(53) inicio(58) fin(58) acciones(64)
+  COLUMNAS SPRINTS   (338px): objetivo(134) estado(78) inicio(95) fin(95) acciones(65)
   COLUMNAS TAREAS    (338px): titulo(76) estado(48) prioridad(54) tiempo(hidden) acciones(160)
   COLUMNAS COMPET.   (338px): nombre(140) peso(60) acciones(138)
 -->
@@ -244,16 +244,16 @@
                                             </children>
                                         </HBox>
                                         <!--
-                                            Tabla Sprints — 370px card, 32px padding → 338px tabla
-                                            objetivo(109) estado(53) inicio(58) fin(58) acciones(60) = 338
+                                            Tabla Sprints — iconos ✏/✕ en acciones (65px)
+                                            libera espacio → objetivo(134) estado(78) inicio(95) fin(95) acciones(65)
                                         -->
                                         <TableView fx:id="sprintsTable" prefHeight="180.0" VBox.vgrow="ALWAYS">
                                             <columns>
-                                                <TableColumn fx:id="objetivoColumn" prefWidth="109.0" text="OBJETIVO" />
-                                                <TableColumn fx:id="estadoColumn" prefWidth="53.0" text="ESTADO" />
-                                                <TableColumn fx:id="inicioColumn" prefWidth="58.0" text="INICIO" />
-                                                <TableColumn fx:id="finColumn" prefWidth="58.0" text="FIN" />
-                                                <TableColumn fx:id="accionesColumn" prefWidth="60.0" text="ACCIONES" />
+                                                <TableColumn fx:id="objetivoColumn" prefWidth="134.0" text="OBJETIVO" />
+                                                <TableColumn fx:id="estadoColumn" prefWidth="78.0" text="ESTADO" />
+                                                <TableColumn fx:id="inicioColumn" prefWidth="95.0" text="INICIO" />
+                                                <TableColumn fx:id="finColumn" prefWidth="95.0" text="FIN" />
+                                                <TableColumn fx:id="accionesColumn" prefWidth="65.0" text="" />
                                             </columns>
                                             <placeholder>
                                                 <Label style="-fx-text-fill: -app-text-secondary; -fx-font-size: 13px;"
@@ -297,17 +297,17 @@
                                                 </children>
                                             </HBox>
                                             <!--
-                                                Tabla Tareas — 370px card, 32px padding → 338px tabla
-                                                titulo(90) estado(52) prioridad(60) acciones(136) = 338
+                                                Tabla Tareas — titulo(150) estado(68) prioridad(58) acciones(62) = 338
+                                                Botones de acción también con iconos ✏/✕
                                                 tiempoTareasColumn → oculta (visible=false) para no romper @FXML
                                             -->
                                             <TableView fx:id="tareasTable" prefHeight="180.0" VBox.vgrow="ALWAYS">
                                                 <columns>
-                                                    <TableColumn fx:id="tituloTareasColumn" prefWidth="90.0" text="TÍTULO" />
-                                                    <TableColumn fx:id="estadoTareasColumn" prefWidth="52.0" text="ESTADO" />
-                                                    <TableColumn fx:id="prioridadTareasColumn" prefWidth="60.0" text="PRIOR." />
+                                                    <TableColumn fx:id="tituloTareasColumn" prefWidth="150.0" text="TÍTULO" />
+                                                    <TableColumn fx:id="estadoTareasColumn" prefWidth="68.0" text="ESTADO" />
+                                                    <TableColumn fx:id="prioridadTareasColumn" prefWidth="58.0" text="PRIOR." />
                                                     <TableColumn fx:id="tiempoTareasColumn" prefWidth="0.0" visible="false" text="TIEMPO" />
-                                                    <TableColumn fx:id="accionesTareasColumn" prefWidth="136.0" text="ACCIONES" />
+                                                    <TableColumn fx:id="accionesTareasColumn" prefWidth="62.0" text="" />
                                                 </columns>
                                                 <placeholder>
                                                     <Label style="-fx-text-fill: -app-text-secondary; -fx-font-size: 13px;"

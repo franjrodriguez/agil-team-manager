@@ -6,6 +6,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Servicio de configuración del sistema.
+ * Gestiona parámetros del motor de asignación.
+ *
+ * @author Francisco José Rodríguez Ruiz
+ * @since 1.0
+ */
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -53,6 +60,9 @@ public class ConfiguracionService {
         return Integer.parseInt(obtener(MOTOR_CANDIDATOS_MAX, "5"));
     }
 
+    /**
+     * Guarda los parámetros del motor de asignación.
+     */
     public void guardarMotorParams(int cargaMaxima, int competenciaMinima, int candidatosMax) {
         guardar(MOTOR_CARGA_MAXIMA,
                 String.valueOf(cargaMaxima),

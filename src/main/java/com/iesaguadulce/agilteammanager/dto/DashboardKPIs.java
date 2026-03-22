@@ -1,7 +1,11 @@
 package com.iesaguadulce.agilteammanager.dto;
 
+
 /**
- * DTO para agrupar los KPIs del Dashboard principal
+ * DTO con los KPIs principales del Dashboard.
+ *
+ * @author Francisco José Rodríguez Ruiz
+ * @since 1.0
  */
 public class DashboardKPIs {
     private long proyectosActivos;
@@ -9,7 +13,10 @@ public class DashboardKPIs {
     private long personasActivas;
     private double cargaPromedioEquipo;
 
-    // Constructor
+
+    /**
+     * Constructor con todos los KPIs.
+     */
     public DashboardKPIs(long proyectosActivos, long tareasPendientes,
                          long personasActivas, double cargaPromedioEquipo) {
         this.proyectosActivos = proyectosActivos;

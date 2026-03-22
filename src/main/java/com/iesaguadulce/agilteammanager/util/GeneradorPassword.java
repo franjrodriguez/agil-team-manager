@@ -2,7 +2,18 @@ package com.iesaguadulce.agilteammanager.util;
 
 import org.mindrot.jbcrypt.BCrypt;
 
+/**
+ * Utilidad para generar hashes de contraseñas con BCrypt.
+ *
+ * @author Francisco José Rodríguez Ruiz
+ * @since 1.0
+ */
 public class GeneradorPassword {
+
+    /**
+     * Genera hashes BCrypt para usuarios predefinidos.
+     * Imprime sentencias SQL UPDATE listas para ejecutar.
+     */
     public static void main(String[] args) {
         String[] usuarios = {"admin", "dbadmin", "backend1", "backend2"};
         String passwordParaTodos = "1234";

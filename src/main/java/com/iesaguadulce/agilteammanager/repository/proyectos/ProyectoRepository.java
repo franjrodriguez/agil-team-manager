@@ -10,6 +10,12 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repositorio para gestión de proyectos.
+ *
+ * @author Francisco José Rodríguez Ruiz
+ * @version 1.0
+ */
 @Repository
 public interface ProyectoRepository extends JpaRepository<Proyecto, Long> {
 
@@ -25,12 +31,13 @@ public interface ProyectoRepository extends JpaRepository<Proyecto, Long> {
     List<Proyecto> findProyectosActivos();
 
     /**
-     * Busca proyectos por nombre (búsqueda parcial)
+     * Busca proyectos por nombre (búsqueda parcial ignorando mayusculas)
      */
     List<Proyecto> findByNombreContainingIgnoreCase(String nombre);
 
     /**
-     * Busca proyecto con sus sprints cargados
+     * Busca proyecto con sprints cargados (JOIN FETCH).
+     * @param id ID del proyecto
      */
     @Query("SELECT p FROM Proyecto p " +
             "LEFT JOIN FETCH p.sprints " +
@@ -38,7 +45,8 @@ public interface ProyectoRepository extends JpaRepository<Proyecto, Long> {
     Optional<Proyecto> findByIdWithSprints(@Param("id") Long id);
 
     /**
-     * Busca proyecto con sus tareas cargadas
+     * Busca proyecto con tareas cargadas (JOIN FETCH).
+     * @param id ID del proyecto
      */
     @Query("SELECT p FROM Proyecto p " +
             "LEFT JOIN FETCH p.tareas " +
@@ -46,7 +54,9 @@ public interface ProyectoRepository extends JpaRepository<Proyecto, Long> {
     Optional<Proyecto> findByIdWithTareas(@Param("id") Long id);
 
     /**
-     * Obtiene proyectos que finalizan en un rango de fechas
+     * Obtiene proyectos con fecha de fin en rango.
+     * @param desde fecha inicio del rango
+     * @param hasta fecha fin del rango
      */
     @Query("SELECT p FROM Proyecto p " +
             "WHERE p.fechaFin BETWEEN :desde AND :hasta")

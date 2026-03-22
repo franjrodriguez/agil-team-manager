@@ -13,7 +13,10 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Servicio para gestión de sprints
+ * Servicio de gestión de sprints.
+ *
+ * @author Francisco José Rodríguez Ruiz
+ * @since 1.0
  */
 @Service
 @Transactional
@@ -24,7 +27,9 @@ public class SprintService {
     private final ProyectoRepository proyectoRepository;
 
     /**
-     * Crea un nuevo sprint
+     * Crea un nuevo sprint en un proyecto.
+     *
+     * @throws RuntimeException si ya existe un sprint activo
      */
     public Sprint crear(Long proyectoId, String objetivo,
                         LocalDate fechaInicio, LocalDate fechaFin) {
@@ -82,7 +87,9 @@ public class SprintService {
     }
 
     /**
-     * Inicia un sprint (cambia estado a activo)
+     * Inicia un sprint (estado a activo).
+     *
+     * @throws RuntimeException si ya hay un sprint activo en el proyecto
      */
     public void iniciar(Long id) {
         Sprint sprint = sprintRepository.findById(id)

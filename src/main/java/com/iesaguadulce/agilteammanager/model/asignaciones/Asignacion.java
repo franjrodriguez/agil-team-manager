@@ -11,6 +11,12 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+/**
+ * Entidad que representa la asignación de una tarea a una persona.
+ *
+ * @author Francisco José Rodríguez Ruiz
+ * @since 1.0
+ */
 @Entity
 @Table(name = "asignaciones")
 @Data

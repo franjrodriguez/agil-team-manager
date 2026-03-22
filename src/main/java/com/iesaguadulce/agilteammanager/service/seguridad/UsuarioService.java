@@ -16,7 +16,10 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Servicio para gestión de usuarios del sistema (Personas)
+ * Servicio de gestión de usuarios (Personas).
+ *
+ * @author Francisco José Rodríguez Ruiz
+ * @since 1.0
  */
 @Service
 @Transactional
@@ -91,6 +94,42 @@ public class UsuarioService {
 
         persona.setNombre(nombre);
         persona.setEmail(email);
+
+        return personaRepository.save(persona);
+    }
+
+    /**
+     * Actualiza las credenciales de acceso de un usuario existente.
+     * Solo modifica usuario, password (si se proporciona), rol y estado.
+     */
+    public Persona actualizarCredenciales(Long id, String usuario, String password,
+                                          String rolNombre, String estado) {
+
+        Persona persona = personaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        if (!usuario.equals(persona.getUsuario()) && personaRepository.existsByUsuario(usuario)) {
+            throw new RuntimeException("El nombre de usuario '" + usuario + "' ya está en uso");
+        }
+
+        persona.setUsuario(usuario);
+
+        if (password != null && !password.isBlank()) {
+            persona.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
+        }
+
+        if (rolNombre != null && !rolNombre.isBlank()) {
+            RolSistema rol = rolSistemaRepository.findByNombre(rolNombre)
+                    .orElseThrow(() -> new RuntimeException("Rol '" + rolNombre + "' no encontrado"));
+            persona.setRol(rol);
+        }
+
+        if (estado != null && !estado.isBlank()) {
+            if (!List.of("activo", "inactivo", "baja").contains(estado)) {
+                throw new RuntimeException("Estado inválido: " + estado);
+            }
+            persona.setEstado(estado);
+        }
 
         return personaRepository.save(persona);
     }

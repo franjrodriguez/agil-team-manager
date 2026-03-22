@@ -16,7 +16,10 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Servicio para gestión de disponibilidad y carga de trabajo
+ * Servicio de gestión de disponibilidad y carga de trabajo del equipo.
+ *
+ * @author Francisco José Rodríguez Ruiz
+ * @since 1.0
  */
 @Service
 @Transactional

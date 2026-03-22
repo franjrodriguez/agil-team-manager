@@ -15,7 +15,14 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 /**
- * Controlador de la pantalla de Login
+ * Controller de la pantalla de autenticación de usuarios.
+ *
+ * <p>Gestiona el proceso de login, validación de credenciales y transición
+ * a la vista principal {@link MainController} según el rol del usuario.</p>
+ *
+ * @author FRANDEV
+ * @see AutenticacionService
+ * @see MainController
  */
 public class LoginController {
 
@@ -26,8 +33,15 @@ public class LoginController {
 
     private AutenticacionService autenticacionService;
 
+    /** Si no es null, estamos en modo re-login (sesión cerrada, MainView ya existe). */
+    private MainController mainController;
+
+    public void setMainController(MainController mc) {
+        this.mainController = mc;
+    }
+
     /**
-     * Se ejecuta automáticamente al cargar el FXML
+     * Inicializa el servicio de autenticación desde el contexto Spring. Se ejecuta automáticamente
      */
     @FXML
     public void initialize() {
@@ -35,9 +49,9 @@ public class LoginController {
         autenticacionService = SpringContext.getBean(AutenticacionService.class);
         System.out.println("(FRANDEV)---> LoginController inicializado correctamente");
     }
-
     /**
-     * Evento del botón "Iniciar Sesión"
+     * Procesa el intento de login tras pulsar el botón.
+     * Valida credenciales y carga el dashboard correspondiente.
      */
     @FXML
     private void onLoginClick() {
@@ -54,7 +68,7 @@ public class LoginController {
         }
 
         try {
-            // Intentar autenticar
+            // Intentar autenticar... me dan los sudores de la muerte colega!!!
             Persona persona = autenticacionService.autenticar(usuario, password);
 
             if (persona == null) {
@@ -75,42 +89,40 @@ public class LoginController {
     }
 
     /**
-     * Carga la vista principal (MainView) e inyecta los datos de sesión.
+     * Carga la vista principal {@code MainView.fxml} e inicia la sesión.
      *
-     * MainView es la estructura completa: cabecera + menú lateral + footer.
-     * El dashboard (Admin o Usuario) se carga DENTRO del contentArea de MainView,
-     * no como escena raíz — esa era la lógica anterior incorrecta.
+     * <p>Utiliza {@code setControllerFactory} para garantizar que {@link MainController}
+     * sea gestionado por Spring, evitando instancias duplicadas con @FXML no inyectados.</p>
+     *
+     * @param persona usuario autenticado
      */
     private void cargarDashboard(Persona persona) {
-        System.out.println("(FRANDEV)---> ESTOY DENTRO, PERO A VER CON QUE ME ENCUENTRO...");
         try {
             boolean esAdmin = autenticacionService.esAdministrador(persona);
-            String rolNombre = persona.getRol().getNombre();
 
-            // Cargamos siempre la estructura principal (cabecera + menú + footer)
-            // IMPORTANTE: setControllerFactory asegura que MainController sea el bean
-            // de Spring, no una instancia nueva por reflexión. Sin esto, los controladores
-            // hijos (DashboardAdminController) obtienen desde SpringContext un MainController
-            // diferente al que tiene los @FXML inyectados → contentArea sería null.
+            if (mainController != null) {
+                // ── Re-login: MainView ya existe, solo reiniciar sesión ──
+                mainController.iniciarSesion(persona, true, esAdmin);
+                Stage loginStage = (Stage) btnLogin.getScene().getWindow();
+                loginStage.close();
+                return;
+            }
+
+            // ── Primer login: cargar MainView desde cero ──
+            String rolNombre = persona.getRol().getNombre();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/dashboard/MainView.fxml"));
             loader.setControllerFactory(SpringContext::getBean);
             Parent root = loader.load();
-            System.out.println("(FRANDEV)---> PARECÍA QUE VEÍA ALGO...");
 
-            // Pasamos los datos de sesión al controlador principal.
-            // Él decide qué dashboard cargar en el contentArea central.
-            System.out.println("(FRANDEV)---> PREPARADOS PARA EL SEGUNDO SALTO A MAINCONTROLLER, AUNQUE ESTO SIGUE...");
-            MainController mainController = loader.getController();
-            mainController.iniciarSesion(persona, true, esAdmin);
+            MainController mc = loader.getController();
+            mc.iniciarSesion(persona, true, esAdmin);
 
-            // Cambiar escena
             Stage stage = (Stage) btnLogin.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("AgilTeam Manager - " + persona.getNombre());
             stage.setMaximized(true);
             stage.show();
 
-            System.out.println("(FRANDEV)---> UN GRUPO DE INVESTIGACION SE LANZÓ HACIA EL HYPER-MAINCONTROLLER...");
             System.out.println("✅ MainView cargada para: " + persona.getNombre() + " [" + rolNombre + "]");
 
         } catch (Exception e) {

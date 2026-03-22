@@ -29,31 +29,31 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import org.springframework.stereotype.Component;
 
+import javafx.stage.FileChooser;
+import org.mindrot.jbcrypt.BCrypt;
+import java.io.File;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
- * ═══════════════════════════════════════════════════════════════
- * PersonasController — Controlador UI de Profesionales
- * ───────────────────────────────────────────────────────────────
- * UBICACIÓN: src/main/java/.../ui/personas/PersonasController.java
+ * Controller principal de la gestión de profesionales/personas.
  *
- * FLUJO:
- *   FXML (evento) → este Controller → PersonaService → PersonaRepository → BD
+ * <p>Gestiona el ciclo completo de profesionales: datos personales, asignaciones a tareas,
+ * competencias técnicas y configuración de roles. Implementa patrón de lista maestra-detalle
+ * con filtros en tiempo real.</p>
  *
- * NOTA: Implementa Initializable para obtener PersonaService desde
- * SpringContext manualmente. Esto es necesario porque JavaFX crea
- * el controlador mediante new (reflexión), sin pasar por Spring,
- * por lo que @Autowired no funciona en este contexto.
- * ═══════════════════════════════════════════════════════════════
+ * @author FRANDEV
+ * @see PersonaService
+ * @see PersonaCompetenciaService
  */
 @Component
 public class PersonasController implements Initializable {
 
     // ─────────────────────────────────────────────────────────
-    // SERVICIOS (se obtienen manualmente desde SpringContext)
+    // SERVICIOS
     // ─────────────────────────────────────────────────────────
 
     private PersonaService personaService;
@@ -74,9 +74,7 @@ public class PersonasController implements Initializable {
 
     @FXML private VBox sidebarPanel;
     @FXML private TextField searchField;
-    @FXML private ComboBox<String> deptFilter;
     @FXML private ComboBox<String> statusFilter;
-    @FXML private ComboBox<String> roleFilter;
     @FXML private Button btnAddProfessional;
     @FXML private ListView<Persona> professionalsListView;
 
@@ -85,6 +83,7 @@ public class PersonasController implements Initializable {
     // ─────────────────────────────────────────────────────────
 
     @FXML private ImageView profileAvatar;
+    @FXML private Button btnCambiarFoto;
     @FXML private Label profileName;
     @FXML private Label profileRole;
     @FXML private ComboBox<String> statusComboBox;
@@ -131,10 +130,6 @@ public class PersonasController implements Initializable {
     @FXML private Button btnDelete;
     @FXML private Button btnSave;
 
-    // ─────────────────────────────────────────────────────────
-    // ESTADO INTERNO
-    // ─────────────────────────────────────────────────────────
-
     /** Lista base observable que alimenta el ListView */
     private final ObservableList<Persona> listaPersonas = FXCollections.observableArrayList();
 
@@ -157,10 +152,6 @@ public class PersonasController implements Initializable {
     /** Formatos de fecha y hora para la tabla de tareas */
     private static final DateTimeFormatter FMT_FECHA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final DateTimeFormatter FMT_HORA  = DateTimeFormatter.ofPattern("HH:mm");
-
-    // =========================================================================
-    //  INICIALIZACIÓN
-    // =========================================================================
 
     /**
      * Método de inicialización llamado por JavaFX tras cargar el FXML.
@@ -191,10 +182,6 @@ public class PersonasController implements Initializable {
         System.out.println("(FRANDEV) --> PersonasController inicializado correctamente");
     }
 
-    // =========================================================================
-    //  CONFIGURACIÓN DE COMPONENTES
-    // =========================================================================
-
     /**
      * Pre-carga las 3 imágenes de prioridad en un mapa reutilizable.
      * Así no hacemos I/O en cada fila de la tabla.
@@ -214,12 +201,6 @@ public class PersonasController implements Initializable {
         statusFilter.setItems(FXCollections.observableArrayList("Todos", "activo", "inactivo", "baja"));
         statusFilter.setValue("Todos");
         statusFilter.setOnAction(e -> aplicarFiltros());
-
-        // Sidebar: filtro de departamento (opcional en el FXML actual)
-        if (deptFilter != null) deptFilter.setOnAction(e -> aplicarFiltros());
-
-        // Sidebar: filtro de rol profesional (opcional en el FXML actual)
-        if (roleFilter != null) roleFilter.setOnAction(e -> aplicarFiltros());
 
         // Formulario: ComboBox de estado de la persona en la cabecera del detalle
         statusComboBox.setItems(FXCollections.observableArrayList("activo", "inactivo", "baja"));
@@ -409,6 +390,12 @@ public class PersonasController implements Initializable {
     private void onAñadirCompetencia() {
         if (personaSeleccionada == null) return;
 
+        if (personaSeleccionada.getId() == null) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Profesional no guardado",
+                    "Guarda el profesional primero antes de asignar competencias técnicas.");
+            return;
+        }
+
         // Competencias ya asignadas (para excluirlas del desplegable)
         List<Long> yaAsignadas = competenciesTable.getItems().stream()
                 .map(pc -> pc.getCompetencia().getId())
@@ -466,6 +453,33 @@ public class PersonasController implements Initializable {
                 }
             }
         });
+    }
+
+    /**
+     * Abre un FileChooser para seleccionar la foto del profesional.
+     * Convierte la ruta a URL file:// y la asigna a personaSeleccionada.
+     * El cambio se persiste al pulsar "Guardar Cambios".
+     */
+    @FXML
+    private void onCambiarFoto() {
+        if (personaSeleccionada == null) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Sin selección",
+                    "Pulsa 'Añadir Profesional' o selecciona uno de la lista antes de cambiar la foto.");
+            return;
+        }
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Seleccionar foto del profesional");
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("Imágenes", "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp")
+        );
+
+        File archivo = fileChooser.showOpenDialog(profileAvatar.getScene().getWindow());
+        if (archivo != null) {
+            String url = archivo.toURI().toString(); // "file:/C:/ruta/imagen.png"
+            profileAvatar.setImage(new Image(url));
+            personaSeleccionada.setFotoPath(url);
+        }
     }
 
     /**
@@ -556,8 +570,6 @@ public class PersonasController implements Initializable {
                 ? searchField.getText().toLowerCase().trim()
                 : "";
         String estadoSel = statusFilter.getValue();
-        String deptSel   = deptFilter  != null ? deptFilter.getValue()  : null;
-        String rolSel    = roleFilter  != null ? roleFilter.getValue()  : null;
 
         listaFiltrada.setPredicate(persona -> {
             boolean matchTexto = textoSearch.isEmpty()
@@ -568,15 +580,7 @@ public class PersonasController implements Initializable {
             boolean matchEstado = estadoSel == null || "Todos".equals(estadoSel)
                     || estadoSel.equalsIgnoreCase(persona.getEstado());
 
-            boolean matchDept = deptSel == null || "Todos".equals(deptSel)
-                    || (persona.getPuesto() != null
-                    && persona.getPuesto().getNombre().equalsIgnoreCase(deptSel));
-
-            boolean matchRol = rolSel == null || "Todos".equals(rolSel)
-                    || (persona.getRol() != null
-                    && persona.getRol().getNombre().equalsIgnoreCase(rolSel));
-
-            return matchTexto && matchEstado && matchDept && matchRol;
+            return matchTexto && matchEstado;
         });
     }
 
@@ -676,31 +680,40 @@ public class PersonasController implements Initializable {
 
     /**
      * Prepara el formulario para crear un nuevo profesional (limpia todos los campos).
+     * Se crea un Persona vacío (id == null) para que foto y guardado funcionen.
      */
     private void onNuevoProfesional() {
-        personaSeleccionada = null;
+        professionalsListView.getSelectionModel().clearSelection();
+        personaSeleccionada = new Persona();
         cambiosEstadoTareas.clear();
         limpiarFormulario();
     }
 
     /**
      * Recoge los datos del formulario y los persiste.
-     * Si hay cambios de estado en tareas, los aplica primero.
-     *
-     * TODO: Llamar a personaService.guardar() cuando esté implementado.
-     * TODO: Llamar a TareaService para persistir cambios de estado de tareas.
+     * Si personaSeleccionada no tiene id, crea un nuevo profesional.
+     * Si ya tiene id, actualiza el existente.
      */
     private void onGuardarCambios() {
-        if (personaSeleccionada == null) {
-            // Pendiente: crear nueva persona desde el formulario
-            System.out.println("(FRANDEV) --> Crear nueva persona - pendiente de implementar");
+        if (personaSeleccionada == null) return;
+
+        if (personaSeleccionada.getId() == null) {
+            crearNuevaPersona();
             return;
         }
 
-        // 1) Actualizar modelo con los valores del formulario
+        // 1) Validar email antes de persistir
+        String emailActualizado = emailField.getText().trim();
+        if (!esEmailValido(emailActualizado)) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Email inválido",
+                    "El formato del email no es correcto (ejemplo: usuario@dominio.com).");
+            return;
+        }
+
+        // 2) Actualizar modelo con los valores del formulario
         personaSeleccionada.setNombre(nombreField.getText());
         personaSeleccionada.setPuesto(puestoComboBox.getValue());
-        personaSeleccionada.setEmail(emailField.getText());
+        personaSeleccionada.setEmail(emailActualizado.isEmpty() ? null : emailActualizado);
         personaSeleccionada.setUsuario(usernameField.getText());
         personaSeleccionada.setFechaAlta(joinDatePicker.getValue());
         personaSeleccionada.setEstado(statusComboBox.getValue());
@@ -723,22 +736,110 @@ public class PersonasController implements Initializable {
                     .ifPresent(personaSeleccionada::setRol);
         }
 
+        // Capturamos id y nombre ANTES de recargar la lista,
+        // porque cargarPersonas() → selectFirst() → listener → personaSeleccionada cambia.
+        final Long idGuardado     = personaSeleccionada.getId();
+        final String nombreGuardado = personaSeleccionada.getNombre();
+
         try {
             personaService.guardar(personaSeleccionada);
 
-            // Actualizar cabecera y lista
-            profileName.setText(personaSeleccionada.getNombre());
-            profileRole.setText(personaSeleccionada.getPuesto() != null
-                    ? personaSeleccionada.getPuesto().getNombre() : "Sin puesto");
+            // Recarga la lista (esto cambia personaSeleccionada como efecto secundario)
             cargarPersonas();
+
+            // Re-seleccionamos la persona que acabamos de guardar
+            listaFiltrada.stream()
+                    .filter(p -> p.getId().equals(idGuardado))
+                    .findFirst()
+                    .ifPresent(p -> {
+                        professionalsListView.getSelectionModel().select(p);
+                        professionalsListView.scrollTo(p);
+                    });
 
             cambiosEstadoTareas.clear();
             mostrarAlerta(Alert.AlertType.INFORMATION, "Guardado",
-                    "Los cambios de '" + personaSeleccionada.getNombre() + "' se han guardado correctamente.");
+                    "Los cambios de '" + nombreGuardado + "' se han guardado correctamente.");
 
         } catch (Exception e) {
             mostrarAlerta(Alert.AlertType.ERROR, "Error al guardar",
                     "No se pudieron guardar los cambios: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Valida el formulario y persiste el nuevo profesional.
+     * Pide una contraseña inicial mediante un diálogo sencillo.
+     */
+    private void crearNuevaPersona() {
+        String nombre   = nombreField.getText().trim();
+        String usuario  = usernameField.getText().trim();
+        Puesto puesto   = puestoComboBox.getValue();
+        String rolNombre = systemRoleComboBox.getValue();
+
+        if (nombre.isEmpty() || usuario.isEmpty() || puesto == null || rolNombre == null) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Campos incompletos",
+                    "Nombre, usuario, puesto y rol de sistema son obligatorios.");
+            return;
+        }
+
+        String emailNuevo = emailField.getText().trim();
+        if (!esEmailValido(emailNuevo)) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Email inválido",
+                    "El formato del email no es correcto (ejemplo: usuario@dominio.com).");
+            return;
+        }
+
+        // Pedir contraseña inicial
+        TextInputDialog passDialog = new TextInputDialog();
+        passDialog.setTitle("Contraseña inicial");
+        passDialog.setHeaderText("Establece la contraseña inicial del profesional");
+        passDialog.setContentText("Contraseña:");
+        Optional<String> passResult = passDialog.showAndWait();
+        if (passResult.isEmpty() || passResult.get().isBlank()) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Sin contraseña",
+                    "Debes establecer una contraseña inicial.");
+            return;
+        }
+
+        // Rellenar el objeto Persona con los datos del formulario
+        personaSeleccionada.setNombre(nombre);
+        personaSeleccionada.setUsuario(usuario);
+        String emailTexto = emailField.getText().trim();
+        personaSeleccionada.setEmail(emailTexto.isEmpty() ? null : emailTexto);
+        personaSeleccionada.setPuesto(puesto);
+        personaSeleccionada.setEstado(statusComboBox.getValue() != null ? statusComboBox.getValue() : "activo");
+        personaSeleccionada.setFechaAlta(joinDatePicker.getValue() != null ? joinDatePicker.getValue() : LocalDate.now());
+
+        String sexoTexto = sexComboBox.getValue();
+        personaSeleccionada.setSexo(switch (sexoTexto != null ? sexoTexto : "") {
+            case "Hombre" -> 'M';
+            case "Mujer"  -> 'F';
+            default       -> 'O';
+        });
+
+        rolSistemaService.obtenerTodos().stream()
+                .filter(r -> r.getNombre().equals(rolNombre))
+                .findFirst()
+                .ifPresent(personaSeleccionada::setRol);
+
+        personaSeleccionada.setPassword(BCrypt.hashpw(passResult.get(), BCrypt.gensalt()));
+
+        try {
+            Persona guardada = personaService.guardar(personaSeleccionada);
+            final Long idGuardado = guardada.getId();
+            cargarPersonas();
+            listaFiltrada.stream()
+                    .filter(p -> p.getId().equals(idGuardado))
+                    .findFirst()
+                    .ifPresent(p -> {
+                        professionalsListView.getSelectionModel().select(p);
+                        professionalsListView.scrollTo(p);
+                    });
+            mostrarAlerta(Alert.AlertType.INFORMATION, "Guardado",
+                    "Profesional '" + nombre + "' creado correctamente.");
+        } catch (Exception e) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Error al crear",
+                    "No se pudo crear el profesional: " + e.getMessage());
         }
     }
 
@@ -768,11 +869,11 @@ public class PersonasController implements Initializable {
      * Deja todos los campos del formulario en blanco.
      */
     private void limpiarFormulario() {
-        profileName.setText("");
-        profileRole.setText("");
-        profileAvatar.setImage(null);
-        statusComboBox.setValue(null);
-        statusComboBox.setStyle("");
+        profileName.setText("Nuevo profesional");
+        profileRole.setText("Sin puesto asignado");
+        cargarAvatar(null);
+        statusComboBox.setValue("activo");
+        aplicarEstiloEstado("activo");
         nombreField.clear();
         puestoComboBox.setValue(null);
         emailField.clear();
@@ -787,6 +888,14 @@ public class PersonasController implements Initializable {
     // =========================================================================
     //  UTILIDADES
     // =========================================================================
+
+    /**
+     * Devuelve true si el email tiene formato válido o está vacío (campo opcional).
+     */
+    private boolean esEmailValido(String email) {
+        if (email == null || email.isBlank()) return true;
+        return email.matches("^[\\w._%+\\-]+@[\\w.\\-]+\\.[a-zA-Z]{2,}$");
+    }
 
     /**
      * Cambia el color de fondo del ComboBox de estado según el valor.

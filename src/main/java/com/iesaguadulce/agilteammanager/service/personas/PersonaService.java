@@ -11,7 +11,10 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Servicio para gestión de personas del equipo
+ * Servicio de gestión de personas del equipo.
+ *
+ * @author Francisco José Rodríguez Ruiz
+ * @since 1.0
  */
 @Service
 @Transactional

@@ -10,11 +10,18 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Repositorio para sugerencias del motor de asignación inteligente.
+ *
+ * @author Francisco José Rodríguez Ruiz
+ * @version 1.0
+ */
 @Repository
 public interface AsignacionSugeridaRepository extends JpaRepository<AsignacionSugerida, Long> {
 
     /**
-     * Obtiene todas las sugerencias para una tarea ordenadas por score ajustado
+     * Obtiene sugerencias de una tarea ordenadas por score.
+     * @param tareaId ID de la tarea
      */
     @Query("SELECT a FROM AsignacionSugerida a " +
             "WHERE a.tarea.id = :tareaId " +
@@ -22,7 +29,9 @@ public interface AsignacionSugeridaRepository extends JpaRepository<AsignacionSu
     List<AsignacionSugerida> findByTareaIdOrderByScoreDesc(@Param("tareaId") Long tareaId);
 
     /**
-     * Obtiene las N mejores sugerencias para una tarea
+     * Obtiene N mejores sugerencias para una tarea.
+     * @param tareaId ID de la tarea
+     * @param limit máximo de resultados
      */
     @Query("SELECT a FROM AsignacionSugerida a " +
             "WHERE a.tarea.id = :tareaId " +
@@ -34,7 +43,8 @@ public interface AsignacionSugeridaRepository extends JpaRepository<AsignacionSu
     );
 
     /**
-     * Obtiene sugerencias para una persona
+     * Obtiene sugerencias para una persona.
+     * @param personaId ID de la persona
      */
     @Query("SELECT a FROM AsignacionSugerida a " +
             "WHERE a.persona.id = :personaId " +
@@ -42,7 +52,8 @@ public interface AsignacionSugeridaRepository extends JpaRepository<AsignacionSu
     List<AsignacionSugerida> findByPersonaIdOrderByScoreDesc(@Param("personaId") Long personaId);
 
     /**
-     * Obtiene la mejor sugerencia para una tarea
+     * Obtiene la mejor sugerencia para una tarea.
+     * @param tareaId ID de la tarea
      */
     @Query("SELECT a FROM AsignacionSugerida a " +
             "WHERE a.tarea.id = :tareaId " +
@@ -51,7 +62,9 @@ public interface AsignacionSugeridaRepository extends JpaRepository<AsignacionSu
     AsignacionSugerida findMejorSugerenciaByTareaId(@Param("tareaId") Long tareaId);
 
     /**
-     * Obtiene sugerencias calculadas en un rango de fechas
+     * Obtiene sugerencias calculadas en rango de fechas.
+     * @param desde fecha inicio
+     * @param hasta fecha fin
      */
     @Query("SELECT a FROM AsignacionSugerida a " +
             "WHERE a.fechaCalculo BETWEEN :desde AND :hasta")
@@ -61,7 +74,8 @@ public interface AsignacionSugeridaRepository extends JpaRepository<AsignacionSu
     );
 
     /**
-     * Obtiene sugerencias de un proyecto
+     * Obtiene sugerencias de un proyecto.
+     * @param proyectoId ID del proyecto
      */
     @Query("SELECT a FROM AsignacionSugerida a " +
             "WHERE a.tarea.proyecto.id = :proyectoId " +
@@ -69,7 +83,8 @@ public interface AsignacionSugeridaRepository extends JpaRepository<AsignacionSu
     List<AsignacionSugerida> findByProyectoId(@Param("proyectoId") Long proyectoId);
 
     /**
-     * Elimina sugerencias antiguas (más de X días)
+     * Elimina sugerencias anteriores a una fecha.
+     * @param fechaLimite fecha límite
      */
     @Modifying
     @Query("DELETE FROM AsignacionSugerida a " +
@@ -77,14 +92,17 @@ public interface AsignacionSugeridaRepository extends JpaRepository<AsignacionSu
     void deleteSugerenciasAntiguas(@Param("fechaLimite") LocalDateTime fechaLimite);
 
     /**
-     * Elimina sugerencias de una tarea
+     * Elimina sugerencias de una tarea.
+     * @param tareaId ID de la tarea
      */
     @Modifying
     @Query("DELETE FROM AsignacionSugerida a WHERE a.tarea.id = :tareaId")
     void deleteByTareaId(@Param("tareaId") Long tareaId);
 
     /**
-     * Verifica si existen sugerencias recientes para una tarea (últimas 24h)
+     * Verifica si existen sugerencias recientes (últimas 24h) para una tarea.
+     * @param tareaId ID de la tarea
+     * @param hace24h fecha límite (hace 24 horas)
      */
     @Query("SELECT COUNT(a) > 0 FROM AsignacionSugerida a " +
             "WHERE a.tarea.id = :tareaId " +
@@ -95,7 +113,8 @@ public interface AsignacionSugeridaRepository extends JpaRepository<AsignacionSu
     );
 
     /**
-     * Obtiene sugerencias con carga completa (persona, tarea, competencias)
+     * Obtiene sugerencias con persona, tarea y competencias cargados (JOIN FETCH).
+     * @param tareaId ID de la tarea
      */
     @Query("SELECT DISTINCT a FROM AsignacionSugerida a " +
             "JOIN FETCH a.persona p " +

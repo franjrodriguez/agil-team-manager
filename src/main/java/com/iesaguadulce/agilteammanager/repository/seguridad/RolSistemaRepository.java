@@ -7,6 +7,12 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+/**
+ * Repositorio para gestión de roles del sistema.
+ *
+ * @author Francisco José Rodríguez Ruiz
+ * @version 1.0
+ */
 @Repository
 public interface RolSistemaRepository extends JpaRepository<RolSistema, Long> {
 
@@ -21,13 +27,15 @@ public interface RolSistemaRepository extends JpaRepository<RolSistema, Long> {
     boolean existsByNombre(String nombre);
 
     /**
-     * Busca un rol con todos sus permisos cargados
+     * Busca rol por ID con permisos cargados (JOIN FETCH).
+     * @param id ID del rol
      */
     @Query("SELECT r FROM RolSistema r LEFT JOIN FETCH r.permisos WHERE r.id = :id")
     Optional<RolSistema> findByIdWithPermisos(Long id);
 
     /**
-     * Busca un rol por nombre con permisos cargados
+     * Busca rol por nombre con permisos cargados (JOIN FETCH).
+     * @param nombre nombre del rol
      */
     @Query("SELECT r FROM RolSistema r LEFT JOIN FETCH r.permisos WHERE r.nombre = :nombre")
     Optional<RolSistema> findByNombreWithPermisos(String nombre);

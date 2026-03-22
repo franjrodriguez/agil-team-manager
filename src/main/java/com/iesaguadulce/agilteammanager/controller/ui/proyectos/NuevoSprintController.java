@@ -7,51 +7,43 @@ import com.iesaguadulce.agilteammanager.service.proyectos.SprintService;
 
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 
 import java.util.List;
 
 /**
- * Controller de NuevoSprintDrawer.fxml
- * Modo creación : sprintAEditar == null
- * Modo edición  : sprintAEditar != null  (rellena campos y llama a actualizar)
+ * Controller del drawer de sprints. Soporta creación y edición.
  */
 public class NuevoSprintController implements DrawerChildController {
 
-    // ── Campos del formulario ────────────────────────────────
-    @FXML private Label            tituloLabel;
-    @FXML private TextField        objetivoField;
+    @FXML private Label tituloLabel;
+    @FXML private TextField objetivoField;
     @FXML private ComboBox<String> estadoCombo;
-    @FXML private DatePicker       fechaInicioDate;
-    @FXML private DatePicker       fechaFinDate;
+    @FXML private DatePicker fechaInicioDate;
+    @FXML private DatePicker fechaFinDate;
 
-    // ── Botones ──────────────────────────────────────────────
     @FXML private Button btnCerrarTop;
     @FXML private Button btnCancelar;
     @FXML private Button btnGuardar;
 
-    // ── Contexto ─────────────────────────────────────────────
     private ProyectosController parentController;
-    private Proyecto            proyectoActual;
-    private Sprint              sprintAEditar;   // null → crear, no null → editar
-    private SprintService       sprintService;
+    private Proyecto proyectoActual;
+    private Sprint sprintAEditar;
+    private SprintService sprintService;
 
-    // ════════════════════════════════════════════════════════
-    //  INICIALIZACIÓN
-    // ════════════════════════════════════════════════════════
-
+    /** Inicializa combo de estados. */
     @FXML
     public void initialize() {
         sprintService = SpringContext.getBean(SprintService.class);
         estadoCombo.setItems(FXCollections.observableArrayList(
-                List.of("planificacion", "activo", "completado", "cancelado")
-        ));
+                List.of("planificacion", "activo", "completado", "cancelado")));
         estadoCombo.setValue("planificacion");
     }
-
-    // ════════════════════════════════════════════════════════
-    //  DrawerChildController
-    // ════════════════════════════════════════════════════════
 
     @Override
     public void setParentController(ProyectosController parent) {
@@ -63,57 +55,43 @@ public class NuevoSprintController implements DrawerChildController {
         this.proyectoActual = proyecto;
     }
 
+    /**
+     * Configura el modo edición. Si sprint es null, modo creación.
+     * @param sprint sprint existente o null
+     */
     @Override
     public void setSprintAEditar(Sprint sprint) {
         this.sprintAEditar = sprint;
         if (sprint != null) {
             tituloLabel.setText("Editar Sprint");
             btnGuardar.setText("Guardar Cambios");
-            objetivoField.setText(sprint.getObjetivo() != null ? sprint.getObjetivo() : "");
-            estadoCombo.setValue(sprint.getEstado() != null ? sprint.getEstado() : "planificacion");
+            objetivoField.setText(sprint.getObjetivo());
+            estadoCombo.setValue(sprint.getEstado());
             fechaInicioDate.setValue(sprint.getFechaInicio());
             fechaFinDate.setValue(sprint.getFechaFin());
         }
     }
 
-    // ════════════════════════════════════════════════════════
-    //  ACCIONES FXML
-    // ════════════════════════════════════════════════════════
-
+    /** Cierra el drawer. */
     @FXML
     public void onCerrar() {
         if (parentController != null) parentController.cerrarDrawer();
     }
 
+    /** Guarda o actualiza el sprint según el modo. */
     @FXML
     public void onGuardar() {
         if (!validar()) return;
 
         if (sprintAEditar != null) {
-            // ── MODO EDICIÓN ──
-            sprintService.actualizar(
-                    sprintAEditar.getId(),
-                    objetivoField.getText().trim(),
-                    fechaInicioDate.getValue(),
-                    fechaFinDate.getValue(),
-                    estadoCombo.getValue()
-            );
+            sprintService.actualizar(sprintAEditar.getId(), objetivoField.getText().trim(),
+                    fechaInicioDate.getValue(), fechaFinDate.getValue(), estadoCombo.getValue());
         } else {
-            // ── MODO CREACIÓN ──
-            sprintService.crear(
-                    proyectoActual.getId(),
-                    objetivoField.getText().trim(),
-                    fechaInicioDate.getValue(),
-                    fechaFinDate.getValue()
-            );
+            sprintService.crear(proyectoActual.getId(), objetivoField.getText().trim(),
+                    fechaInicioDate.getValue(), fechaFinDate.getValue());
         }
-
-        if (parentController != null) parentController.refrescarDatos();
+        parentController.refrescarDatos();
     }
-
-    // ════════════════════════════════════════════════════════
-    //  VALIDACIÓN
-    // ════════════════════════════════════════════════════════
 
     private boolean validar() {
         if (objetivoField.getText() == null || objetivoField.getText().isBlank()) {
@@ -124,12 +102,38 @@ public class NuevoSprintController implements DrawerChildController {
             mostrarError("No hay ningún proyecto seleccionado.");
             return false;
         }
+        if (fechaInicioDate.getValue() == null || fechaFinDate.getValue() == null) {
+            mostrarError("Las fechas de inicio y fin del sprint son obligatorias.");
+            return false;
+        }
+        if (!fechaFinDate.getValue().isAfter(fechaInicioDate.getValue())) {
+            mostrarError("La fecha de fin debe ser posterior a la fecha de inicio.");
+            return false;
+        }
+        if (proyectoActual != null) {
+            if (proyectoActual.getFechaInicio() != null
+                    && fechaInicioDate.getValue().isBefore(proyectoActual.getFechaInicio())) {
+                mostrarError("La fecha de inicio del sprint no puede ser anterior\n"
+                        + "a la fecha de inicio del proyecto ("
+                        + proyectoActual.getFechaInicio() + ").");
+                return false;
+            }
+            if (proyectoActual.getFechaFin() != null
+                    && fechaFinDate.getValue().isAfter(proyectoActual.getFechaFin())) {
+                mostrarError("La fecha de fin del sprint no puede ser posterior\n"
+                        + "a la fecha de fin del proyecto ("
+                        + proyectoActual.getFechaFin() + ").");
+                return false;
+            }
+        }
         return true;
     }
 
     private void mostrarError(String mensaje) {
-        Alert alert = new Alert(Alert.AlertType.WARNING, mensaje, ButtonType.OK);
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error de validación");
         alert.setHeaderText(null);
+        alert.setContentText(mensaje);
         alert.showAndWait();
     }
 }

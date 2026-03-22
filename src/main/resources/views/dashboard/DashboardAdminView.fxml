@@ -10,18 +10,12 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="806.0" prefWidth="1200.0" styleClass="bg-default" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iesaguadulce.agilteammanager.controller.ui.dashboard.DashboardAdminController">
+<AnchorPane prefHeight="806.0" prefWidth="1200.0" styleClass="bg-default bg-fondopunteado" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iesaguadulce.agilteammanager.controller.ui.dashboard.DashboardAdminController">
    <children>
-      <ImageView fitHeight="806.0" fitWidth="1200.0" pickOnBounds="true" preserveRatio="false"
-                 AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0"
-                 AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-         <image>
-            <Image url="@../../assets/fondopunteado.jpg" />
-         </image>
-      </ImageView>
       <VBox prefHeight="806.0" prefWidth="1200.0" style="-fx-background-color: transparent;"
             AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0"
             AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
@@ -110,7 +104,7 @@
                                  </image>
                               </ImageView>
                               <Separator prefHeight="25.0" prefWidth="30.0" visible="false" />
-                              <Label fx:id="titleLabel" prefHeight="19.0" prefWidth="247.0" styleClass="kpi-label" text="Números de usuarios" wrapText="true" />
+                              <Label fx:id="titleLabel" prefHeight="-1.0" prefWidth="247.0" styleClass="kpi-label" text="Números de usuarios" wrapText="true" />
                            </children>
                         </HBox>
                         <Label fx:id="valueUsuarios" prefHeight="47.0" prefWidth="70.0" styleClass="kpi-value" text="00" />
@@ -127,7 +121,7 @@
                         <String fx:value="elevated-1" />
                      </styleClass>
                   </VBox>
-                  <Separator prefHeight="25.0" prefWidth="33.0" visible="false" />
+                  <Region HBox.hgrow="ALWAYS" />
                   <VBox fx:id="widgetCard2" alignment="CENTER" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="140.0" prefWidth="256.0" spacing="10.0">
                      <children>
                         <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="8.0">
@@ -138,7 +132,7 @@
                                  </image>
                               </ImageView>
                               <Separator prefHeight="25.0" prefWidth="30.0" visible="false" />
-                              <Label fx:id="titleLabel1" prefHeight="19.0" prefWidth="265.0" styleClass="kpi-label" text="Usuarios en activo" />
+                              <Label fx:id="titleLabel1" prefHeight="-1.0" prefWidth="265.0" styleClass="kpi-label" text="Usuarios en activo" wrapText="true" />
                            </children>
                         </HBox>
                         <Label fx:id="valueUsuariosActivos" prefHeight="53.0" prefWidth="70.0" styleClass="kpi-value" text="00" />
@@ -155,7 +149,7 @@
                         <String fx:value="elevated-2" />
                      </styleClass>
                   </VBox>
-                  <Separator layoutX="266.0" layoutY="10.0" prefWidth="33.0" visible="false" />
+                  <Region HBox.hgrow="ALWAYS" />
                   <VBox fx:id="widgetCard3" alignment="CENTER" layoutX="266.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="140.0" prefWidth="256.0" spacing="10.0">
                      <children>
                         <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="8.0">
@@ -166,7 +160,7 @@
                                  </image>
                               </ImageView>
                               <Separator prefHeight="25.0" prefWidth="30.0" visible="false" />
-                              <Label fx:id="titleLabel11" prefHeight="19.0" prefWidth="270.0" styleClass="kpi-label" text="Usuarios inactivos" />
+                              <Label fx:id="titleLabel11" prefHeight="-1.0" prefWidth="270.0" styleClass="kpi-label" text="Usuarios inactivos" wrapText="true" />
                            </children>
                         </HBox>
                         <Label fx:id="valueUsuariosNoActivos" prefHeight="47.0" prefWidth="70.0" styleClass="kpi-value" text="00" />
@@ -183,7 +177,7 @@
                         <String fx:value="elevated-2" />
                      </styleClass>
                   </VBox>
-                  <Separator layoutX="590.0" layoutY="10.0" prefWidth="33.0" visible="false" />
+                  <Region HBox.hgrow="ALWAYS" />
                   <VBox fx:id="widgetCard4" alignment="CENTER" layoutX="522.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="140.0" prefWidth="256.0" spacing="10.0">
                      <children>
                         <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="8.0">
@@ -194,7 +188,7 @@
                                  </image>
                               </ImageView>
                               <Separator prefHeight="25.0" prefWidth="30.0" visible="false" />
-                              <Label fx:id="titleLabel111" prefHeight="19.0" prefWidth="248.0" styleClass="kpi-label" text="Roles en sistema" />
+                              <Label fx:id="titleLabel111" prefHeight="-1.0" prefWidth="248.0" styleClass="kpi-label" text="Roles en sistema" wrapText="true" />
                            </children>
                         </HBox>
                         <Label fx:id="valueRoles" prefHeight="47.0" prefWidth="85.0" styleClass="kpi-value" text="00" />
@@ -228,7 +222,7 @@
                                  </image>
                               </ImageView>
                               <Separator prefHeight="25.0" prefWidth="30.0" visible="false" />
-                              <Label prefHeight="19.0" prefWidth="247.0" styleClass="kpi-label" text="Versión de la aplicación" />
+                              <Label prefHeight="-1.0" prefWidth="247.0" styleClass="kpi-label" text="Versión de la aplicación" wrapText="true" />
                            </children>
                         </HBox>
                         <Label fx:id="valueVersion" prefHeight="47.0" prefWidth="70.0" styleClass="kpi-value" text="1.0" />
@@ -245,7 +239,7 @@
                         <String fx:value="elevated-2" />
                      </styleClass>
                   </VBox>
-                  <Separator prefWidth="33.0" visible="false" />
+                  <Region HBox.hgrow="ALWAYS" />
                   <VBox fx:id="widgetCard21" alignment="CENTER" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="140.0" prefWidth="256.0" spacing="10.0">
                      <children>
                         <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="8.0">
@@ -256,7 +250,7 @@
                                  </image>
                               </ImageView>
                               <Separator prefHeight="25.0" prefWidth="30.0" visible="false" />
-                              <Label prefHeight="19.0" prefWidth="265.0" styleClass="kpi-label" text="Ultimo login" />
+                              <Label prefHeight="-1.0" prefWidth="265.0" styleClass="kpi-label" text="Ultimo login" wrapText="true" />
                            </children>
                         </HBox>
                         <Label fx:id="valueHoraUltimoLogin" prefHeight="47.0" prefWidth="91.0" styleClass="kpi-value" text="00:00" />
@@ -273,7 +267,7 @@
                         <String fx:value="elevated-2" />
                      </styleClass>
                   </VBox>
-                  <Separator layoutX="266.0" layoutY="10.0" prefWidth="33.0" visible="false" />
+                  <Region HBox.hgrow="ALWAYS" />
                   <VBox fx:id="widgetCard31" alignment="CENTER" layoutX="266.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="140.0" prefWidth="256.0" spacing="10.0">
                      <children>
                         <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="8.0">
@@ -284,7 +278,7 @@
                                  </image>
                               </ImageView>
                               <Separator prefHeight="25.0" prefWidth="30.0" visible="false" />
-                              <Label prefHeight="19.0" prefWidth="270.0" styleClass="kpi-label" text="Ultima conexión fallida" />
+                              <Label prefHeight="-1.0" prefWidth="270.0" styleClass="kpi-label" text="Ultima conexión fallida" wrapText="true" />
                            </children>
                         </HBox>
                         <Label fx:id="valueUltimaConexionFallida" prefHeight="47.0" prefWidth="93.0" styleClass="kpi-value" text="00:00" />
@@ -301,7 +295,7 @@
                         <String fx:value="elevated-2" />
                      </styleClass>
                   </VBox>
-                  <Separator layoutX="590.0" layoutY="10.0" prefWidth="33.0" visible="false" />
+                  <Region HBox.hgrow="ALWAYS" />
                   <VBox fx:id="widgetCard41" alignment="CENTER" layoutX="522.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="140.0" prefWidth="256.0" spacing="10.0">
                      <children>
                         <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="8.0">
@@ -312,7 +306,7 @@
                                  </image>
                               </ImageView>
                               <Separator prefHeight="25.0" prefWidth="30.0" visible="false" />
-                              <Label fx:id="titleLabel1111" prefHeight="19.0" prefWidth="248.0" styleClass="kpi-label" text="Número de conexiones ERR" textOverrun="CLIP" wrapText="true" />
+                              <Label fx:id="titleLabel1111" prefHeight="-1.0" prefWidth="248.0" styleClass="kpi-label" text="Número de conexiones ERR" wrapText="true" />
                            </children>
                         </HBox>
                         <Label fx:id="valueErrorConexion" prefHeight="47.0" prefWidth="85.0" styleClass="kpi-value" text="00" wrapText="true" />

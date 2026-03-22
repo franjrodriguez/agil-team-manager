@@ -11,6 +11,12 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+/**
+ * Entidad para sugerencias automáticas de asignación de tareas.
+ *
+ * @author Francisco José Rodríguez Ruiz
+ * @since 1.0
+ */
 @Entity
 @Table(name = "asignaciones_sugeridas")
 @Data

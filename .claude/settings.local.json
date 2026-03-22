@@ -3,7 +3,17 @@
     "allow": [
       "Bash(mvn clean compile:*)",
       "Bash(./mvnw clean compile:*)",
-      "Bash(./mvnw compile:*)"
+      "Bash(./mvnw compile:*)",
+      "Bash(BASE=\"C:\\\\Users\\\\franr\\\\NAS\\\\profesional\\\\Proyectos\\\\DAM\\\\proyecto_fin_grado\\\\agilteammanager\")",
+      "Bash(CTRL=\"src\\\\main\\\\java\\\\com\\\\iesaguadulce\\\\agilteammanager\\\\controller\\\\ui\")",
+      "Bash(VIEWS=\"src\\\\main\\\\resources\\\\views\")",
+      "Bash(__NEW_LINE_932fda8288dacf0a__ copy \"$BASE\\\\$CTRL\\\\dashboard\\\\MainController.java\" \"$BASE\\\\$CTRL\\\\dashboard\\\\MainController.java.bak\")",
+      "Bash(copy:*)",
+      "Bash(copy \"$BASE\\\\$VIEWS\\\\dashboard\\\\MainView.fxml\" \"$BASE\\\\$VIEWS\\\\dashboard\\\\MainView.fxml.bak\")",
+      "Bash(dir:*)",
+      "Bash(powershell.exe -Command \"\n$base = ''C:\\\\Users\\\\franr\\\\NAS\\\\profesional\\\\Proyectos\\\\DAM\\\\proyecto_fin_grado\\\\agilteammanager''\n$ctrl = ''\\\\src\\\\main\\\\java\\\\com\\\\iesaguadulce\\\\agilteammanager\\\\controller\\\\ui''\n$views = ''\\\\src\\\\main\\\\resources\\\\views\\\\dashboard''\n\nCopy-Item \"\"$base$ctrl\\\\dashboard\\\\MainController.java\"\"  \"\"$base$ctrl\\\\dashboard\\\\MainController.java.bak\"\"\nCopy-Item \"\"$base$ctrl\\\\login\\\\LoginController.java\"\"     \"\"$base$ctrl\\\\login\\\\LoginController.java.bak\"\"\nCopy-Item \"\"$base$views\\\\MainView.fxml\"\"                 \"\"$base$views\\\\MainView.fxml.bak\"\"\nWrite-Host ''Copias OK''\n\")",
+      "Bash(powershell.exe -Command \"New-Item -ItemType Directory -Force ''C:\\\\Users\\\\franr\\\\NAS\\\\profesional\\\\Proyectos\\\\DAM\\\\proyecto_fin_grado\\\\agilteammanager\\\\src\\\\main\\\\resources\\\\views\\\\sesion'' | Out-Null; Write-Host ''OK''\")",
+      "Bash(powershell.exe -Command \"\n$path = ''C:\\\\Users\\\\franr\\\\NAS\\\\profesional\\\\Proyectos\\\\DAM\\\\proyecto_fin_grado\\\\agilteammanager\\\\src\\\\main\\\\resources\\\\views\\\\sesion\\\\ChangeSessionView.fxml''\n$content = @''\n<?xml version=\"\"1.0\"\" encoding=\"\"UTF-8\"\"?>\n\n<?import java.net.URL?>\n<?import javafx.scene.image.Image?>\n<?import javafx.scene.image.ImageView?>\n<?import javafx.scene.layout.StackPane?>\n\n<StackPane prefHeight=\"\"806.0\"\" prefWidth=\"\"1200.0\"\"\n           style=\"\"-fx-background-color: #0F1419;\"\"\n           xmlns=\"\"http://javafx.com/javafx/17.0.12\"\"\n           xmlns:fx=\"\"http://javafx.com/fxml/1\"\">\n\n    <stylesheets>\n        <URL value=\"\"@../../css/primer-light.css\"\" />\n        <URL value=\"\"@../../css/agilteam-styles.css\"\" />\n    </stylesheets>\n\n    <ImageView fitHeight=\"\"140.0\"\" fitWidth=\"\"520.0\"\" pickOnBounds=\"\"true\"\" preserveRatio=\"\"true\"\"\n               opacity=\"\"0.25\"\">\n        <image><Image url=\"\"@../../assets/logo_oscuro.png\"\" /></image>\n    </ImageView>\n\n</StackPane>\n''@\nSet-Content -Path $path -Value $content -Encoding UTF8\nWrite-Host ''OK''\")"
     ]
   }
 }

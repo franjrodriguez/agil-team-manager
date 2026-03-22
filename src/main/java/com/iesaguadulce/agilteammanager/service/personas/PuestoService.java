@@ -10,7 +10,10 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Servicio para gestión de puestos profesionales
+ * Servicio de gestión de puestos profesionales.
+ *
+ * @author Francisco José Rodríguez Ruiz
+ * @since 1.0
  */
 @Service
 @Transactional
@@ -55,6 +58,11 @@ public class PuestoService {
         return puestoRepository.save(puesto);
     }
 
+    /**
+     * Guarda un puesto con validaciones.
+     *
+     * @throws IllegalArgumentException si el nombre está vacío o ya existe
+     */
     public Puesto guardar(Puesto puesto) {
         // Validación: nombre no puede estar vacío
         if (puesto.getNombre() == null || puesto.getNombre().isBlank()) {

@@ -65,7 +65,6 @@ public class MotorAsignacionController implements Initializable {
     @FXML private TableColumn<Tarea, String> proyectoTareaColumn;
     @FXML private TableColumn<Tarea, String> sprintTareaColumn;
     @FXML private TableColumn<Tarea, String> prioridadTareaColumn;
-    @FXML private TableColumn<Tarea, String> compTareaColumn;
 
     // ─────────────────────────────────────────────────────────
     // REFERENCIAS AL FXML — Panel derecho (candidatos)
@@ -154,8 +153,6 @@ public class MotorAsignacionController implements Initializable {
             return new SimpleStringProperty(label);
         });
 
-        compTareaColumn.setCellValueFactory(data ->
-                new SimpleStringProperty("…"));
     }
 
     private void configurarSeleccionTarea() {

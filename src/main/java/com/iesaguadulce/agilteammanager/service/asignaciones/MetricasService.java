@@ -19,7 +19,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Servicio para cálculo de métricas y KPIs del dashboard
+ * Calcula métricas y KPIs para el dashboard.
+ *
+ * @author Francisco José Rodríguez Ruiz
+ * @version 1.0
  */
 @Service
 @Transactional(readOnly = true)
@@ -33,7 +36,8 @@ public class MetricasService {
     private final DisponibilidadRepository disponibilidadRepository;
 
     /**
-     * Obtiene KPIs principales del dashboard
+     * Obtiene KPIs principales: personas, proyectos, tareas por estado y carga.
+     * @return mapa con métricas agregadas
      */
     public Map<String, Object> obtenerKPIsPrincipales() {
 
@@ -84,7 +88,8 @@ public class MetricasService {
     }
 
     /**
-     * Obtiene distribución de carga por persona
+     * Obtiene distribución de carga por persona en porcentaje.
+     * @return lista ordenada por carga descendente
      */
     public List<Map<String, Object>> obtenerDistribucionCarga() {
         List<Disponibilidad> disponibilidades =
@@ -130,7 +135,8 @@ public class MetricasService {
     }
 
     /**
-     * Obtiene últimas asignaciones
+     * Obtiene las últimas asignaciones ordenadas por fecha.
+     * @param limit máximo de resultados
      */
     public List<Map<String, Object>> obtenerUltimasAsignaciones(int limit) {
 
@@ -185,7 +191,8 @@ public class MetricasService {
     }
 
     /**
-     * Genera datos para Burndown Chart de un sprint
+     * Genera datos para Burndown Chart de un sprint.
+     * @return serie temporal de tareas restantes por fecha
      */
     public List<Map<String, Object>> generarBurndownChart(Long sprintId) {
 

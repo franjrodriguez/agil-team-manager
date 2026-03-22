@@ -34,8 +34,8 @@
 ║                      └── VBox contenedorCandidatos              ║
 ║                           (el controller añade cards aquí)      ║
 ║                                                                  ║
-║  Columnas tabla tareas (428px):                                 ║
-║    titulo(155) proyecto(90) sprint(80) prioridad(60) comp(43)   ║
+║  Columnas tabla tareas (500px):                                 ║
+║    titulo(190) proyecto(125) sprint(110) prioridad(75)          ║
 ╚══════════════════════════════════════════════════════════════════╝
 -->
 
@@ -104,7 +104,7 @@
         <children>
 
             <!-- ── IZQUIERDA: panel lista de tareas pendientes ── -->
-            <VBox fx:id="panelTareas" prefWidth="460.0" spacing="0.0"
+            <VBox fx:id="panelTareas" prefWidth="580.0" spacing="0.0"
                   style="-fx-background-color: -app-bg-card;
                          -fx-background-radius: 8;
                          -fx-border-color: -app-border-soft;
@@ -137,23 +137,21 @@
 
                 <!--
                     Tabla de tareas pendientes de asignación.
-                    460px panel − 0 padding lateral (tabla ocupa todo) = 460px
-                    Columnas: titulo(155) proyecto(90) sprint(80) prioridad(60) comp(43) + ~32px scrollbar → ≈460
+                    580px panel − 0 padding lateral (tabla ocupa todo) = 580px
+                    Columnas: titulo(190) proyecto(125) sprint(110) prioridad(75) + ~32px scrollbar → ≈532
                 -->
                 <TableView fx:id="tareasTable" VBox.vgrow="ALWAYS"
                            style="-fx-background-color: transparent;
                                   -fx-border-color: transparent;">
                     <columns>
                         <TableColumn fx:id="tituloTareaColumn"
-                                     prefWidth="155.0" text="TAREA" />
+                                     prefWidth="190.0" text="TAREA" />
                         <TableColumn fx:id="proyectoTareaColumn"
-                                     prefWidth="90.0" text="PROYECTO" />
+                                     prefWidth="125.0" text="PROYECTO" />
                         <TableColumn fx:id="sprintTareaColumn"
-                                     prefWidth="80.0" text="SPRINT" />
+                                     prefWidth="110.0" text="SPRINT" />
                         <TableColumn fx:id="prioridadTareaColumn"
-                                     prefWidth="60.0" text="PRIOR." />
-                        <TableColumn fx:id="compTareaColumn"
-                                     prefWidth="43.0" text="COMP." />
+                                     prefWidth="75.0" text="PRIOR." />
                     </columns>
                     <placeholder>
                         <Label style="-fx-text-fill: -app-text-secondary; -fx-font-size: 13px;"

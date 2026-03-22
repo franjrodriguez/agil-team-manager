@@ -17,8 +17,10 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Servicio para gestión de niveles de competencias de personas
- * Mantiene histórico de evolución
+ * Asigna o actualiza el nivel de una competencia (0-100).
+ * Crea registro histórico con timestamp.
+ *
+ * @throws RuntimeException si el nivel no está entre 0 y 100
  */
 @Service
 @Transactional

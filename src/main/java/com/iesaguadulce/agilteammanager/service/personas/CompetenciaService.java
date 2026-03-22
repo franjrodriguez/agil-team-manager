@@ -10,7 +10,9 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Servicio para gestión del catálogo de competencias
+ * Crea una nueva competencia.
+ *
+ * @throws RuntimeException si ya existe el nombre
  */
 @Service
 @Transactional

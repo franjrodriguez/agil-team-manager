@@ -510,3 +510,27 @@ INSERT INTO disponibilidad (persona_id, carga) VALUES
 -- ============================================================
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 UPDATE personas SET password = crypt('1234', gen_salt('bf', 10));
+
+-- ============================================================
+-- BLOQUE 13: SE ACTUALIZAN LAS FECHAS DE FINALIZACION DE TAREAS COMPLETADAS
+-- ============================================================
+-- Asigna fecha_terminacion a las tareas con estado 'completada'
+-- distribuyendo las 15 tareas entre los últimos 7 días (2-3 por día)
+-- Ejecutar UNA SOLA VEZ en agilteamdb
+
+WITH ranked AS (
+    SELECT id, ROW_NUMBER() OVER (ORDER BY id) AS rn
+    FROM tareas
+    WHERE estado = 'completada'
+)
+UPDATE tareas
+SET fecha_terminacion = CASE
+    WHEN id IN (SELECT id FROM ranked WHERE rn IN (1,  2))       THEN '2026-03-11 10:00:00'::TIMESTAMP
+    WHEN id IN (SELECT id FROM ranked WHERE rn IN (3,  4))       THEN '2026-03-12 11:00:00'::TIMESTAMP
+    WHEN id IN (SELECT id FROM ranked WHERE rn IN (5,  6))       THEN '2026-03-13 09:30:00'::TIMESTAMP
+    WHEN id IN (SELECT id FROM ranked WHERE rn IN (7,  8))       THEN '2026-03-14 14:00:00'::TIMESTAMP
+    WHEN id IN (SELECT id FROM ranked WHERE rn IN (9,  10))      THEN '2026-03-15 16:00:00'::TIMESTAMP
+    WHEN id IN (SELECT id FROM ranked WHERE rn IN (11, 12))      THEN '2026-03-16 10:30:00'::TIMESTAMP
+    WHEN id IN (SELECT id FROM ranked WHERE rn IN (13, 14, 15))  THEN '2026-03-17 08:00:00'::TIMESTAMP
+END
+WHERE estado = 'completada';

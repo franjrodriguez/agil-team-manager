@@ -9,12 +9,16 @@ import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 /**
- * Servicio para gestión de roles y permisos del sistema
+ * Servicio de gestión de roles y permisos.
+ *
+ * @author Francisco José Rodríguez Ruiz
+ * @since 1.0
  */
 @Service
 @Transactional
@@ -57,7 +61,9 @@ public class PermisoService {
     }
 
     /**
-     * Crea un nuevo permiso y lo asigna al rol indicado
+     * Crea un permiso y lo asigna al rol indicado.
+     *
+     * @throws RuntimeException si el código de permiso ya existe
      */
     public Permiso crearPermisoYAsignarARol(Long rolId, String codigo, String descripcion) {
         if (permisoRepository.findByCodigo(codigo).isPresent()) {
@@ -79,7 +85,9 @@ public class PermisoService {
     }
 
     /**
-     * Crea un nuevo rol de sistema
+     * Crea un nuevo rol.
+     *
+     * @throws RuntimeException si el nombre ya existe
      */
     public RolSistema crearRol(String nombre, String descripcion) {
         if (rolSistemaRepository.findByNombre(nombre).isPresent()) {
@@ -116,14 +124,18 @@ public class PermisoService {
     }
 
     /**
-     * Asigna permisos a un rol
+     * Asigna permisos a un rol.
+     * Se opera sobre el PersistentSet de Hibernate (clear + addAll) para evitar
+     * UnsupportedOperationException al reemplazar la colección por un Set inmutable.
      */
     public void asignarPermisosARol(Long rolId, Set<Long> permisosIds) {
         RolSistema rol = rolSistemaRepository.findById(rolId)
                 .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
 
-        Set<Permiso> permisos = Set.copyOf(permisoRepository.findAllById(permisosIds));
-        rol.setPermisos(permisos);
+        Hibernate.initialize(rol.getPermisos());
+        Set<Permiso> nuevosPermisos = new HashSet<>(permisoRepository.findAllById(permisosIds));
+        rol.getPermisos().clear();
+        rol.getPermisos().addAll(nuevosPermisos);
 
         rolSistemaRepository.save(rol);
     }

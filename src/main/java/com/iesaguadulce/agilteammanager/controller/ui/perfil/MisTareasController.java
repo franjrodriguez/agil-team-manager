@@ -33,7 +33,10 @@ import java.util.ResourceBundle;
  *
  * PATRÓN: Usa SpringContext.getBean() en initialize() porque JavaFX
  * crea el controlador con 'new', sin pasar por el contexto de Spring.
+ *
+ * @author FRANDEV
  */
+
 @Component
 public class MisTareasController implements Initializable {
 

@@ -4,22 +4,23 @@ import com.iesaguadulce.agilteammanager.model.proyectos.Proyecto;
 import com.iesaguadulce.agilteammanager.model.proyectos.Sprint;
 
 /**
- * Interfaz que deben implementar los controllers de los drawers (Sprint y Tarea).
- * Permite que el controller padre (ProyectosController) les pase contexto
- * y que los hijos puedan cerrar el drawer y refrescar los datos.
+ * Interfaz para controllers de drawers (Sprint y Tarea).
+ * Permite la comunicación bidireccional con {@link ProyectosController}.
  */
 public interface DrawerChildController {
 
+    /** Establece el controller padre para callbacks de cierre y refresco. */
     void setParentController(ProyectosController parent);
 
+    /** Establece el proyecto en contexto. */
     void setProyectoActual(Proyecto proyecto);
 
-    /** Solo relevante para NuevaTareaController al crear. */
+    /** Establece el sprint para asociar nuevas tareas (modo creación). */
     default void setSprintActual(Sprint sprint) {}
 
-    /** Pasa un Sprint existente para editar. Si es null → modo creación. */
+    /** Establece el sprint a editar; null indica modo creación. */
     default void setSprintAEditar(Sprint sprint) {}
 
-    /** Pasa una Tarea existente para editar. Si es null → modo creación. */
+    /** Establece la tarea a editar; null indica modo creación. */
     default void setTareaAEditar(com.iesaguadulce.agilteammanager.model.proyectos.Tarea tarea) {}
 }

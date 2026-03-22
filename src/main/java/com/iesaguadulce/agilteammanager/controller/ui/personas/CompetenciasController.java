@@ -18,27 +18,19 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 /**
- * ═══════════════════════════════════════════════════════════════
- * CompetenciasController — Controlador UI de Competencias Técnicas
- * ───────────────────────────────────────────────────────────────
- * UBICACIÓN: src/main/java/.../ui/personas/CompetenciasController.java
+ * Controller de la vista de gestión de competencias técnicas.
  *
- * FLUJO:
- *   FXML (evento) → este Controller → CompetenciaService → CompetenciaRepository → BD
- * ═══════════════════════════════════════════════════════════════
+ * <p>Implementa CRUD completo para competencias con interfaz de dos paneles:
+ * lista filtrable a la izquierda y formulario de edición a la derecha.</p>
+ *
+ * @author FRANDEV
+ * @see CompetenciaService
  */
 @Component
 public class CompetenciasController implements Initializable {
 
-    // ─────────────────────────────────────────────────────────
-    // INYECCIÓN DE DEPENDENCIAS
-    // ─────────────────────────────────────────────────────────
     @Autowired
     private CompetenciaService competenciaService;
-
-    // ─────────────────────────────────────────────────────────
-    // REFERENCIAS A ELEMENTOS DEL FXML
-    // ─────────────────────────────────────────────────────────
 
     /** Panel izquierdo: buscador de texto */
     @FXML private TextField searchField;
@@ -61,20 +53,13 @@ public class CompetenciasController implements Initializable {
     /** Botón de borrar (visible solo con selección) */
     @FXML private Button btnDelete;
 
-    // ─────────────────────────────────────────────────────────
-    // ESTADO INTERNO
-    // ─────────────────────────────────────────────────────────
-
     /** Competencia actualmente seleccionada. null = modo "nueva" */
     private Competencia competenciaSeleccionada = null;
 
     /** Lista observable que alimenta el ListView */
     private ObservableList<Competencia> listaCompetencias = FXCollections.observableArrayList();
 
-    // ─────────────────────────────────────────────────────────
-    // INICIALIZACIÓN
-    // ─────────────────────────────────────────────────────────
-
+    /** Inicializa el controller cargando datos y configurando componentes. */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         System.out.println("(FRANDEV) --> Entramos en CompetenciasController");
@@ -120,18 +105,11 @@ public class CompetenciasController implements Initializable {
         competenciasListView.setItems(listaCompetencias);
     }
 
-    // ─────────────────────────────────────────────────────────
-    // CARGA DE DATOS
-    // ─────────────────────────────────────────────────────────
-
+    /** Carga todas las competencias desde el servicio. */
     private void cargarTodasLasCompetencias() {
         List<Competencia> competencias = competenciaService.obtenerTodas();
         listaCompetencias.setAll(competencias);
     }
-
-    // ─────────────────────────────────────────────────────────
-    // EVENTOS DEL FXML
-    // ─────────────────────────────────────────────────────────
 
     /**
      * Filtra el ListView en tiempo real al escribir en el buscador.
@@ -151,8 +129,8 @@ public class CompetenciasController implements Initializable {
     }
 
     /**
-     * Carga los datos de la competencia seleccionada en el formulario.
-     * Referenciado en FXML: onMouseClicked="#seleccionarCompetencia"
+     * Carga la competencia seleccionada en el formulario.
+     * @param event evento de clic del ratón
      */
     @FXML
     private void seleccionarCompetencia(MouseEvent event) {

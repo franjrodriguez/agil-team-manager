@@ -9,6 +9,12 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repositorio para gestión de personas del equipo.
+ *
+ * @author Francisco José Rodríguez Ruiz
+ * @version 1.0
+ */
 @Repository
 public interface PersonaRepository extends JpaRepository<Persona, Long> {
 
@@ -43,19 +49,22 @@ public interface PersonaRepository extends JpaRepository<Persona, Long> {
     List<Persona> findByEstado(String estado);
 
     /**
-     * Busca personas por puesto
+     * Busca personas por puesto.
+     * @param puestoId ID del puesto
      */
     @Query("SELECT p FROM Persona p WHERE p.puesto.id = :puestoId")
     List<Persona> findByPuestoId(@Param("puestoId") Long puestoId);
 
     /**
-     * Busca personas por rol del sistema
+     * Busca personas por rol del sistema.
+     * @param rolId ID del rol
      */
     @Query("SELECT p FROM Persona p WHERE p.rol.id = :rolId")
     List<Persona> findByRolId(@Param("rolId") Long rolId);
 
     /**
-     * Busca persona con sus competencias cargadas
+     * Busca persona con competencias cargadas (JOIN FETCH).
+     * @param id ID de la persona
      */
     @Query("SELECT DISTINCT p FROM Persona p " +
             "LEFT JOIN FETCH p.personasCompetencias pc " +
@@ -73,8 +82,9 @@ public interface PersonaRepository extends JpaRepository<Persona, Long> {
     List<Persona> findActivasWithCompetencias();
 
     /**
-     * Carga una persona con asignaciones, tareas y competencias en una sola consulta.
-     * Evita LazyInitializationException al acceder a estas colecciones fuera de transacción.
+     * Carga persona completa con competencias y asignaciones.
+     * Evita LazyInitializationException.
+     * @param id ID de la persona
      */
     @Query("SELECT DISTINCT p FROM Persona p " +
            "LEFT JOIN FETCH p.personasCompetencias pc " +

@@ -13,7 +13,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Servicio para gestión de proyectos
+ * Servicio de gestión de proyectos.
+ *
+ * @author Francisco José Rodríguez Ruiz
+ * @since 1.0
  */
 @Service
 @Transactional
@@ -23,7 +26,9 @@ public class ProyectoService {
     private final ProyectoRepository proyectoRepository;
 
     /**
-     * Crea un nuevo proyecto
+     * Crea un nuevo proyecto.
+     *
+     * @throws RuntimeException si las fechas son inválidas
      */
     public Proyecto crear(String nombre, String descripcion,
                           LocalDate fechaInicio, LocalDate fechaFin) {

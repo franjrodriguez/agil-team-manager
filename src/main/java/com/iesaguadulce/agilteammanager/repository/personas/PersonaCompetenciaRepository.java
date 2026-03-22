@@ -11,11 +11,18 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repositorio para competencias de personas.
+ *
+ * @author Francisco José Rodríguez Ruiz
+ * @version 1.0
+ */
 @Repository
 public interface PersonaCompetenciaRepository extends JpaRepository<PersonaCompetencia, PersonaCompetenciaId> {
 
     /**
-     * Obtiene todas las competencias de una persona
+     * Obtiene competencias de una persona ordenadas por nivel descendente.
+     * @param personaId ID de la persona
      */
     @Query("SELECT pc FROM PersonaCompetencia pc " +
             "WHERE pc.persona.id = :personaId " +
@@ -23,7 +30,8 @@ public interface PersonaCompetenciaRepository extends JpaRepository<PersonaCompe
     List<PersonaCompetencia> findByPersonaId(@Param("personaId") Long personaId);
 
     /**
-     * Obtiene todas las personas que tienen una competencia
+     * Obtiene personas con una competencia específica.
+     * @param competenciaId ID de la competencia
      */
     @Query("SELECT pc FROM PersonaCompetencia pc " +
             "WHERE pc.competencia.id = :competenciaId " +
@@ -31,7 +39,9 @@ public interface PersonaCompetenciaRepository extends JpaRepository<PersonaCompe
     List<PersonaCompetencia> findByCompetenciaId(@Param("competenciaId") Long competenciaId);
 
     /**
-     * Busca el nivel actual de una competencia para una persona
+     * Obtiene nivel actual de una competencia para una persona.
+     * @param personaId ID de la persona
+     * @param competenciaId ID de la competencia
      */
     @Query("SELECT pc.nivelActual FROM PersonaCompetencia pc " +
             "WHERE pc.persona.id = :personaId AND pc.competencia.id = :competenciaId")
@@ -41,7 +51,9 @@ public interface PersonaCompetenciaRepository extends JpaRepository<PersonaCompe
     );
 
     /**
-     * Obtiene el historial de una competencia para una persona
+     * Obtiene historial de una competencia para una persona.
+     * @param personaId ID de la persona
+     * @param competenciaId ID de la competencia
      */
     @Query("SELECT pc FROM PersonaCompetencia pc " +
             "WHERE pc.persona.id = :personaId AND pc.competencia.id = :competenciaId " +
@@ -52,7 +64,10 @@ public interface PersonaCompetenciaRepository extends JpaRepository<PersonaCompe
     );
 
     /**
-     * Obtiene cambios de nivel en un rango de fechas
+     * Obtiene cambios de nivel en rango de fechas.
+     * @param personaId ID de la persona
+     * @param desde fecha inicio
+     * @param hasta fecha fin
      */
     @Query("SELECT pc FROM PersonaCompetencia pc " +
             "WHERE pc.persona.id = :personaId " +

@@ -8,13 +8,22 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.util.Objects;
 
+/**
+ * Clave primaria compuesta para PersonaCompetencia.
+ *
+ * @author Francisco José Rodríguez Ruiz
+ * @version 1.0
+ */
 @Embeddable
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class PersonaCompetenciaId implements Serializable {
 
+    /** ID de la persona. */
     private Long personaId;
+
+    /** ID de la competencia. */
     private Long competenciaId;
 
     @Override

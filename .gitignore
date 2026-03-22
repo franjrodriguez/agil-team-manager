@@ -37,3 +37,11 @@ build/
 
 ### Credenciales ###
 application.properties
+
+### Claude ###
+CLAUDE.md
+HISTORICO.md
+.claude/
+
+### Temporales ###
+*.bak

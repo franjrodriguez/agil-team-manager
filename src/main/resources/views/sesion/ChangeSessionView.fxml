@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.scene.layout.StackPane?>
+
+<StackPane prefHeight="806.0" prefWidth="1200.0"
+           style="-fx-background-color: #0F1419;"
+           styleClass="bg-fondoclaro"
+           xmlns="http://javafx.com/javafx/17.0.12"
+           xmlns:fx="http://javafx.com/fxml/1">
+
+    <stylesheets>
+        <URL value="@../../css/primer-light.css" />
+        <URL value="@../../css/agilteam-styles.css" />
+    </stylesheets>
+
+</StackPane>

@@ -11,11 +11,18 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repositorio para competencias requeridas por tareas.
+ *
+ * @author Francisco José Rodríguez Ruiz
+ * @version 1.0
+ */
 @Repository
 public interface TareaCompetenciaRepository extends JpaRepository<TareaCompetencia, TareaCompetenciaId> {
 
     /**
-     * Obtiene todas las competencias requeridas por una tarea
+     * Obtiene competencias de una tarea ordenadas por peso descendente.
+     * @param tareaId ID de la tarea
      */
     @Query("SELECT tc FROM TareaCompetencia tc " +
             "WHERE tc.tarea.id = :tareaId " +
@@ -23,7 +30,8 @@ public interface TareaCompetenciaRepository extends JpaRepository<TareaCompetenc
     List<TareaCompetencia> findByTareaId(@Param("tareaId") Long tareaId);
 
     /**
-     * Obtiene todas las tareas que requieren una competencia
+     * Obtiene tareas que requieren una competencia.
+     * @param competenciaId ID de la competencia
      */
     @Query("SELECT tc FROM TareaCompetencia tc " +
             "WHERE tc.competencia.id = :competenciaId " +
@@ -31,7 +39,9 @@ public interface TareaCompetenciaRepository extends JpaRepository<TareaCompetenc
     List<TareaCompetencia> findByCompetenciaId(@Param("competenciaId") Long competenciaId);
 
     /**
-     * Obtiene el peso de una competencia en una tarea
+     * Obtiene peso de una competencia en tarea específica.
+     * @param tareaId ID de la tarea
+     * @param competenciaId ID de la competencia
      */
     @Query("SELECT tc.peso FROM TareaCompetencia tc " +
             "WHERE tc.tarea.id = :tareaId AND tc.competencia.id = :competenciaId")
@@ -41,7 +51,8 @@ public interface TareaCompetenciaRepository extends JpaRepository<TareaCompetenc
     );
 
     /**
-     * Calcula la suma de pesos de una tarea (debe ser 1.0)
+     * Suma de pesos de una tarea (debe ser 1.0).
+     * @param tareaId ID de la tarea
      */
     @Query("SELECT SUM(tc.peso) FROM TareaCompetencia tc WHERE tc.tarea.id = :tareaId")
     Optional<BigDecimal> sumPesosByTareaId(@Param("tareaId") Long tareaId);

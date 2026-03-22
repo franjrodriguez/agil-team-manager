@@ -87,7 +87,8 @@ CREATE TABLE tareas (
   estado VARCHAR(50) DEFAULT 'pendiente', -- Estados posibles: pendiente, en_progreso, revision, completada, bloqueada
   prioridad NUMERIC(3,2) CHECK (prioridad BETWEEN 0 AND 1) DEFAULT 0.5,
   estimacion_horas INT,
-  fecha_creacion TIMESTAMP DEFAULT now()
+  fecha_creacion TIMESTAMP DEFAULT now(),
+  fecha_terminacion TIMESTAMP
 );
 
 

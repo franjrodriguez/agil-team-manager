@@ -13,7 +13,9 @@ import com.iesaguadulce.agilteammanager.repository.proyectos.ProyectoRepository;
 import com.iesaguadulce.agilteammanager.repository.proyectos.TareaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -21,7 +23,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Servicio que obtiene los KPIs del Dashboard desde la base de datos
+ * Servicio de métricas para el dashboard de gestión ágil.
+ *
+ * @author Francisco José Rodríguez Ruiz
+ * @version 1.0
  */
 @Service
 public class DashboardService {
@@ -33,7 +38,8 @@ public class DashboardService {
     @Autowired private AsignacionRepository asignacionRepository;
 
     /**
-     * Obtiene todos los KPIs del dashboard en un solo método
+     * Obtiene los KPIs principales del dashboard.
+     * @return métricas agregadas de proyectos, tareas, personas y carga
      */
     public DashboardKPIs obtenerKPIs() {
         long proyectosActivos = contarProyectosActivos();
@@ -43,8 +49,6 @@ public class DashboardService {
 
         return new DashboardKPIs(proyectosActivos, tareasPendientes, personasActivas, cargaPromedio);
     }
-
-    // ===== MÉTODOS INDIVIDUALES =====
 
     /**
      * Widget 1: Proyectos activos
@@ -83,7 +87,8 @@ public class DashboardService {
     // ===== MÉTODOS ASOCIADOS A GRAFICA Y TABLAS INFERIORES
 
     /**
-     * 📊 Obtiene datos de rendimiento (tareas completadas) de los últimos 7 días
+     * Obtiene datos de rendimiento (tareas completadas) de los últimos 7 días
+     * Usa fecha_terminacion de la propia tarea cuando su estado pasa a "completada"
      */
     public List<RendimientoDiaDTO> obtenerRendimientoUltimos7Dias() {
         List<RendimientoDiaDTO> rendimiento = new ArrayList<>();
@@ -94,8 +99,8 @@ public class DashboardService {
             LocalDateTime inicioDia = fecha.atStartOfDay();
             LocalDateTime finDia = fecha.plusDays(1).atStartOfDay();
 
-            // Contar tareas completadas en ese día
-            long tareasCompletadas = asignacionRepository.countByFechaCompletadaBetween(inicioDia, finDia);
+            long tareasCompletadas = tareaRepository.countByEstadoAndFechaTerminacionBetween(
+                    "completada", inicioDia, finDia);
 
             rendimiento.add(new RendimientoDiaDTO(fecha, tareasCompletadas));
         }
@@ -104,10 +109,11 @@ public class DashboardService {
     }
 
     /**
-     * 📋 Obtiene lista de tareas pendientes (máximo 10)
+     * Obtiene todas las tareas pendientes ordenadas por prioridad (sin límite)
      */
+    @Transactional(readOnly = true)
     public List<TareaPendienteDTO> obtenerTareasPendientes() {
-        List<Tarea> tareas = tareaRepository.findTop10ByEstadoOrderByPrioridadDesc("pendiente");
+        List<Tarea> tareas = tareaRepository.findByEstadoOrderByPrioridadDesc("pendiente");
 
         return tareas.stream()
                 .map(t -> new TareaPendienteDTO(
@@ -118,16 +124,17 @@ public class DashboardService {
     }
 
     /**
-     * 👥 Obtiene lista de personas activas con su carga y tareas
+     * Obtiene lista de personas activas con su carga y tareas
      */
+    @Transactional(readOnly = true)
     public List<PersonaActivaDTO> obtenerEquipoActivo() {
         List<Persona> personasActivas = personaRepository.findByEstado("activo");
 
         return personasActivas.stream()
                 .map(p -> {
                     // Obtener última carga de la persona
-                    Double carga = disponibilidadRepository.findUltimaCargaByPersonaId(p.getId());
-                    double cargaActual = (carga != null) ? carga : 0.0;
+                    BigDecimal carga = disponibilidadRepository.findUltimaCargaByPersonaId(p.getId());
+                    double cargaActual = (carga != null) ? carga.doubleValue() : 0.0;
 
                     // Contar tareas activas (en progreso)
                     int numTareas = asignacionRepository.countByPersonaIdAndTareaEstado(

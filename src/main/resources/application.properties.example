@@ -1,7 +1,6 @@
 # ============================================================
 # AGILTEAM MANAGER - CONFIGURATION
 # ============================================================
-# Copia este archivo como application.properties y rellena tus datos.
 
 # Application Info
 spring.application.name=Agilteammanager
@@ -9,11 +8,11 @@ spring.application.name=Agilteammanager
 # IMPORTANTE: Deshabilitar servidor web (no lo necesitamos)
 spring.main.web-application-type=none
 
-# Database
-spring.datasource.url=jdbc:postgresql://localhost:5432/agilteammanagerdb
+# Database (Conexion Local macOS)
+spring.datasource.url=jdbc:postgresql://localhost:5432/agilteamdb
 spring.datasource.driver-class-name=org.postgresql.Driver
-spring.datasource.username=TU_USUARIO
-spring.datasource.password=TU_PASSWORD
+spring.datasource.username=TU_USUARIO_AQUI
+spring.datasource.password=TU_PASSWORD_AQUI
 
 # JPA
 spring.jpa.hibernate.ddl-auto=update
@@ -21,8 +20,8 @@ spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.format_sql=true
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
 
-# Deshabilitar DataSource auto-configuration temporalmente
-spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+# DataSource auto-configuration habilitada (necesaria para JPA/Hibernate)
+# spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 
 # Logging
 logging.level.root=INFO

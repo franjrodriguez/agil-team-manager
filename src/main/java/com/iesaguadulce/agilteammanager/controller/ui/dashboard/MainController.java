@@ -1,6 +1,7 @@
 package com.iesaguadulce.agilteammanager.controller.ui.dashboard;
 
 import com.iesaguadulce.agilteammanager.config.SpringContext;
+import com.iesaguadulce.agilteammanager.controller.ui.login.LoginController;
 import com.iesaguadulce.agilteammanager.controller.ui.perfil.MisTareasController;
 import com.iesaguadulce.agilteammanager.model.personas.Persona;
 import com.iesaguadulce.agilteammanager.service.seguridad.PermisoService;
@@ -11,7 +12,6 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
@@ -22,26 +22,32 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
  * MainController — Controlador principal de la ventana de la aplicación.
  *
- * Responsabilidades:
+ * <p>Gestiona la navegación entre vistas, permisos de menú, cabecera de usuario
+ * y comunicación entre componentes. Punto central de coordinación UI.</p>
+ *
+ *  * Responsabilidades:
  *  - Inicializar la cabecera (usuario, rol, fecha, estado BD)
  *  - Gestionar la navegación lateral cargando FXMLs en el AnchorPane central
  *  - Controlar los iconos de la cabecera (About, Salir)
  *  - Actualizar el pie de página con estado de conexión y hora de sesión
  *  - Aplicar visibilidad de opciones del menú según permisos del rol
+ *
+ * @see PermisoService
  */
+
 @Component
 public class MainController {
 
@@ -128,10 +134,10 @@ public class MainController {
 
     private static final String FXML_CONFIGURACION   = "/views/configuracion/ConfiguracionView.fxml";
 
-    // ─────────────────────────────────────────────────────────
-    // INICIALIZACIÓN
-    // ─────────────────────────────────────────────────────────
+    private static final String FXML_LOGIN           = "/views/login/LoginView.fxml";
+    private static final String FXML_CHANGE_SESSION  = "/views/sesion/ChangeSessionView.fxml";
 
+    /** Inicializa tooltips y carga servicios. */
     @FXML
     public void initialize() {
         // Cargamos el servicio de permisos desde Spring
@@ -139,7 +145,7 @@ public class MainController {
 
         Tooltip.install(img_db_status, new Tooltip("Estado de la conexión a la BD"));
         Tooltip.install(img_about,     new Tooltip("Acerca de AgilTeam Manager"));
-        Tooltip.install(img_exit,      new Tooltip("Cerrar sesión y salir"));
+        Tooltip.install(img_exit,      new Tooltip("Cerrar sesión"));
 
         actualizarCabecera();
         actualizarFooter();
@@ -182,7 +188,7 @@ public class MainController {
     }
 
     // ─────────────────────────────────────────────────────────
-    // NAVEGACIÓN
+    // NAVEGACIÓN (o un intento de hacerlo bien... no me gusta)
     // ─────────────────────────────────────────────────────────
 
     @FXML
@@ -220,8 +226,8 @@ public class MainController {
     }
 
     /**
-     * Carga Mis Tareas y le inyecta la Persona en sesión al controlador.
-     * Es el único caso donde necesitamos el controlador tras la carga.
+     * Muestra las tareas del usuario actual.
+     * Inyecta la persona en sesión al controller correspondiente.
      */
     @FXML
     public void mostrarMisTareas() {
@@ -252,6 +258,7 @@ public class MainController {
     // ICONOS DE CABECERA
     // ─────────────────────────────────────────────────────────
 
+    /** Muestra el diálogo "Acerca de". */
     @FXML
     public void abrirAbout(MouseEvent event) {
         try {
@@ -272,18 +279,63 @@ public class MainController {
         }
     }
 
+    /** Cierra la sesión actual y muestra el login para que otro usuario se autentique. */
     @FXML
-    public void salirAplicacion(MouseEvent event) {
-        Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmacion.setTitle("Salir de AgilTeam Manager");
-        confirmacion.setHeaderText("¿Deseas cerrar la sesión y salir?");
-        confirmacion.setContentText("Se cerrarán todas las ventanas abiertas.");
+    public void cerrarSesion(MouseEvent event) {
+        // Limpiar estado de sesión
+        personaEnSesion = null;
+        nombreUsuario   = "—";
+        rolUsuario      = "—";
+        bdConectada     = false;
+        esAdmin         = false;
 
-        Optional<ButtonType> resultado = confirmacion.showAndWait();
-        if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
-            Platform.exit();
-            System.exit(0);
+        // Resetear UI de cabecera y pie
+        actualizarCabecera();
+        actualizarFooter();
+        if (lbl_status_conected != null) lbl_status_conected.setText("Sesión iniciada a las: --:--:--");
+
+        // Deshabilitar todo el menú lateral
+        deshabilitarMenuCompleto();
+
+        // Mostrar pantalla de espera en el área central
+        cargarVista(FXML_CHANGE_SESSION, "> SESIÓN CERRADA");
+
+        // Abrir el login como modal; si el usuario lo cierra sin logarse, cerrar la app
+        abrirLoginModal();
+    }
+
+    private void abrirLoginModal() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(FXML_LOGIN));
+            Scene scene = new Scene(loader.load());
+
+            LoginController loginCtrl = loader.getController();
+            loginCtrl.setMainController(this);
+
+            Stage loginStage = new Stage();
+            loginStage.setTitle("Iniciar Sesión — AgilTeam Manager");
+            loginStage.setScene(scene);
+            loginStage.setResizable(false);
+            loginStage.initModality(Modality.APPLICATION_MODAL);
+            loginStage.initOwner((Stage) contentArea.getScene().getWindow());
+            loginStage.showAndWait();
+
+            // Si el modal se cierra sin que nadie se autentique → cerrar la app
+            if (personaEnSesion == null) {
+                Platform.exit();
+                System.exit(0);
+            }
+
+        } catch (IOException e) {
+            mostrarError("No se pudo abrir el login.\n" + e.getMessage());
         }
+    }
+
+    private void deshabilitarMenuCompleto() {
+        List.of(btn_roles, btn_competencias, btn_profesionales, btn_proyectos,
+                btn_proy_motor, btn_my_tareas, btn_admin_user, btn_admin_roles,
+                btn_configuration)
+            .forEach(b -> { if (b != null) { b.setDisable(true); b.setOpacity(0.4); } });
     }
 
     // ─────────────────────────────────────────────────────────
@@ -337,17 +389,13 @@ public class MainController {
         boton.setOpacity(tieneAcceso ? 1.0 : 0.4);
     }
 
-    // ─────────────────────────────────────────────────────────
-    // MÉTODOS PRIVADOS — carga de vistas
-    // ─────────────────────────────────────────────────────────
-
     /**
      * Carga un FXML en el AnchorPane central y devuelve el FXMLLoader
      * para que el llamador pueda acceder al controlador si lo necesita.
      *
      * @param rutaFxml  Ruta del FXML dentro del classpath
      * @param pasillo   Texto de navegación para la cabecera
-     * @return FXMLLoader con el controlador ya inicializado, o null si falló
+     * @return FXMLLoader con el controlador ya inicializado, o null si falla
      */
     private FXMLLoader cargarVista(String rutaFxml, String pasillo) {
         try {
@@ -400,6 +448,31 @@ public class MainController {
         }
 
         actualizarIconoBD(img_db_status);
+        cargarAvatarUsuario();
+    }
+
+    private void cargarAvatarUsuario() {
+        if (img_user == null) return;
+        if (personaEnSesion != null) {
+            String path = personaEnSesion.getFotoPath();
+            if (path != null && !path.isBlank()) {
+                try {
+                    File f = new File(path);
+                    if (f.exists()) {
+                        img_user.setImage(new Image(f.toURI().toString()));
+                        return;
+                    }
+                } catch (Exception ignored) { }
+            }
+        }
+        // Fallback: icono genérico según sexo
+        Character sexo = personaEnSesion != null ? personaEnSesion.getSexo() : null;
+        String ruta = Character.valueOf('F').equals(sexo)
+                ? "/icons/user-female.png"
+                : "/icons/user-male.png";
+        try {
+            img_user.setImage(new Image(getClass().getResourceAsStream(ruta)));
+        } catch (Exception ignored) { }
     }
 
     private void actualizarFooter() {

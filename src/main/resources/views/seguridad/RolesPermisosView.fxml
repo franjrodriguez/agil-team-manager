@@ -1,22 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.net.URL?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.VBox?>
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
 
 <!--
 ╔══════════════════════════════════════════════════════════════════╗
@@ -24,11 +12,8 @@
 ║  Estilos: primer-light.css  +  agilteam-styles.css              ║
 ╚══════════════════════════════════════════════════════════════════╝
 -->
-<BorderPane fx:id="rootPane"
-            prefHeight="806.0" prefWidth="1200.0"
-            xmlns="http://javafx.com/javafx/17.0.12"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.iesaguadulce.agilteammanager.controller.ui.seguridad.RolesPermisosController">
+
+<BorderPane fx:id="rootPane" prefHeight="806.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iesaguadulce.agilteammanager.controller.ui.seguridad.RolesPermisosController">
 
     <stylesheets>
         <URL value="@../../css/primer-light.css" />
@@ -39,30 +24,20 @@
          TOP — Cabecera fija
          ═══════════════════════════════════════════════════════ -->
     <top>
-        <HBox alignment="CENTER_LEFT" prefHeight="72.0" spacing="16.0"
-              style="-fx-background-color: -app-bg-card;
-                     -fx-border-color: -app-border-soft;
-                     -fx-border-width: 0 0 1 0;">
-            <padding><Insets top="0" right="24" bottom="0" left="24" /></padding>
+        <HBox alignment="CENTER_LEFT" prefHeight="72.0" spacing="16.0" style="-fx-background-color: -app-bg-card;                      -fx-border-color: -app-border-soft;                      -fx-border-width: 0 0 1 0;">
+            <padding><Insets bottom="0" left="24" right="24" top="0" /></padding>
 
-            <ImageView fitHeight="40.0" fitWidth="40.0"
-                       pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                 <image><Image url="@../../icons/KeyTitle.png" /></image>
             </ImageView>
 
             <VBox alignment="CENTER_LEFT" spacing="2.0" HBox.hgrow="ALWAYS">
-                <Label styleClass="section-title" text="Roles y Permisos" />
-                <Label styleClass="page-subtitle" text="Gestión de roles del sistema y sus permisos" />
+                <Label prefHeight="25.0" prefWidth="275.0" styleClass="section-title" text="Roles de sistema y Permisos" />
+                <Label prefHeight="18.0" prefWidth="546.0" styleClass="page-subtitle" text="Gestión de roles del sistema y sus permisos para acceder a operativas" />
             </VBox>
 
-            <Button fx:id="btnDelete" mnemonicParsing="false"
-                    prefHeight="36.0" prefWidth="140.0"
-                    style="-fx-background-color: -app-error; -fx-text-fill: white;
-                           -fx-background-radius: 6; -fx-font-weight: 600;"
-                    text="Borrar Rol" />
-            <Button fx:id="btnSave" mnemonicParsing="false"
-                    prefHeight="36.0" prefWidth="160.0"
-                    styleClass="primary" text="Guardar Cambios" />
+            <Button fx:id="btnDelete" mnemonicParsing="false" prefHeight="36.0" prefWidth="140.0" style="-fx-background-color: -app-error; -fx-text-fill: white;                            -fx-background-radius: 6; -fx-font-weight: 600;" text="Borrar Rol" />
+            <Button fx:id="btnSave" mnemonicParsing="false" prefHeight="36.0" prefWidth="160.0" styleClass="primary" text="Guardar Cambios" />
         </HBox>
     </top>
 
@@ -70,16 +45,12 @@
          LEFT — Panel lateral claro
          ═══════════════════════════════════════════════════════ -->
     <left>
-        <VBox fx:id="sidebarPanel" prefHeight="734.0" prefWidth="380.0" spacing="12.0"
-              styleClass="app-panel" BorderPane.alignment="CENTER">
-            <padding><Insets top="16" right="16" bottom="16" left="16" /></padding>
+        <VBox fx:id="sidebarPanel" prefHeight="734.0" prefWidth="380.0" spacing="12.0" styleClass="app-panel" BorderPane.alignment="CENTER">
+            <padding><Insets bottom="16" left="16" right="16" top="16" /></padding>
 
-            <TextField fx:id="searchField" prefHeight="38.0"
-                       promptText="Buscar rol..." />
+            <TextField fx:id="searchField" prefHeight="38.0" promptText="Buscar rol..." />
 
-            <Button fx:id="btnAddRol" mnemonicParsing="false"
-                    prefHeight="38.0" prefWidth="400.0" styleClass="primary"
-                    text="Nuevo Rol" />
+            <Button fx:id="btnAddRol" mnemonicParsing="false" prefHeight="38.0" prefWidth="400.0" styleClass="primary" text="Nuevo Rol" />
 
             <ListView fx:id="rolesListView" VBox.vgrow="ALWAYS" />
         </VBox>
@@ -89,76 +60,52 @@
          CENTER — Área de trabajo
          ═══════════════════════════════════════════════════════ -->
     <center>
-        <ScrollPane fx:id="detailScrollPane" hbarPolicy="NEVER" fitToWidth="true"
-                    BorderPane.alignment="CENTER">
+        <ScrollPane fx:id="detailScrollPane" fitToWidth="true" hbarPolicy="NEVER" BorderPane.alignment="CENTER">
             <content>
-                <VBox fx:id="detailPane" spacing="16.0"
-                      style="-fx-background-color: -app-bg-workspace;">
-                    <padding><Insets top="28" right="32" bottom="32" left="32" /></padding>
+                <VBox fx:id="detailPane" spacing="16.0" style="-fx-background-color: -app-bg-workspace;">
+                    <padding><Insets bottom="32" left="32" right="32" top="28" /></padding>
 
                     <!-- Datos del rol -->
-                    <VBox fx:id="credencialesSection" spacing="16.0"
-                          style="-fx-background-color: -app-bg-card;
-                                 -fx-background-radius: 8;
-                                 -fx-border-color: -app-border-soft;
-                                 -fx-border-radius: 8;
-                                 -fx-border-width: 1;
-                                 -fx-padding: 16;">
+                    <VBox fx:id="credencialesSection" spacing="16.0" style="-fx-background-color: -app-bg-card;                                  -fx-background-radius: 8;                                  -fx-border-color: -app-border-soft;                                  -fx-border-radius: 8;                                  -fx-border-width: 1;                                  -fx-padding: 16;">
 
                         <HBox fx:id="taskSectionHeader2" alignment="CENTER_LEFT" spacing="10.0">
-                            <ImageView fx:id="profileAvatar1" fitHeight="24.0" fitWidth="24.0"
-                                       pickOnBounds="true" preserveRatio="true">
+                            <ImageView fx:id="profileAvatar1" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                                 <image><Image url="@../../icons/editar.png" /></image>
                             </ImageView>
-                            <Label styleClass="section-title" text="Datos del Rol"
-                                   HBox.hgrow="ALWAYS" />
+                            <Label styleClass="section-title" text="Datos del Rol" HBox.hgrow="ALWAYS" />
                         </HBox>
 
                         <Separator />
 
                         <VBox spacing="6.0">
                             <Label styleClass="form-label" text="NOMBRE DEL ROL" />
-                            <TextField fx:id="rolField" prefHeight="36.0"
-                                       promptText="Nombre del rol de sistema" />
+                            <TextField fx:id="rolField" prefHeight="36.0" promptText="Nombre del rol de sistema" />
                         </VBox>
 
                         <VBox spacing="6.0">
                             <Label styleClass="form-label" text="DESCRIPCIÓN" />
-                            <TextArea fx:id="descripcionArea" prefHeight="100.0"
-                                      wrapText="true"
-                                      promptText="Descripción del rol y sus responsabilidades..." />
+                            <TextArea fx:id="descripcionArea" prefHeight="100.0" promptText="Descripción del rol y sus responsabilidades..." wrapText="true" />
                         </VBox>
                     </VBox>
 
                     <!-- Permisos asignados -->
-                    <VBox fx:id="rolesSection" spacing="12.0"
-                          style="-fx-background-color: -app-bg-card;
-                                 -fx-background-radius: 8;
-                                 -fx-border-color: -app-border-soft;
-                                 -fx-border-radius: 8;
-                                 -fx-border-width: 1;
-                                 -fx-padding: 16;">
+                    <VBox fx:id="rolesSection" spacing="12.0" style="-fx-background-color: -app-bg-card;                                  -fx-background-radius: 8;                                  -fx-border-color: -app-border-soft;                                  -fx-border-radius: 8;                                  -fx-border-width: 1;                                  -fx-padding: 16;">
 
                         <HBox fx:id="taskSectionHeader" alignment="CENTER_LEFT" spacing="10.0">
-                            <ImageView fx:id="profileAvatar11" fitHeight="24.0" fitWidth="24.0"
-                                       pickOnBounds="true" preserveRatio="true">
+                            <ImageView fx:id="profileAvatar11" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                                 <image><Image url="@../../icons/KeyTitle.png" /></image>
                             </ImageView>
-                            <Label styleClass="section-title" text="Permisos del Rol"
-                                   HBox.hgrow="ALWAYS" />
-                            <Button fx:id="btnAddPermiso" mnemonicParsing="false"
-                                    prefHeight="32.0" prefWidth="150.0"
-                                    styleClass="primary" text="Agregar Permiso" />
+                            <Label styleClass="section-title" text="Permisos del Rol" HBox.hgrow="ALWAYS" />
+                            <Button fx:id="btnAddPermiso" mnemonicParsing="false" prefHeight="32.0" prefWidth="150.0" styleClass="primary" text="Agregar Permiso" />
                         </HBox>
 
                         <Separator />
 
-                        <TableView fx:id="tasksTable" prefHeight="220.0"
-                                   style="-fx-background-radius: 6;">
+                        <TableView fx:id="tasksTable" prefHeight="220.0" style="-fx-background-radius: 6;">
                             <columns>
-                                <TableColumn fx:id="nombreColumn"     prefWidth="200.0" text="NOMBRE" />
+                                <TableColumn fx:id="nombreColumn" prefWidth="200.0" text="NOMBRE" />
                                 <TableColumn fx:id="descripcionColumn" prefWidth="360.0" text="DESCRIPCIÓN" />
-                                <TableColumn fx:id="accionesColumn"   prefWidth="130.0" text="ACCIONES" />
+                                <TableColumn fx:id="accionesColumn" prefWidth="130.0" text="ACCIONES" />
                             </columns>
                         </TableView>
                     </VBox>
@@ -166,7 +113,7 @@
                     <Region VBox.vgrow="ALWAYS" />
 
                     <!-- Nodos fantasma -->
-                    <HBox fx:id="actionButtons" visible="false" managed="false" />
+                    <HBox fx:id="actionButtons" managed="false" visible="false" />
 
                 </VBox>
             </content>

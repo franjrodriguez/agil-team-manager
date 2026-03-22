@@ -11,17 +11,25 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repositorio para gestión de tareas.
+ *
+ * @author Francisco José Rodríguez Ruiz
+ * @version 1.0
+ */
 @Repository
 public interface TareaRepository extends JpaRepository<Tarea, Long> {
 
     /**
-     * Obtiene tareas por proyecto
+     * Obtiene tareas de un proyecto.
+     * @param proyectoId ID del proyecto
      */
     @Query("SELECT t FROM Tarea t WHERE t.proyecto.id = :proyectoId")
     List<Tarea> findByProyectoId(@Param("proyectoId") Long proyectoId);
 
     /**
-     * Obtiene tareas por sprint
+     * Obtiene tareas de un sprint.
+     * @param sprintId ID del sprint
      */
     @Query("SELECT t FROM Tarea t WHERE t.sprint.id = :sprintId")
     List<Tarea> findBySprintId(@Param("sprintId") Long sprintId);
@@ -32,7 +40,8 @@ public interface TareaRepository extends JpaRepository<Tarea, Long> {
     List<Tarea> findByEstado(String estado);
 
     /**
-     * Obtiene tareas pendientes de un proyecto
+     * Obtiene tareas pendientes de un proyecto.
+     * @param proyectoId ID del proyecto
      */
     @Query("SELECT t FROM Tarea t " +
             "WHERE t.proyecto.id = :proyectoId AND t.estado = 'pendiente'")
@@ -46,7 +55,17 @@ public interface TareaRepository extends JpaRepository<Tarea, Long> {
     List<Tarea> findTareasSinAsignar();
 
     /**
-     * Busca tarea con sus competencias requeridas cargadas
+     * Obtiene tareas sin asignar con proyecto y sprint ya inicializados (evita LazyInitializationException).
+     */
+    @Query("SELECT t FROM Tarea t " +
+            "JOIN FETCH t.proyecto " +
+            "LEFT JOIN FETCH t.sprint " +
+            "WHERE NOT EXISTS (SELECT 1 FROM Asignacion a WHERE a.tarea.id = t.id)")
+    List<Tarea> findTareasSinAsignarConRelaciones();
+
+    /**
+     * Busca tarea con competencias cargadas (JOIN FETCH).
+     * @param id ID de la tarea
      */
     @Query("SELECT DISTINCT t FROM Tarea t " +
             "LEFT JOIN FETCH t.tareasCompetencias tc " +
@@ -55,13 +74,16 @@ public interface TareaRepository extends JpaRepository<Tarea, Long> {
     Optional<Tarea> findByIdWithCompetencias(@Param("id") Long id);
 
     /**
-     * Obtiene tareas con prioridad mayor o igual a un valor
+     * Obtiene tareas con prioridad mayor o igual al valor dado.
+     * @param prioridadMinima valor mínimo de prioridad
      */
     @Query("SELECT t FROM Tarea t WHERE t.prioridad >= :prioridadMinima ORDER BY t.prioridad DESC")
     List<Tarea> findByPrioridadGreaterThanEqual(@Param("prioridadMinima") BigDecimal prioridadMinima);
 
     /**
-     * Obtiene tareas creadas en un rango de fechas
+     * Obtiene tareas creadas en rango de fechas.
+     * @param desde fecha inicio
+     * @param hasta fecha fin
      */
     @Query("SELECT t FROM Tarea t " +
             "WHERE t.fechaCreacion BETWEEN :desde AND :hasta")
@@ -71,7 +93,8 @@ public interface TareaRepository extends JpaRepository<Tarea, Long> {
     );
 
     /**
-     * Cuenta tareas por estado en un proyecto
+     * Cuenta tareas por estado en un proyecto.
+     * @param proyectoId ID del proyecto
      */
     @Query("SELECT t.estado, COUNT(t) FROM Tarea t " +
             "WHERE t.proyecto.id = :proyectoId " +
@@ -79,7 +102,8 @@ public interface TareaRepository extends JpaRepository<Tarea, Long> {
     List<Object[]> countTareasByEstadoAndProyectoId(@Param("proyectoId") Long proyectoId);
 
     /**
-     * Cuenta tareas por estado en un sprint
+     * Cuenta tareas por estado en un sprint.
+     * @param sprintId ID del sprint
      */
     @Query("SELECT t.estado, COUNT(t) FROM Tarea t " +
             "WHERE t.sprint.id = :sprintId " +
@@ -97,8 +121,13 @@ public interface TareaRepository extends JpaRepository<Tarea, Long> {
     long countByEstado(String estado);
 
     /**
-     * Obtiene las 10 tareas pendientes con mayor prioridad
+     * Obtiene todas las tareas de un estado ordenadas por prioridad
      */
-    List<Tarea> findTop10ByEstadoOrderByPrioridadDesc(String estado);
+    List<Tarea> findByEstadoOrderByPrioridadDesc(String estado);
+
+    /**
+     * Cuenta tareas completadas en un rango de fecha_terminacion (para la gráfica)
+     */
+    long countByEstadoAndFechaTerminacionBetween(String estado, LocalDateTime inicio, LocalDateTime fin);
 
 }

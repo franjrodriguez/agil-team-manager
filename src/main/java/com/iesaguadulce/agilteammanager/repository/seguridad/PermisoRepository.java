@@ -8,6 +8,12 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repositorio para gestión de permisos del sistema.
+ *
+ * @author Francisco José Rodríguez Ruiz
+ * @version 1.0
+ */
 @Repository
 public interface PermisoRepository extends JpaRepository<Permiso, Long> {
 
@@ -22,13 +28,14 @@ public interface PermisoRepository extends JpaRepository<Permiso, Long> {
     boolean existsByCodigo(String codigo);
 
     /**
-     * Obtiene todos los permisos de un rol específico
+     * Obtiene permisos asociados a un rol.
+     * @param rolId ID del rol
      */
     @Query("SELECT p FROM Permiso p JOIN p.roles r WHERE r.id = :rolId")
     List<Permiso> findByRolId(Long rolId);
 
     /**
-     * Busca permisos por código que contenga el texto
+     * Busca permisos por código que contenga el texto (ignora mayusculas)
      */
     List<Permiso> findByCodigoContainingIgnoreCase(String codigo);
 }

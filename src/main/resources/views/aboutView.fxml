@@ -1,20 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.net.URL?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.VBox?>
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
 
-<VBox prefHeight="600.0" prefWidth="500.0"
-      style="-fx-background-color: -app-bg-workspace;"
-      xmlns="http://javafx.com/javafx/17.0.12"
-      xmlns:fx="http://javafx.com/fxml/1">
+<VBox prefHeight="600.0" prefWidth="500.0" style="-fx-background-color: -app-bg-workspace;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iesaguadulce.agilteammanager.controller.ui.dashboard.AboutController">
 
     <stylesheets>
         <URL value="@../css/primer-light.css" />
@@ -22,76 +14,39 @@
     </stylesheets>
 
     <!-- ── Cabecera oscura con logo ── -->
-    <VBox alignment="CENTER" prefHeight="160.0" spacing="0.0"
-          style="-fx-background-color: -app-bg-header;">
-        <ImageView fitHeight="110.0" fitWidth="420.0"
-                   pickOnBounds="true" preserveRatio="true">
+    <VBox alignment="CENTER" prefHeight="160.0" spacing="0.0" style="-fx-background-color: -app-bg-header;">
+        <ImageView fitHeight="110.0" fitWidth="420.0" pickOnBounds="true" preserveRatio="true">
             <image><Image url="@../assets/logo_oscuro.png" /></image>
         </ImageView>
-        <Label text="v 1.0.0"
-               style="-fx-text-fill: #6B7280; -fx-font-size: 12px; -fx-padding: 4 0 0 0;" />
+        <Label style="-fx-text-fill: #6B7280; -fx-font-size: 12px; -fx-padding: 4 0 0 0;" text="v 1.0.0" />
     </VBox>
 
     <!-- ── Contenido ── -->
-    <VBox VBox.vgrow="ALWAYS" spacing="12.0"
-          style="-fx-background-color: -app-bg-workspace;">
-        <padding><Insets top="20" right="24" bottom="0" left="24" /></padding>
+    <VBox spacing="12.0" style="-fx-background-color: -app-bg-workspace;" VBox.vgrow="ALWAYS">
+        <padding><Insets bottom="0" left="24" right="24" top="20" /></padding>
 
         <!-- Descripción -->
-        <VBox spacing="4.0"
-              style="-fx-background-color: -app-bg-card;
-                     -fx-background-radius: 8;
-                     -fx-border-color: -app-border-soft;
-                     -fx-border-radius: 8;
-                     -fx-border-width: 1;
-                     -fx-padding: 14 16 14 16;">
+        <VBox spacing="4.0" style="-fx-background-color: -app-bg-card;                      -fx-background-radius: 8;                      -fx-border-color: -app-border-soft;                      -fx-border-radius: 8;                      -fx-border-width: 1;                      -fx-padding: 14 16 14 16;">
             <Label styleClass="form-label" text="DESCRIPCIÓN" />
-            <Label styleClass="page-subtitle"
-                   text="Solución integral para optimizar la carga de trabajo y el seguimiento de competencias en equipos IT."
-                   wrapText="true" />
+            <Label styleClass="page-subtitle" text="Solución integral para optimizar la carga de trabajo y el seguimiento de competencias en equipos IT." wrapText="true" />
         </VBox>
 
         <!-- Desarrollado por -->
-        <VBox spacing="4.0"
-              style="-fx-background-color: -app-bg-card;
-                     -fx-background-radius: 8;
-                     -fx-border-color: -app-border-soft;
-                     -fx-border-radius: 8;
-                     -fx-border-width: 1;
-                     -fx-padding: 14 16 14 16;">
+        <VBox spacing="4.0" style="-fx-background-color: -app-bg-card;                      -fx-background-radius: 8;                      -fx-border-color: -app-border-soft;                      -fx-border-radius: 8;                      -fx-border-width: 1;                      -fx-padding: 14 16 14 16;">
             <Label styleClass="form-label" text="DESARROLLADO POR" />
-            <Label styleClass="page-subtitle"
-                   text="Francisco José Rodríguez Ruiz (Fran)"
-                   style="-fx-font-weight: 600; -fx-text-fill: #1F2937;" />
-            <Label styleClass="page-subtitle"
-                   text="Proyecto Fin de Grado · FP DAM · 2025 / 26" />
+            <Label style="-fx-font-weight: 600; -fx-text-fill: #1F2937;" styleClass="page-subtitle" text="Francisco José Rodríguez Ruiz (Fran)" />
+            <Label styleClass="page-subtitle" text="Proyecto Fin de Grado · FP DAM · 2025 / 26" />
         </VBox>
 
         <!-- Agradecimientos + Licencia en fila -->
         <HBox spacing="12.0">
-            <VBox spacing="4.0" HBox.hgrow="ALWAYS"
-                  style="-fx-background-color: -app-bg-card;
-                         -fx-background-radius: 8;
-                         -fx-border-color: -app-border-soft;
-                         -fx-border-radius: 8;
-                         -fx-border-width: 1;
-                         -fx-padding: 14 16 14 16;">
+            <VBox spacing="4.0" style="-fx-background-color: -app-bg-card;                          -fx-background-radius: 8;                          -fx-border-color: -app-border-soft;                          -fx-border-radius: 8;                          -fx-border-width: 1;                          -fx-padding: 14 16 14 16;" HBox.hgrow="ALWAYS">
                 <Label styleClass="form-label" text="AGRADECIMIENTOS" />
-                <Label styleClass="page-subtitle"
-                       text="Tutores del centro y Kenzo (Happiness Off.)"
-                       wrapText="true" />
+                <Label styleClass="page-subtitle" text="Tutores del centro y Kenzo (Happiness Off.)" wrapText="true" />
             </VBox>
-            <VBox spacing="4.0" HBox.hgrow="ALWAYS"
-                  style="-fx-background-color: -app-bg-card;
-                         -fx-background-radius: 8;
-                         -fx-border-color: -app-border-soft;
-                         -fx-border-radius: 8;
-                         -fx-border-width: 1;
-                         -fx-padding: 14 16 14 16;">
+            <VBox spacing="4.0" style="-fx-background-color: -app-bg-card;                          -fx-background-radius: 8;                          -fx-border-color: -app-border-soft;                          -fx-border-radius: 8;                          -fx-border-width: 1;                          -fx-padding: 14 16 14 16;" HBox.hgrow="ALWAYS">
                 <Label styleClass="form-label" text="LICENCIA" />
-                <Label styleClass="page-subtitle"
-                       text="Creative Commons · Uso Educativo"
-                       wrapText="true" />
+                <Label styleClass="page-subtitle" text="Creative Commons · Uso Educativo" wrapText="true" />
             </VBox>
         </HBox>
 
@@ -99,13 +54,9 @@
     </VBox>
 
     <!-- ── Footer con botón ── -->
-    <HBox alignment="CENTER"
-          style="-fx-background-color: -app-bg-card;
-                 -fx-border-color: -app-border-soft;
-                 -fx-border-width: 1 0 0 0;">
-        <padding><Insets top="14" right="24" bottom="14" left="24" /></padding>
-        <Button mnemonicParsing="false" prefHeight="36.0" prefWidth="140.0"
-                styleClass="primary" text="Regresar" />
+    <HBox alignment="CENTER" style="-fx-background-color: -app-bg-card;                  -fx-border-color: -app-border-soft;                  -fx-border-width: 1 0 0 0;">
+        <padding><Insets bottom="14" left="24" right="24" top="14" /></padding>
+        <Button fx:id="btnCerrar" mnemonicParsing="false" prefHeight="36.0" prefWidth="140.0" styleClass="primary" text="Regresar" />
     </HBox>
 
 </VBox>

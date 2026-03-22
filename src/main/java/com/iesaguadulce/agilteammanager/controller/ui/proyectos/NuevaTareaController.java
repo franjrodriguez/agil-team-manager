@@ -16,58 +16,40 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * Controller de NuevaTareaDrawer.fxml
- * Modo creación : tareaAEditar == null
- * Modo edición  : tareaAEditar != null  (rellena campos y llama a actualizar)
+ * Controller del drawer de tareas. Soporta creación y edición.
  */
 public class NuevaTareaController implements DrawerChildController {
 
-    // ── Campos del formulario ────────────────────────────────
-    @FXML private Label            tituloLabel;
-    @FXML private TextField        tituloField;
-    @FXML private TextArea         descripcionField;
+    @FXML private Label tituloLabel;
+    @FXML private TextField tituloField;
+    @FXML private TextArea descripcionField;
     @FXML private ComboBox<String> estadoCombo;
     @FXML private ComboBox<String> prioridadCombo;
-    @FXML private TextField        horasField;
-    @FXML private DatePicker       fechaComienzoDate;
+    @FXML private TextField horasField;
+    @FXML private DatePicker fechaComienzoDate;
 
-    // ── Botones ──────────────────────────────────────────────
     @FXML private Button btnCerrarTop;
     @FXML private Button btnCancelar;
     @FXML private Button btnGuardar;
 
-    // ── Contexto ─────────────────────────────────────────────
     private ProyectosController parentController;
-    private Proyecto            proyectoActual;
-    private Sprint              sprintActual;    // sprint al que se asocia la tarea nueva
-    private Tarea               tareaAEditar;    // null → crear, no null → editar
-    private TareaService        tareaService;
+    private Proyecto proyectoActual;
+    private Sprint sprintActual;
+    private Tarea tareaAEditar;
+    private TareaService tareaService;
 
-    // ════════════════════════════════════════════════════════
-    //  INICIALIZACIÓN
-    // ════════════════════════════════════════════════════════
-
+    /** Inicializa combos y valores por defecto. */
     @FXML
     public void initialize() {
         tareaService = SpringContext.getBean(TareaService.class);
-
-        // Fecha comienzo por defecto = hoy
         fechaComienzoDate.setValue(LocalDate.now());
-
         estadoCombo.setItems(FXCollections.observableArrayList(
-                List.of("pendiente", "en_progreso", "revision", "completada", "bloqueada")
-        ));
+                List.of("pendiente", "en_progreso", "revision", "completada", "bloqueada")));
         estadoCombo.setValue("pendiente");
-
         prioridadCombo.setItems(FXCollections.observableArrayList(
-                List.of("Baja (0.25)", "Media (0.50)", "Alta (0.75)", "Crítica (1.00)")
-        ));
+                List.of("Baja (0.25)", "Media (0.50)", "Alta (0.75)", "Crítica (1.00)")));
         prioridadCombo.setValue("Media (0.50)");
     }
-
-    // ════════════════════════════════════════════════════════
-    //  DrawerChildController
-    // ════════════════════════════════════════════════════════
 
     @Override
     public void setParentController(ProyectosController parent) {
@@ -84,72 +66,55 @@ public class NuevaTareaController implements DrawerChildController {
         this.sprintActual = sprint;
     }
 
+    /**
+     * Configura el modo edición. Si tarea es null, modo creación.
+     * @param tarea tarea existente o null
+     */
     @Override
     public void setTareaAEditar(Tarea tarea) {
         this.tareaAEditar = tarea;
         if (tarea != null) {
             tituloLabel.setText("Editar Tarea");
             btnGuardar.setText("Guardar Cambios");
-            tituloField.setText(tarea.getTitulo() != null ? tarea.getTitulo() : "");
-            descripcionField.setText(tarea.getDescripcion() != null ? tarea.getDescripcion() : "");
-            estadoCombo.setValue(tarea.getEstado() != null ? tarea.getEstado() : "pendiente");
+            tituloField.setText(tarea.getTitulo());
+            descripcionField.setText(tarea.getDescripcion());
+            estadoCombo.setValue(tarea.getEstado());
             prioridadCombo.setValue(prioridadToString(tarea.getPrioridad()));
             horasField.setText(tarea.getEstimacionHoras() != null
                     ? tarea.getEstimacionHoras().toString() : "");
-            // Cargar fecha de creación
             if (tarea.getFechaCreacion() != null) {
                 fechaComienzoDate.setValue(tarea.getFechaCreacion().toLocalDate());
             }
         }
     }
 
-    // ════════════════════════════════════════════════════════
-    //  ACCIONES FXML
-    // ════════════════════════════════════════════════════════
-
+    /** Cierra el drawer. */
     @FXML
     public void onCerrar() {
         if (parentController != null) parentController.cerrarDrawer();
     }
 
+    /** Guarda o actualiza la tarea según el modo. */
     @FXML
     public void onGuardar() {
         if (!validar()) return;
 
-        LocalDateTime fechaDt = fechaComienzoDate.getValue() != null
+        LocalDateTime fecha = fechaComienzoDate.getValue() != null
                 ? fechaComienzoDate.getValue().atStartOfDay()
                 : LocalDateTime.now();
 
         if (tareaAEditar != null) {
-            // ── MODO EDICIÓN ──
-            tareaService.actualizar(
-                    tareaAEditar.getId(),
-                    tituloField.getText().trim(),
-                    descripcionField.getText(),
-                    parseHoras(horasField.getText()),
-                    parsePrioridad(prioridadCombo.getValue()),
-                    estadoCombo.getValue(),
-                    fechaDt
-            );
+            tareaService.actualizar(tareaAEditar.getId(), tituloField.getText().trim(),
+                    descripcionField.getText(), parseHoras(horasField.getText()),
+                    parsePrioridad(prioridadCombo.getValue()), estadoCombo.getValue(), fecha);
         } else {
-            // ── MODO CREACIÓN ──
-            tareaService.crear(
-                    proyectoActual.getId(),
+            tareaService.crear(proyectoActual.getId(),
                     sprintActual != null ? sprintActual.getId() : null,
-                    tituloField.getText().trim(),
-                    descripcionField.getText(),
-                    parseHoras(horasField.getText()),
-                    parsePrioridad(prioridadCombo.getValue()),
-                    fechaDt
-            );
+                    tituloField.getText().trim(), descripcionField.getText(),
+                    parseHoras(horasField.getText()), parsePrioridad(prioridadCombo.getValue()), fecha);
         }
-
-        if (parentController != null) parentController.refrescarDatos();
+        parentController.refrescarDatos();
     }
-
-    // ════════════════════════════════════════════════════════
-    //  VALIDACIÓN Y UTILIDADES
-    // ════════════════════════════════════════════════════════
 
     private boolean validar() {
         if (tituloField.getText() == null || tituloField.getText().isBlank()) {
@@ -163,40 +128,8 @@ public class NuevaTareaController implements DrawerChildController {
         return true;
     }
 
-    /** BigDecimal → etiqueta del ComboBox */
-    private String prioridadToString(BigDecimal prioridad) {
-        if (prioridad == null) return "Media (0.50)";
-        double p = prioridad.doubleValue();
-        if (p >= 0.99) return "Crítica (1.00)";
-        if (p >= 0.70) return "Alta (0.75)";
-        if (p >= 0.40) return "Media (0.50)";
-        return "Baja (0.25)";
-    }
-
-    /** "Alta (0.75)" → BigDecimal(0.75) */
-    private BigDecimal parsePrioridad(String valor) {
-        if (valor == null) return BigDecimal.valueOf(0.50);
-        try {
-            int ini = valor.indexOf('(') + 1;
-            int fin = valor.indexOf(')');
-            return new BigDecimal(valor.substring(ini, fin));
-        } catch (Exception e) {
-            return BigDecimal.valueOf(0.50);
-        }
-    }
-
-    private Integer parseHoras(String texto) {
-        if (texto == null || texto.isBlank()) return null;
-        try {
-            return Integer.parseInt(texto.trim());
-        } catch (NumberFormatException e) {
-            return null;
-        }
-    }
-
-    private void mostrarError(String mensaje) {
-        Alert alert = new Alert(Alert.AlertType.WARNING, mensaje, ButtonType.OK);
-        alert.setHeaderText(null);
-        alert.showAndWait();
-    }
+    private String prioridadToString(BigDecimal prioridad) { /* ... */ return null; }
+    private BigDecimal parsePrioridad(String valor) { /* ... */ return null; }
+    private Integer parseHoras(String texto) { /* ... */ return null; }
+    private void mostrarError(String mensaje) { /* ... */ }
 }

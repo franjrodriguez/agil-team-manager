@@ -10,31 +10,41 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repositorio para gestión de asignaciones de tareas a personas.
+ *
+ * @author Francisco José Rodríguez Ruiz
+ * @version 1.0
+ */
 @Repository
 public interface AsignacionRepository extends JpaRepository<Asignacion, Long> {
 
     /**
-     * Obtiene todas las asignaciones de una tarea
+     * Obtiene asignaciones de una tarea.
+     * @param tareaId ID de la tarea
      */
     @Query("SELECT a FROM Asignacion a WHERE a.tarea.id = :tareaId ORDER BY a.fechaAsignacion DESC")
     List<Asignacion> findByTareaId(@Param("tareaId") Long tareaId);
 
     /**
-     * Obtiene la asignación activa de una tarea (no completada)
+     * Obtiene asignación activa (no completada) de una tarea.
+     * @param tareaId ID de la tarea
      */
     @Query("SELECT a FROM Asignacion a " +
             "WHERE a.tarea.id = :tareaId AND a.fechaCompletada IS NULL")
     Optional<Asignacion> findAsignacionActivaByTareaId(@Param("tareaId") Long tareaId);
 
     /**
-     * Obtiene asignaciones activas de una persona (no completadas)
+     * Obtiene asignaciones activas de una persona.
+     * @param personaId ID de la persona
      */
     @Query("SELECT a FROM Asignacion a " +
             "WHERE a.persona.id = :personaId AND a.fechaCompletada IS NULL")
     List<Asignacion> findAsignacionesActivasByPersonaId(@Param("personaId") Long personaId);
 
     /**
-     * Obtiene asignaciones completadas de una persona
+     * Obtiene asignaciones completadas de una persona.
+     * @param personaId ID de la persona
      */
     @Query("SELECT a FROM Asignacion a " +
             "WHERE a.persona.id = :personaId AND a.fechaCompletada IS NOT NULL " +
@@ -42,7 +52,9 @@ public interface AsignacionRepository extends JpaRepository<Asignacion, Long> {
     List<Asignacion> findAsignacionesCompletadasByPersonaId(@Param("personaId") Long personaId);
 
     /**
-     * Obtiene asignaciones en un rango de fechas
+     * Obtiene asignaciones en rango de fechas.
+     * @param desde fecha inicio
+     * @param hasta fecha fin
      */
     @Query("SELECT a FROM Asignacion a " +
             "WHERE a.fechaAsignacion BETWEEN :desde AND :hasta")
@@ -52,7 +64,8 @@ public interface AsignacionRepository extends JpaRepository<Asignacion, Long> {
     );
 
     /**
-     * Obtiene asignaciones de un proyecto
+     * Obtiene asignaciones de un proyecto.
+     * @param proyectoId ID del proyecto
      */
     @Query("SELECT a FROM Asignacion a " +
             "WHERE a.tarea.proyecto.id = :proyectoId " +
@@ -60,7 +73,8 @@ public interface AsignacionRepository extends JpaRepository<Asignacion, Long> {
     List<Asignacion> findByProyectoId(@Param("proyectoId") Long proyectoId);
 
     /**
-     * Obtiene asignaciones de un sprint
+     * Obtiene asignaciones de un sprint.
+     * @param sprintId ID del sprint
      */
     @Query("SELECT a FROM Asignacion a " +
             "WHERE a.tarea.sprint.id = :sprintId " +
@@ -68,21 +82,24 @@ public interface AsignacionRepository extends JpaRepository<Asignacion, Long> {
     List<Asignacion> findBySprintId(@Param("sprintId") Long sprintId);
 
     /**
-     * Cuenta asignaciones activas por persona
+     * Cuenta asignaciones activas de una persona.
+     * @param personaId ID de la persona
      */
     @Query("SELECT COUNT(a) FROM Asignacion a " +
             "WHERE a.persona.id = :personaId AND a.fechaCompletada IS NULL")
     long countAsignacionesActivasByPersonaId(@Param("personaId") Long personaId);
 
     /**
-     * Obtiene valoración promedio de una persona
+     * Obtiene valoración promedio de una persona.
+     * @param personaId ID de la persona
      */
     @Query("SELECT AVG(a.valoracionFinal) FROM Asignacion a " +
             "WHERE a.persona.id = :personaId AND a.valoracionFinal IS NOT NULL")
     Optional<Double> findValoracionPromedioByPersonaId(@Param("personaId") Long personaId);
 
     /**
-     * Obtiene asignaciones con carga completa (persona, tarea, proyecto)
+     * Obtiene asignación con persona, tarea y proyecto cargados (JOIN FETCH).
+     * @param id ID de la asignación
      */
     @Query("SELECT a FROM Asignacion a " +
             "JOIN FETCH a.persona p " +
@@ -97,7 +114,9 @@ public interface AsignacionRepository extends JpaRepository<Asignacion, Long> {
     long countByFechaCompletadaBetween(LocalDateTime inicio, LocalDateTime fin);
 
     /**
-     * Cuenta tareas activas de una persona por estado
+     * Cuenta asignaciones activas de una persona por estado de tarea.
+     * @param personaId ID de la persona
+     * @param estado estado de la tarea
      */
     @Query("SELECT COUNT(a) FROM Asignacion a WHERE a.persona.id = :personaId " +
             "AND a.tarea.estado = :estado AND a.fechaCompletada IS NULL")

@@ -14,6 +14,15 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 
+/**
+ * Controller del dashboard de administrador.
+ *
+ * <p>Muestra KPIs de usuarios, roles e información del sistema.
+ * Delega la navegación a {@link MainController}.</p>
+ *
+ * @see MainController
+ * @see PersonaService
+ */
 @Component
 public class DashboardAdminController implements Initializable {
 
@@ -37,6 +46,7 @@ public class DashboardAdminController implements Initializable {
 
     private MainController mainController;
 
+    /** Inicializa servicios y carga los KPIs. */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         personaService    = SpringContext.getBean(PersonaService.class);
@@ -47,6 +57,7 @@ public class DashboardAdminController implements Initializable {
         cargarInfoSistema();
     }
 
+    /** Los KPIs no son los Krispis de Kellog, sino los Widgets */
     private void cargarKpisUsuarios() {
         long total    = personaService.contarTotal();
         long activos  = personaService.contarActivas();
@@ -59,6 +70,11 @@ public class DashboardAdminController implements Initializable {
         valueRoles.setText(String.valueOf(roles));
     }
 
+    /*
+    * Veamos algo: todo el tema de este método, en cuanto a la info puesta a piñón
+    *               es para no meter de momento más caña al proyecto. Soy consciente
+    *               que sería necesario afinar esto pero para la MVC ya bien de momento.
+     */
     private void cargarInfoSistema() {
         valueVersion.setText("1.0");
 

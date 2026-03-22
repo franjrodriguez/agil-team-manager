@@ -22,88 +22,41 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * ═══════════════════════════════════════════════════════════════
- * RolesPermisosController — Controlador UI de Roles y Permisos
- * ───────────────────────────────────────────────────────────────
- * UBICACIÓN: src/main/java/.../ui/seguridad/RolesPermisosController.java
+ * Controlador UI para gestión de roles y permisos del sistema.
  *
- * FLUJO:
- *   FXML (evento) → este Controller → PermisoService → BD
+ * <p>Permite administrar roles, asignar/quitar permisos y crear nuevos permisos.</p>
  *
- * RESPONSABILIDADES:
- *   - Listar y buscar roles del sistema en el sidebar
- *   - Mostrar/editar nombre y descripción del rol seleccionado
- *   - Listar permisos asignados al rol
- *   - Agregar / quitar permisos de un rol
- *   - Crear y eliminar roles
- *
- * NOTA: Usa SpringContext.getBean() en initialize() porque JavaFX
- * instancia este controller con new (sin Spring).
- * ═══════════════════════════════════════════════════════════════
+ * @author Francisco José Rodríguez Ruiz
+ * @version 1.0
  */
 @Component
 public class RolesPermisosController implements Initializable {
 
-    // ─────────────────────────────────────────────────────────
-    // SERVICIOS (obtenidos manualmente desde SpringContext)
-    // ─────────────────────────────────────────────────────────
-
     private PermisoService permisoService;
 
-    // ─────────────────────────────────────────────────────────
-    // REFERENCIAS AL FXML — Contenedor raíz
-    // ─────────────────────────────────────────────────────────
-
+    // FXML - Contenedor raíz
     @FXML private BorderPane rootPane;
 
-    // ─────────────────────────────────────────────────────────
-    // REFERENCIAS AL FXML — Sidebar
-    // ─────────────────────────────────────────────────────────
-
+    // FXML - Sidebar
     @FXML private VBox sidebarPanel;
     @FXML private TextField searchField;
     @FXML private Button btnAddRol;
     @FXML private ListView<RolSistema> rolesListView;
 
-    // ─────────────────────────────────────────────────────────
-    // REFERENCIAS AL FXML — Sección de edición del rol
-    // ─────────────────────────────────────────────────────────
-
-    /** Campo nombre del rol */
+    // FXML - Edición del rol
     @FXML private TextField rolField;
-
-    /** Campo descripción del rol */
     @FXML private TextArea descripcionArea;
 
-    // ─────────────────────────────────────────────────────────
-    // REFERENCIAS AL FXML — Tabla de permisos del rol
-    // ─────────────────────────────────────────────────────────
-
+    // FXML - Tabla de permisos
     @FXML private TableView<Permiso> tasksTable;
-
-    /** Columna NOMBRE → Permiso.codigo */
     @FXML private TableColumn<Permiso, String> nombreColumn;
-
-    /** Columna DESCRIPCIÓN → Permiso.descripcion */
     @FXML private TableColumn<Permiso, String> descripcionColumn;
-
-    /**
-     * Columna ACCIONES → botón "Quitar" por fila para desasignar el permiso del rol.
-     * Usamos Void porque el valor no viene del modelo, lo renderiza la cellFactory.
-     */
     @FXML private TableColumn<Permiso, Void> accionesColumn;
 
-    // ─────────────────────────────────────────────────────────
-    // REFERENCIAS AL FXML — Botones
-    // ─────────────────────────────────────────────────────────
-
+    // FXML - Botones
     @FXML private Button btnAddPermiso;
     @FXML private Button btnDelete;
     @FXML private Button btnSave;
-
-    // ─────────────────────────────────────────────────────────
-    // ESTADO INTERNO
-    // ─────────────────────────────────────────────────────────
 
     /** Lista observable que alimenta el ListView del sidebar */
     private final ObservableList<RolSistema> listaRoles = FXCollections.observableArrayList();
@@ -114,13 +67,8 @@ public class RolesPermisosController implements Initializable {
     /** Rol actualmente seleccionado. null = modo "nuevo" */
     private RolSistema rolSeleccionado;
 
-    // =========================================================================
-    //  INICIALIZACIÓN
-    // =========================================================================
-
     /**
-     * JavaFX llama a este método tras cargar el FXML.
-     * Obtenemos PermisoService desde SpringContext (patrón manual).
+     * Inicializa controlador obteniendo servicio y configurando componentes.
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -135,10 +83,6 @@ public class RolesPermisosController implements Initializable {
 
         System.out.println("(FRANDEV) --> RolesPermisosController inicializado correctamente");
     }
-
-    // =========================================================================
-    //  CONFIGURACIÓN DE COMPONENTES
-    // =========================================================================
 
     /**
      * Configura el ListView de roles:
@@ -262,10 +206,6 @@ public class RolesPermisosController implements Initializable {
         }
     }
 
-    // =========================================================================
-    //  BÚSQUEDA / FILTRADO
-    // =========================================================================
-
     /**
      * Filtra la lista de roles en tiempo real según el texto introducido.
      * Si el texto está vacío, muestra todos los roles.
@@ -282,10 +222,6 @@ public class RolesPermisosController implements Initializable {
         }
     }
 
-    // =========================================================================
-    //  DETALLE DEL ROL
-    // =========================================================================
-
     /**
      * Rellena el formulario central con los datos del rol seleccionado.
      */
@@ -297,10 +233,6 @@ public class RolesPermisosController implements Initializable {
 
         cargarPermisosDelRol(rol);
     }
-
-    // =========================================================================
-    //  ACCIONES (BOTONES)
-    // =========================================================================
 
     /**
      * Prepara el formulario para crear un nuevo rol.
@@ -476,10 +408,9 @@ public class RolesPermisosController implements Initializable {
         listaPermisos.clear();
     }
 
-    // =========================================================================
-    //  UTILIDADES
-    // =========================================================================
-
+    /**
+     * Ventana de Mensajes de Alerta.
+     */
     private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
         Alert alert = new Alert(tipo);
         alert.setTitle(titulo);

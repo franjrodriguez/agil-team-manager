@@ -10,6 +10,12 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+/**
+ * Entidad que registra la disponibilidad/carga de trabajo de una persona.
+ *
+ * @author Francisco José Rodríguez Ruiz
+ * @since 1.0
+ */
 @Entity
 @Table(name = "disponibilidad")
 @Data

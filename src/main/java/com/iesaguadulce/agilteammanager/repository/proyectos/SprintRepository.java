@@ -10,11 +10,18 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repositorio para gestión de sprints.
+ *
+ * @author Francisco José Rodríguez Ruiz
+ * @version 1.0
+ */
 @Repository
 public interface SprintRepository extends JpaRepository<Sprint, Long> {
 
     /**
-     * Obtiene todos los sprints de un proyecto
+     * Obtiene sprints de un proyecto ordenados por número.
+     * @param proyectoId ID del proyecto
      */
     @Query("SELECT s FROM Sprint s WHERE s.proyecto.id = :proyectoId ORDER BY s.numero")
     List<Sprint> findByProyectoId(@Param("proyectoId") Long proyectoId);
@@ -25,14 +32,16 @@ public interface SprintRepository extends JpaRepository<Sprint, Long> {
     List<Sprint> findByEstado(String estado);
 
     /**
-     * Obtiene el sprint activo de un proyecto
+     * Obtiene sprint activo de un proyecto.
+     * @param proyectoId ID del proyecto
      */
     @Query("SELECT s FROM Sprint s " +
             "WHERE s.proyecto.id = :proyectoId AND s.estado = 'activo'")
     Optional<Sprint> findSprintActivoByProyectoId(@Param("proyectoId") Long proyectoId);
 
     /**
-     * Busca sprint con sus tareas cargadas
+     * Busca sprint con tareas cargadas (JOIN FETCH).
+     * @param id ID del sprint
      */
     @Query("SELECT s FROM Sprint s " +
             "LEFT JOIN FETCH s.tareas " +
@@ -40,7 +49,9 @@ public interface SprintRepository extends JpaRepository<Sprint, Long> {
     Optional<Sprint> findByIdWithTareas(@Param("id") Long id);
 
     /**
-     * Obtiene sprints que finalizan en un rango de fechas
+     * Obtiene sprints con fecha de fin en rango.
+     * @param desde fecha inicio del rango
+     * @param hasta fecha fin del rango
      */
     @Query("SELECT s FROM Sprint s " +
             "WHERE s.fechaFin BETWEEN :desde AND :hasta")
@@ -50,13 +61,15 @@ public interface SprintRepository extends JpaRepository<Sprint, Long> {
     );
 
     /**
-     * Obtiene el último número de sprint de un proyecto
+     * Obtiene último número de sprint en un proyecto.
+     * @param proyectoId ID del proyecto
      */
     @Query("SELECT MAX(s.numero) FROM Sprint s WHERE s.proyecto.id = :proyectoId")
     Optional<Integer> findMaxNumeroByProyectoId(@Param("proyectoId") Long proyectoId);
 
     /**
-     * Cuenta sprints por estado en un proyecto
+     * Cuenta sprints por estado en un proyecto.
+     * @param proyectoId ID del proyecto
      */
     @Query("SELECT s.estado, COUNT(s) FROM Sprint s " +
             "WHERE s.proyecto.id = :proyectoId " +
