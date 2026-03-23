@@ -1,0 +1,18 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: agilteam-postgres
+    environment:
+      POSTGRES_DB: agilteamdb
+      POSTGRES_USER: agilteam
+      POSTGRES_PASSWORD: agilteam2025
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./scripts/CREAR_USUARIO_CON_PERMISOS.sql:/docker-entrypoint-initdb.d/01_usuarios.sql
+      - ./scripts/CREAR_MODELO_FISICO_DB.sql:/docker-entrypoint-initdb.d/02_schema.sql
+      - ./scripts/CARGAR_DATOS_PRUEBA.sql:/docker-entrypoint-initdb.d/03_data.sql
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
