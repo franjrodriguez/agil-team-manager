@@ -25,17 +25,15 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 /**
- * ═══════════════════════════════════════════════════════════════
- * MotorAsignacionController — Controlador UI Motor de Asignación
- * ───────────────────────────────────────────────────────────────
- * UBICACIÓN: src/main/java/.../ui/asignaciones/MotorAsignacionController.java
+ * Controlador UI para el Motor de Asignación Inteligente.
+ * <p>
+ * Gestiona la pantalla de cálculo y sugerencia de asignaciones:
+ * muestra las tareas pendientes, ejecuta el motor de scoring y
+ * presenta los candidatos ordenados con su desglose de puntuación.
+ * </p>
  *
- * FLUJO:
- *   FXML (evento) → este Controller → MotorAsignacionService → BD
- *   Botón Calcular → calcularAsignaciones(tareaId) × tarea
- *   Clic en tarea  → obtenerTopSugerencias(tareaId, 3) → generarExplicacion()
- *   Botón Asignar  → aceptarSugerencia(sugerenciaId)
- * ═══════════════════════════════════════════════════════════════
+ * @author Francisco José Rodríguez
+ * @version 1.0
  */
 @Component
 public class MotorAsignacionController implements Initializable {

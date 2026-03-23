@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  *   <li>Score base = Σ(nivel × peso)</li>
  *   <li>Score ajustado = (score/100) × (1-carga) × prioridad</li>
  *   <li>Ordena por score descendente</li>
- * </ol></p>
+ * </ol>
  *
  * @author Francisco José Rodríguez Ruiz
  * @version 1.0

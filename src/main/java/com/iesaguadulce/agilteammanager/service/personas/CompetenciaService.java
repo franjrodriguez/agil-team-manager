@@ -10,9 +10,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Crea una nueva competencia.
+ * Servicio para la gestión del catálogo de competencias técnicas.
  *
- * @throws RuntimeException si ya existe el nombre
  */
 @Service
 @Transactional
@@ -23,6 +22,8 @@ public class CompetenciaService {
 
     /**
      * Crea una nueva competencia
+     *
+     * @throws RuntimeException si ya existe una competencia con ese nombre
      */
     public Competencia crear(String nombre, String descripcion, String tipo) {
         if (competenciaRepository.existsByNombre(nombre)) {

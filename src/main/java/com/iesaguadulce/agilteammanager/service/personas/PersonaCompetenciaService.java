@@ -20,7 +20,6 @@ import java.util.Optional;
  * Asigna o actualiza el nivel de una competencia (0-100).
  * Crea registro histórico con timestamp.
  *
- * @throws RuntimeException si el nivel no está entre 0 y 100
  */
 @Service
 @Transactional
@@ -34,6 +33,7 @@ public class PersonaCompetenciaService {
     /**
      * Asigna o actualiza el nivel de una competencia para una persona
      * Crea un nuevo registro histórico con timestamp
+     * @throws RuntimeException si el nivel no está entre 0 y 100
      */
     public PersonaCompetencia asignarNivel(Long personaId, Long competenciaId, Integer nivel) {
 
