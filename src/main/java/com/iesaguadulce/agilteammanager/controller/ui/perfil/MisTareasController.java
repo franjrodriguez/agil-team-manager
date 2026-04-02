@@ -1,6 +1,7 @@
 package com.iesaguadulce.agilteammanager.controller.ui.perfil;
 
 import com.iesaguadulce.agilteammanager.config.SpringContext;
+import com.iesaguadulce.agilteammanager.util.FotoUtil;
 import com.iesaguadulce.agilteammanager.model.asignaciones.Asignacion;
 import com.iesaguadulce.agilteammanager.model.personas.Persona;
 import com.iesaguadulce.agilteammanager.model.proyectos.Tarea;
@@ -134,6 +135,12 @@ public class MisTareasController implements Initializable {
         profileName.setText(persona.getNombre());
         profileRole.setText(persona.getRol().getNombre());
         profileStatus.setText(persona.getEstado().toUpperCase());
+
+        // Cargamos el avatar del usuario
+        Image avatar = FotoUtil.cargarImagen(persona.getFotoPath());
+        if (avatar != null) {
+            profileAvatar.setImage(avatar);
+        }
 
         // Cargamos las tareas asignadas al usuario
         cargarAsignaciones();

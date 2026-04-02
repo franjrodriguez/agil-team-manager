@@ -64,12 +64,21 @@
                 <!-- Espaciador -->
                 <Region prefHeight="64.0" prefWidth="16.0" />
 
-                <!-- Icono Estado BD (rojo = desconectado / verde = conectado) — solo informativo, sin acción -->
-                <ImageView fx:id="img_db_status" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                    <image>
-                        <Image url="@../../icons/menu/database-rojo.png" />
-                    </image>
-                </ImageView>
+                <!-- Menú de Ayuda — Centro de Ayuda y Vídeo demo -->
+                <MenuButton fx:id="btn_ayuda" text=" Ayuda" graphicTextGap="6"
+                            prefHeight="34.0" styleClass="help-button">
+                    <graphic>
+                        <ImageView fitHeight="22.0" fitWidth="22.0" preserveRatio="true">
+                            <image>
+                                <Image url="@../../icons/menu/help-azul.png" />
+                            </image>
+                        </ImageView>
+                    </graphic>
+                    <items>
+                        <MenuItem text="📄  Centro de Ayuda"    onAction="#abrirCentroAyuda" />
+                        <MenuItem text="🎬  Vídeo demostración" onAction="#abrirVideoDemo"   />
+                    </items>
+                </MenuButton>
 
                 <!-- Espaciador -->
                 <Region prefHeight="64.0" prefWidth="12.0" />

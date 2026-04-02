@@ -232,16 +232,22 @@ public class MotorAsignacionController implements Initializable {
             contenedorCandidatos.getChildren().clear();
 
             if (top3.isEmpty()) {
+                // Avisamos en el label de estado para que el usuario sepa que debe calcular
+                setEstado("⚠  Pulsa 'Calcular Asignaciones'", "#FFFBEB", "#92400E", "#FDE68A");
+
                 Label lbl = new Label(
-                        "No hay candidatos calculados para esta tarea.\n" +
-                        "Asegúrate de que la tarea tiene competencias definidas\n" +
-                        "y vuelve a pulsar 'Calcular Asignaciones'.");
-                lbl.setStyle("-fx-text-fill: -app-text-secondary; -fx-font-size: 13px;");
+                        "⚠  Esta tarea aún no tiene candidatos calculados.\n\n" +
+                        "Pulsa el botón 'Calcular Asignaciones' de la cabecera\n" +
+                        "para que el motor analice a los profesionales disponibles.");
+                lbl.setStyle("-fx-text-fill: #92400E; -fx-font-size: 13px;");
                 lbl.setWrapText(true);
                 contenedorCandidatos.getChildren().add(lbl);
                 mostrarSolo(false, true, false);
                 return;
             }
+
+            // Candidatos disponibles: restauramos el estado a "Listo"
+            setEstado("Listo para calcular", "#EFF6FF", "#1E40AF", "#BFDBFE");
 
             String[] medallas = {"🥇", "🥈", "🥉"};
             for (int i = 0; i < top3.size(); i++) {
@@ -283,7 +289,7 @@ public class MotorAsignacionController implements Initializable {
         List<Map<String, Object>> desglose =
                 (List<Map<String, Object>>) explicacion.getOrDefault("desglosePorCompetencia", List.of());
 
-        boolean advertencia = scoreA.compareTo(BigDecimal.valueOf(0.15)) < 0;
+        boolean advertencia = scoreA.compareTo(BigDecimal.valueOf(15)) < 0;
 
         // ── Card root ──────────────────────────────────────────
         VBox card = new VBox(10);
@@ -306,10 +312,9 @@ public class MotorAsignacionController implements Initializable {
                            "-fx-text-fill: #1F2937;");
         HBox.setHgrow(lblNombre, Priority.ALWAYS);
 
-        int scorePct = scoreA.multiply(BigDecimal.valueOf(100))
-                             .setScale(0, RoundingMode.HALF_UP)
-                             .intValue();
-        Label lblScore = new Label(scorePct + "%");
+        // scoreA ya está en escala 0-100: mostramos con 1 decimal directamente
+        String scorePct = scoreA.setScale(1, RoundingMode.HALF_UP).toPlainString() + "%";
+        Label lblScore = new Label(scorePct);
         lblScore.setStyle(
                 "-fx-background-color: " + (advertencia ? "#FEF3C7" : "#ECFDF5")  + ";" +
                 "-fx-text-fill: "        + (advertencia ? "#92400E" : "#065F46")   + ";" +

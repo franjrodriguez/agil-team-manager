@@ -1,6 +1,7 @@
 package com.iesaguadulce.agilteammanager.controller.ui.dashboard;
 
 import com.iesaguadulce.agilteammanager.config.SpringContext;
+import com.iesaguadulce.agilteammanager.util.FotoUtil;
 import com.iesaguadulce.agilteammanager.dto.DashboardKPIs;
 import com.iesaguadulce.agilteammanager.dto.PersonaActivaDTO;
 import com.iesaguadulce.agilteammanager.dto.RendimientoDiaDTO;
@@ -168,14 +169,10 @@ public class DashboardController {
                         return;
                     }
                     String fotoPath = getTableRow().getItem().getFotoPath();
-                    try {
-                        if (fotoPath != null && !fotoPath.isBlank()) {
-                            imgView.setImage(new Image(fotoPath, true));
-                        } else {
-                            imgView.setImage(new Image(
-                                    getClass().getResourceAsStream("/icons/professional.png")));
-                        }
-                    } catch (Exception e) {
+                    Image imagen = FotoUtil.cargarImagen(fotoPath);
+                    if (imagen != null) {
+                        imgView.setImage(imagen);
+                    } else {
                         imgView.setImage(new Image(
                                 getClass().getResourceAsStream("/icons/professional.png")));
                     }

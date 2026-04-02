@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Centro de Ayuda — AgilTeam Manager</title>
+  <link rel="stylesheet" href="css/estilos.css">
+
+  <script>
+    /* Muestra el placeholder si la imagen no carga */
+    function imgError(img) {
+      img.style.display = 'none';
+      var ph = img.nextElementSibling;
+      if (ph && ph.classList.contains('img-placeholder')) {
+        ph.style.display = 'block';
+      }
+    }
+  </script>
+</head>
+<body>
+
+<!-- ancla para volver arriba -->
+<span id="top"></span>
+
+<!-- ══════════════════════════════════════════
+     HEADER
+══════════════════════════════════════════ -->
+<header>
+  <div>
+    <div class="logo">❓ AgilTeam Manager</div>
+    <div class="subtitle">Centro de Ayuda y Guía de Usuario</div>
+  </div>
+  <span class="badge">v1.0</span>
+</header>
+
+<div class="container">
+
+  <!-- ══════════════════════════════════════════
+       NAVEGACIÓN LATERAL
+  ══════════════════════════════════════════ -->
+  <nav>
+    <div class="nav-title">Contenidos</div>
+    <ul>
+      <li><a href="#inicio" class="active">¿Qué es AgilTeam?</a></li>
+      <li><a href="#acceso">Acceso y roles</a></li>
+      <li><a href="#menu">Menú de navegación</a></li>
+      <li><a href="#personas">Gestión de personas</a></li>
+      <li><a href="#proyectos">Proyectos y sprints</a></li>
+      <li><a href="#tareas">Tareas</a></li>
+      <li><a href="#motor">Motor de asignación</a></li>
+      <li><a href="#dashboard">Dashboard</a></li>
+      <li><a href="#configuracion">Configuración</a></li>
+      <li><a href="#faq">Preguntas frecuentes</a></li>
+    </ul>
+  </nav>
+
+  <!-- ══════════════════════════════════════════
+       CONTENIDO PRINCIPAL
+  ══════════════════════════════════════════ -->
+  <main>
+
+    <!-- 1. Qué es AgilTeam -->
+    <section id="inicio">
+      <h2>¿Qué es AgilTeam Manager?</h2>
+      <p>
+        <strong>AgilTeam Manager</strong> es una aplicación de escritorio para la gestión integral
+        de equipos de desarrollo ágil. Permite organizar personas, proyectos, sprints y tareas,
+        y cuenta con un <strong>motor inteligente de asignación</strong> que sugiere la persona
+        más adecuada para cada tarea en función de sus competencias técnicas, disponibilidad
+        y carga de trabajo actual.
+      </p>
+      <div class="info">
+        La aplicación está diseñada para tres perfiles de usuario: <strong>Administrador</strong>,
+        <strong>Jefe de Proyecto</strong> y <strong>Usuario</strong>. Cada perfil tiene acceso
+        a distintas funcionalidades según sus responsabilidades.
+      </div>
+
+      <figure class="screenshot">
+        <img src="images/captura01.png" alt="Pantalla principal de AgilTeam Manager" onerror="imgError(this)" />
+        <div class="img-placeholder">📷 &nbsp;<em>captura01.png</em> — Vista general de la aplicación al iniciar sesión</div>
+        <figcaption>Pantalla principal tras iniciar sesión</figcaption>
+      </figure>
+
+      <div class="back-top">
+        <a href="#top"><span class="arrow">↑</span> Volver al índice</a>
+      </div>
+    </section>
+
+    <!-- 2. Acceso y roles -->
+    <section id="acceso">
+      <h2>Acceso a la aplicación y roles</h2>
+
+      <h3>Pantalla de inicio de sesión</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body"><strong>Introduce tu usuario y contraseña</strong> en los campos correspondientes.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">Pulsa <strong>Iniciar sesión</strong> o presiona <kbd>Enter</kbd>.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">La aplicación cargará el panel principal adaptado a tu rol.</div>
+        </div>
+      </div>
+
+      <figure class="screenshot screenshot--half">
+        <img src="images/captura02.png" alt="Pantalla de inicio de sesión" onerror="imgError(this)" />
+        <div class="img-placeholder">📷 &nbsp;<em>captura02.png</em> — Pantalla de login con usuario y contraseña</div>
+        <figcaption>Pantalla de inicio de sesión</figcaption>
+      </figure>
+
+      <div class="tip">
+        Si no recuerdas tu contraseña, contacta con el administrador del sistema.
+        No existe recuperación automática de contraseña por email.
+      </div>
+
+      <div class="tip">
+        La primera vez que accedas a la aplicación, es posible hacerlo usando los usuarios 
+        que ya se encuentran dados de alta para pruebas o bien usando el usuario admin con 
+        contraseña 1234. Idealmente se debe crear un usuario nuevo para cada profesional y cambiar
+        las contraseñas por defecto por una contraseña segura.
+      </div>
+
+      <div class="back-top">
+        <a href="#top"><span class="arrow">↑</span> Volver al índice</a>
+      </div>
+    </section>
+
+    <!-- 2.1 Menú de navegación -->
+    <section id="menu">
+      <h2>¿Por qué no veo algunas opciones del menú?</h2>
+      <p>El menú lateral de navegación se adapta según el rol del usuario que ha iniciado sesión.
+        Por defecto, al iniciar la primera vez la aplicación se generan tres roles: 
+        Administrador, Jefe de Proyecto y Usuario. 
+        Cada uno de ellos tendrá acceso a las opciones que se muestran en la siguiente tabla: 
+      </p>
+
+      <h3>Roles y permisos</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Opción menú</th>
+            <th>ADMIN</th>
+            <th>JEFE DE PROYECTO</th>
+            <th>USUARIO</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Inicio</td><td>✅</td><td>✅</td><td>✅</td></tr>
+          <tr><td>Puestos de trabajo</td><td>✅</td><td>✅</td><td>❌</td></tr>
+          <tr><td>Competencias</td><td>✅</td><td>✅</td><td>❌</td></tr>
+          <tr><td>Profesionales</td><td>✅</td><td>✅</td><td>❌</td></tr>
+          <tr><td>Proyectos, Sprints y Tareas</td><td>✅</td><td>✅</td><td>❌</td></tr>
+          <tr><td>Motor de asignación</td><td>✅</td><td>✅</td><td>❌</td></tr>
+          <tr><td>Tareas Personales</td><td>❌</td><td>✅</td><td>✅</td></tr>
+          <tr><td>Usuarios</td><td>✅</td><td>❌</td><td>❌</td></tr>
+          <tr><td>Roles y Permisos</td><td>✅</td><td>❌</td><td>❌</td></tr>
+          <tr><td>Configuración</td><td>✅</td><td>❌</td><td>❌</td></tr>
+        </tbody>
+      </table>
+
+      <div class="back-top">
+        <a href="#top"><span class="arrow">↑</span> Volver al índice</a>
+      </div>
+    </section>
+
+    <!-- 3. Personas -->
+    <section id="personas">
+      <h2>Gestión de personas y competencias</h2>
+      <p>
+        Desde el menú lateral <strong>Personas</strong> puedes gestionar el equipo:
+        añadir nuevos miembros, editar su información y asignarles competencias técnicas.
+      </p>
+
+      <h3>Añadir una persona</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">Ve a <strong>Personas → Gestión de personas</strong>.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">Pulsa el botón <strong>Nueva persona</strong>.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            Rellena los campos: nombre, apellidos, email, disponibilidad (0–100%) y puesto.
+            Todos los campos marcados con * son obligatorios.
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">Pulsa <strong>Guardar</strong>. La persona aparecerá en la lista.</div>
+        </div>
+      </div>
+
+      <figure class="screenshot">
+        <img src="images/captura03.png" alt="Pantalla de gestión de personas" onerror="imgError(this)" />
+        <div class="img-placeholder">📷 &nbsp;<em>captura03.png</em> — Lista de personas del equipo con opciones de edición</div>
+        <figcaption>Vista de gestión de personas</figcaption>
+      </figure>
+
+      <h3>Asignar competencias técnicas</h3>
+      <p>
+        Selecciona una persona en la lista y pulsa <strong>Editar competencias</strong>.
+        Puedes añadir competencias del catálogo (Java, Python, Docker, etc.) con un nivel
+        de dominio del 0 al 100. Estas competencias son el factor principal que usa el
+        motor de asignación para hacer sus sugerencias.
+      </p>
+
+      <h3>Tareas Asignadas</h3>
+      <p>
+        En la tabla inferior se muestran las tareas asignadas a la persona. 
+        En esta tabla los jefes de proyecto pueden cambiar el estado de la tarea marcandola
+        como completada.
+      </p>
+
+      <div class="back-top">
+        <a href="#top"><span class="arrow">↑</span> Volver al índice</a>
+      </div>
+    </section>
+
+    <!-- 4. Proyectos -->
+    <section id="proyectos">
+      <h2>Proyectos y Tareas</h2>
+      <p>
+        Desde el menú lateral <strong>Proyectos, Sprints y Tareas</strong> puedes gestionar los proyectos, sprints y tareas del equipo.
+        Haciendo click sobre cualquier de ellos se muestra la información correspondiente.
+        La aplicación usa un marco de trabajo ágil para la gestión de proyectos, que lleva a separarlo en 
+        fases temporales o sprints. A su vez, dentro de cada sprint se gestionan las tareas que se deben realizar.
+        A esta metodología se la conoce como <strong>SCRUM</strong> y es una de las más utilizadas en el mercado.
+      </p>
+      <h3>Crear un proyecto</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">Ve a <strong>Proyectos → Nuevo proyecto</strong>.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">Introduce el nombre, descripción y fechas de inicio y fin.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">Pulsa <strong>Guardar Cambios</strong> para generar el proyecto.
+            Ahora podemos continuar añadiendo sprints y tareas.</div>
+        </div>
+      </div>
+
+      <figure class="screenshot">
+        <img src="images/captura05.png" alt="Pantalla de gestión de proyectos" onerror="imgError(this)" />
+        <div class="img-placeholder">📷 &nbsp;<em>captura05.png</em> — Lista de proyectos con sus estados y sprints</div>
+        <figcaption>Vista de gestión de proyectos</figcaption>
+      </figure>
+
+      <h3>Añadir sprints a un proyecto</h3>
+      <p>
+        Con el proyecto seleccionado, localiza la tabla <strong>Sprints</strong> y pulsa
+        <strong>Añadir sprint</strong>. Cada sprint tiene objetivo, estado, fecha de inicio
+        y fecha de fin. Los sprints organizan el trabajo en iteraciones cortas (normalmente 1–2 semanas).
+      </p>
+
+      <div class="tip">
+        Un proyecto debe tener al menos un sprint antes de poder añadir tareas.
+      </div>
+
+      <div class="tip">
+        Una vez tenemos el sprint en la tabla, al lado de la información del mismo, podemos clicar
+        el botón azul para editarlo (cambiando su información) o el botón rojo para eliminarlo.
+      </div>
+      
+      <figure class="screenshot">
+        <img src="images/captura051.png" alt="Pantalla de edición de competencias" onerror="imgError(this)" />
+        <div class="img-placeholder">📷 &nbsp;<em>captura051.png</em> — Formulario para crear un sprint nuevo</div>
+        <figcaption>Añadir Sprint</figcaption>
+      </figure>
+
+      <div class="back-top">
+        <a href="#top"><span class="arrow">↑</span> Volver al índice</a>
+      </div>
+    </section>
+
+    <!-- 5. Tareas -->
+    <section id="tareas">
+      <h2>Tareas</h2>
+      <p>
+        Las tareas son las unidades de trabajo dentro de un sprint. Cada tarea tiene
+        título, descripción, prioridad, estimación de horas y competencias requeridas.
+      </p>
+
+      <h3>Crear una tarea</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">Selecciona un proyecto y luego un sprint.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">Pulsa <strong>Nueva tarea</strong>.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            Rellena: título, descripción, estado (PENDIENTE / EN PROGRESO / EN REVISIÓN / COMPLETADA / BLOQUEADA), prioridad (BAJA / MEDIA / ALTA / CRÍTICA),
+            horas estimadas y competencias necesarias para realizarla.
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            Guarda la tarea. Puedes asignarla manualmente o usar el motor de asignación.
+          </div>
+        </div>
+      </div>
+
+      <figure class="screenshot">
+        <img src="images/captura06.png" alt="Pantalla de gestión de tareas" onerror="imgError(this)" />
+        <div class="img-placeholder">📷 &nbsp;<em>captura06.png</em> — Lista de tareas de un sprint con estados y prioridades</div>
+        <figcaption>Vista de gestión de tareas dentro de un sprint</figcaption>
+      </figure>
+
+      <h3>Estados de una tarea</h3>
+      <table>
+        <thead><tr><th>Estado</th><th>Significado</th></tr></thead>
+        <tbody>
+          <tr><td><strong>PENDIENTE</strong></td><td>Creada pero sin asignar ni iniciar</td></tr>
+          <tr><td><strong>EN PROGRESO</strong></td><td>Asignada y en desarrollo activo</td></tr>
+          <tr><td><strong>EN REVISIÓN</strong></td><td>Finalizada, pendiente de revisión/QA</td></tr>
+          <tr><td><strong>COMPLETADA</strong></td><td>Revisada y aprobada</td></tr>
+          <tr><td><strong>BLOQUEADA</strong></td><td>No puede avanzar por una dependencia externa</td></tr>
+        </tbody>
+      </table>
+
+      <div class="back-top">
+        <a href="#top"><span class="arrow">↑</span> Volver al índice</a>
+      </div>
+    </section>
+
+    <!-- 6. Motor de asignación -->
+    <section id="motor">
+      <h2>Motor de asignación inteligente</h2>
+      <p>
+        El motor de asignación analiza automáticamente qué persona del equipo es la más
+        adecuada para una tarea, basándose en tres factores:
+      </p>
+      <ul>
+        <li><strong>Competencias técnicas:</strong> ¿tiene las habilidades que requiere la tarea?</li>
+        <li><strong>Disponibilidad:</strong> ¿tiene capacidad libre en su agenda?</li>
+        <li><strong>Carga de trabajo actual:</strong> ¿cuántas tareas activas tiene ya asignadas?</li>
+      </ul>
+
+      <div class="info">
+        <strong>Fórmula interna:</strong><br/>
+        score_ajustado = (score_base / 100) × (1 − carga) × prioridad<br/>
+        <small>Donde score_base proviene del nivel de competencias, carga es el ratio de tareas activas
+        y prioridad pondera según la urgencia de la tarea.</small>
+      </div>
+
+      <h3>Cómo usar el motor</h3>
+      <p>
+        Se muestra en la lista de la izquierda la relación de tareas pendientes, y alguna 
+        información sobre cada una.
+      </p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">Selecciona una tarea sin asignar.
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            El sistema mostrará una lista ordenada de candidatos con su puntuación.
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            Revisa las sugerencias y pulsa <strong>Asignar</strong> en el candidato elegido.
+          </div>
+        </div>
+      </div>
+
+      <figure class="screenshot">
+        <img src="images/captura07.png" alt="Motor de asignación inteligente" onerror="imgError(this)" />
+        <div class="img-placeholder">📷 &nbsp;<em>captura07.png</em> — Resultado del motor: lista de candidatos con puntuaciones</div>
+        <figcaption>Sugerencias del motor de asignación ordenadas por puntuación</figcaption>
+      </figure>
+
+      <h3>¿Qué más debemos saber?</h3>
+      <p>
+        La etiqueta que aparece en la zona de cabecera a la derecha junto al botón muestra el estado general del motor
+        de asignación. En la siguiente tabla se muestran los posibles mensajes que podemos obtener:
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Mensaje</th>
+            <th>Color</th>
+            <th>Cuándo aparece</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Listo para calcular</td><td>Azul</td><td>Al entrar en la pantalla, si hay tareas sin asignar</td></tr>
+          <tr><td>Calculando...</td><td>Naranja</td><td>Mientras el botón está procesando</td></tr>
+          <tr><td>Listo</td><td>Verde</td><td>Cálculo completado sin errores</td></tr>
+          <tr><td>N sin competencias</td><td>Amarillo</td><td>Algunas tareas no tienen competencias definidas y no se pudieron calcular</td></tr>
+          <tr><td>Sin tareas pendientes</td><td>Verde</td><td>No quedan tareas sin asignar</td></tr>
+          <tr><td>Error</td><td>Rojo</td><td>Excepción inesperada durante el cálculo</td></tr>
+        </tbody>
+      </table>
+
+      <h3>¿Cúando debo usar el botón de Calcular Asignaciones?</h3>
+      <div class="info">
+        Debemos tener en mente que el sistema no actualiza asignaciones de forma automática al entrar proyectos o tareas nuevas.
+        En lugar de eso es el jefe de proyecto quien deberá lanzarlo. 
+        Al pulsar el botón, el sistema recorre todas las tareas pendientes de asignación y calcula una puntuación
+        para cada profesional del equipo teniendo en cuenta sus competencias, su carga de trabajo actual y la prioridad de Cada
+        tarea. El resultado se almacena y queda disponible para ser consultado y asignar la tarea.
+        El botón debería ser pulsado siempre que haya tareas nuevas sin candidatos calculados (mensaje ambar al presionar sobre la tarea).
+        Tambien se debería pulsar si hemos añadido profesionales nuevos o se han modificado sus competencias y conocimientos.
+      </div>
+
+      <div class="back-top">
+        <a href="#top"><span class="arrow">↑</span> Volver al índice</a>
+      </div>
+    </section>
+
+    <!-- 7. Dashboard -->
+    <section id="dashboard">
+      <h2>Dashboard y métricas</h2>
+      <p>
+        El panel de inicio muestra un resumen del estado actual del equipo y los proyectos:
+      </p>
+      <ul>
+        <li><strong>Tareas por estado:</strong> cuántas están pendientes, en progreso, bloqueadas o completadas.</li>
+        <li><strong>Carga del equipo:</strong> distribución de trabajo entre los miembros.</li>
+        <li><strong>Sprints activos:</strong> sprints en curso con su progreso.</li>
+        <li><strong>Últimas asignaciones:</strong> registro de las asignaciones más recientes.</li>
+      </ul>
+
+      <figure class="screenshot">
+        <img src="images/captura08.png" alt="Dashboard con métricas del equipo" onerror="imgError(this)" />
+        <div class="img-placeholder">📷 &nbsp;<em>captura08.png</em> — Dashboard principal con gráficas y resumen de métricas</div>
+        <figcaption>Dashboard con métricas del equipo y proyectos activos</figcaption>
+      </figure>
+
+      <div class="tip">
+        El dashboard se actualiza cada vez que accedes a él. Para ver los datos más recientes,
+        navega a otra sección y vuelve.
+      </div>
+
+      <div class="back-top">
+        <a href="#top"><span class="arrow">↑</span> Volver al índice</a>
+      </div>
+    </section>
+
+    <!-- 8. Configuración -->
+    <section id="configuracion">
+      <h2>Configuración del sistema</h2>
+      <p>
+        Accesible solo para el rol <strong>ADMIN</strong>. Desde aquí puedes:
+      </p>
+      <ul>
+        <li>Gestionar usuarios del sistema (crear, editar, desactivar).</li>
+        <li>Asignar roles y permisos granulares por usuario.</li>
+        <li>Gestionar el catálogo de competencias disponibles.</li>
+        <li>Gestionar el catálogo de puestos de trabajo.</li>
+      </ul>
+
+      <figure class="screenshot">
+        <img src="images/captura09.png" alt="Pantalla de configuración del sistema" onerror="imgError(this)" />
+        <div class="img-placeholder">📷 &nbsp;<em>captura09.png</em> — Panel de configuración (solo visible para ADMIN)</div>
+        <figcaption>Pantalla de configuración del sistema</figcaption>
+      </figure>
+
+      <div class="info">
+        Los cambios en roles y permisos tienen efecto en el siguiente inicio de sesión del usuario afectado.
+      </div>
+
+      <div class="back-top">
+        <a href="#top"><span class="arrow">↑</span> Volver al índice</a>
+      </div>
+    </section>
+
+    <!-- 9. FAQ -->
+    <section id="faq">
+      <h2>Preguntas frecuentes</h2>
+
+      <details>
+        <summary>¿Cómo cambio mi contraseña?</summary>
+        <div class="faq-body">
+          Actualmente la gestión de contraseñas la realiza el administrador del sistema.
+          Contacta con él para solicitar un cambio. Esta funcionalidad está prevista
+          como mejora futura en versiones posteriores.
+        </div>
+      </details>
+
+      <details>
+        <summary>¿Puedo asignar una tarea a más de una persona?</summary>
+        <div class="faq-body">
+          No, en la versión actual cada tarea tiene una asignación individual.
+          Si necesitas que varias personas trabajen en lo mismo, considera dividir la
+          tarea en subtareas independientes.
+        </div>
+      </details>
+
+      <details>
+        <summary>¿Qué pasa si no hay nadie disponible con las competencias necesarias?</summary>
+        <div class="faq-body">
+          El motor de asignación mostrará igualmente los candidatos disponibles ordenados
+          por puntuación, aunque ninguno tenga el 100% de adecuación. La lista te permite
+          ver quién se acerca más y tomar la decisión manualmente.
+        </div>
+      </details>
+
+      <details>
+        <summary>¿Los datos se guardan automáticamente?</summary>
+        <div class="faq-body">
+          Sí. Todas las operaciones (crear, editar, eliminar) se persisten en la base de datos
+          en el momento en que pulsas <strong>Guardar</strong> o confirmas la acción.
+          No hay concepto de "borrador" pendiente de guardar.
+        </div>
+      </details>
+
+      <details>
+        <summary>¿Puedo exportar informes o datos?</summary>
+        <div class="faq-body">
+          La exportación de informes (PDF, CSV) está planificada como mejora futura
+          y no está disponible en esta versión.
+        </div>
+      </details>
+
+      <details>
+        <summary>La aplicación dice "Error de conexión a la base de datos". ¿Qué hago?</summary>
+        <div class="faq-body">
+          Significa que el contenedor Docker con PostgreSQL no está activo. Solución:
+          <ol style="margin-top:8px">
+            <li>Abre Docker Desktop y espera a que el icono esté activo.</li>
+            <li>Abre un terminal en la carpeta <code>agilteammanager/</code>.</li>
+            <li>Ejecuta: <code>docker compose up -d</code></li>
+            <li>Vuelve a lanzar la aplicación.</li>
+          </ol>
+        </div>
+      </details>
+
+      <details>
+        <summary>¿Cómo veo el vídeo de demostración?</summary>
+        <div class="faq-body">
+          Accede desde el menú <strong>Ayuda → Vídeo demostración</strong>.
+          El vídeo estará disponible próximamente en el repositorio del proyecto.
+        </div>
+      </details>
+
+      <div class="back-top">
+        <a href="#top"><span class="arrow">↑</span> Volver al índice</a>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  AgilTeam Manager v1.0 &nbsp;·&nbsp; Francisco José Rodriguez Ruiz &nbsp;·&nbsp; DAM 2025/26<br/>
+  Para soporte técnico consulta la <a href="#inicio" style="color:#2E75B6">guía de usuario</a>
+  o el repositorio en GitHub.
+</footer>
+
+</body>
+</html>

@@ -14,6 +14,7 @@ import com.iesaguadulce.agilteammanager.service.proyectos.TareaService;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.TranslateTransition;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -111,6 +112,9 @@ public class ProyectosController {
     private Proyecto proyectoSeleccionado;
     private Sprint   sprintSeleccionado;
     private Tarea    tareaSeleccionada;
+
+    /** true cuando hay un nuevo proyecto sin guardar */
+    private boolean formularioNuevoSinGuardar = false;
 
 
     /** Inicializa servicios, tablas y listeners. */
@@ -351,7 +355,24 @@ public class ProyectosController {
     private void configurarSeleccionProyecto() {
         proyectoListView.getSelectionModel().selectedItemProperty().addListener(
                 (obs, anterior, nuevo) -> {
-                    if (nuevo != null) {
+                    if (nuevo == null) return;
+
+                    if (formularioNuevoSinGuardar) {
+                        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+                        confirm.setTitle("Cambios sin guardar");
+                        confirm.setHeaderText("Hay un nuevo proyecto sin guardar.");
+                        confirm.setContentText("¿Descartar los cambios y seleccionar otro proyecto?");
+                        confirm.showAndWait().ifPresent(respuesta -> {
+                            if (respuesta == ButtonType.OK) {
+                                formularioNuevoSinGuardar = false;
+                                proyectoSeleccionado = nuevo;
+                                mostrarDetalleProyecto(nuevo);
+                            } else {
+                                Platform.runLater(() ->
+                                        proyectoListView.getSelectionModel().clearSelection());
+                            }
+                        });
+                    } else {
                         proyectoSeleccionado = nuevo;
                         mostrarDetalleProyecto(nuevo);
                     }
@@ -466,6 +487,7 @@ public class ProyectosController {
 
     private void onNuevoProyecto() {
         proyectoSeleccionado = null;
+        formularioNuevoSinGuardar = true;
         projectName.setText("Nuevo Proyecto");
         projectDescriptionBreve.setText("");
         nombreField.clear();
@@ -515,6 +537,8 @@ public class ProyectosController {
                         statusComboBox.getValue()
                 );
             }
+
+            formularioNuevoSinGuardar = false;
 
             // Capturamos id y nombre ANTES de recargar la lista,
             // porque setItems() puede disparar el listener y sobreescribir proyectoSeleccionado.

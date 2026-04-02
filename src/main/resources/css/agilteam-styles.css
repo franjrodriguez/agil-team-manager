@@ -100,6 +100,27 @@
     -fx-padding: 12 20;
 }
 
+/* Botón de Ayuda en la cabecera */
+.help-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-cursor: hand;
+    -fx-background-radius: 6;
+}
+.help-button .label {
+    -fx-text-fill: white;
+}
+.help-button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.15);
+}
+.help-button .arrow-button {
+    -fx-background-color: transparent;
+}
+.help-button .arrow-button .arrow {
+    -fx-background-color: white;
+}
+
 /* Sidebar */
 .app-sidebar {
     -fx-background-color: -app-bg-sidebar;

@@ -2,14 +2,17 @@ package com.iesaguadulce.agilteammanager.controller.ui.personas;
 
 import com.iesaguadulce.agilteammanager.config.SpringContext;
 import com.iesaguadulce.agilteammanager.model.personas.Competencia;
+import com.iesaguadulce.agilteammanager.model.personas.PersonaCompetencia;
 import com.iesaguadulce.agilteammanager.service.personas.CompetenciaService;
+import com.iesaguadulce.agilteammanager.service.personas.PersonaCompetenciaService;
+import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
-import org.hibernate.tool.schema.internal.exec.ScriptTargetOutputToFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -53,20 +56,32 @@ public class CompetenciasController implements Initializable {
     /** Botón de borrar (visible solo con selección) */
     @FXML private Button btnDelete;
 
+    /** Tabla de profesionales con la competencia seleccionada */
+    @FXML private TableView<PersonaCompetencia>           tblEquipoActivo;
+    @FXML private TableColumn<PersonaCompetencia, String> colNombre;
+    @FXML private TableColumn<PersonaCompetencia, String> colNivel;
+
     /** Competencia actualmente seleccionada. null = modo "nueva" */
     private Competencia competenciaSeleccionada = null;
 
+    /** true cuando hay una nueva competencia sin guardar */
+    private boolean formularioNuevoSinGuardar = false;
+
     /** Lista observable que alimenta el ListView */
     private ObservableList<Competencia> listaCompetencias = FXCollections.observableArrayList();
+
+    private PersonaCompetenciaService personaCompetenciaService;
 
     /** Inicializa el controller cargando datos y configurando componentes. */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         System.out.println("(FRANDEV) --> Entramos en CompetenciasController");
-        this.competenciaService = SpringContext.getBean(CompetenciaService.class);
+        this.competenciaService          = SpringContext.getBean(CompetenciaService.class);
+        this.personaCompetenciaService   = SpringContext.getBean(PersonaCompetenciaService.class);
 
         configurarComboBoxTipo();
         configurarListView();
+        configurarTablaEquipo();
         cargarTodasLasCompetencias();
         limpiarFormulario();
 
@@ -137,8 +152,25 @@ public class CompetenciasController implements Initializable {
         Competencia seleccionada = competenciasListView.getSelectionModel().getSelectedItem();
         if (seleccionada == null) return;
 
-        competenciaSeleccionada = seleccionada;
-        cargarDatosEnFormulario(competenciaSeleccionada);
+        if (formularioNuevoSinGuardar) {
+            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+            confirm.setTitle("Cambios sin guardar");
+            confirm.setHeaderText("Hay una nueva competencia sin guardar.");
+            confirm.setContentText("¿Descartar los cambios y seleccionar otra competencia?");
+            confirm.showAndWait().ifPresent(respuesta -> {
+                if (respuesta == ButtonType.OK) {
+                    formularioNuevoSinGuardar = false;
+                    competenciaSeleccionada = seleccionada;
+                    cargarDatosEnFormulario(competenciaSeleccionada);
+                } else {
+                    Platform.runLater(() ->
+                            competenciasListView.getSelectionModel().clearSelection());
+                }
+            });
+        } else {
+            competenciaSeleccionada = seleccionada;
+            cargarDatosEnFormulario(competenciaSeleccionada);
+        }
     }
 
     /**
@@ -148,6 +180,7 @@ public class CompetenciasController implements Initializable {
     @FXML
     private void nuevaCompetencia() {
         competenciaSeleccionada = null;
+        formularioNuevoSinGuardar = true;
         limpiarFormulario();
         nombreField.requestFocus();
     }
@@ -193,6 +226,7 @@ public class CompetenciasController implements Initializable {
                 );
             }
 
+            formularioNuevoSinGuardar = false;
             cargarTodasLasCompetencias();
             competenciaSeleccionada = guardada;
             // seleccionarEnLista(guardada);
@@ -240,6 +274,7 @@ public class CompetenciasController implements Initializable {
     @FXML
     private void cancelar() {
         competenciaSeleccionada = null;
+        formularioNuevoSinGuardar = false;
         limpiarFormulario();
         competenciasListView.getSelectionModel().clearSelection();
     }
@@ -248,6 +283,33 @@ public class CompetenciasController implements Initializable {
     // MÉTODOS AUXILIARES PRIVADOS
     // ─────────────────────────────────────────────────────────
 
+    /** Configura las columnas de la tabla de profesionales. */
+    private void configurarTablaEquipo() {
+        colNombre.setCellValueFactory(data -> {
+            PersonaCompetencia pc = data.getValue();
+            String nombre = (pc.getPersona() != null) ? pc.getPersona().getNombre() : "—";
+            return new SimpleStringProperty(nombre);
+        });
+        colNivel.setCellValueFactory(data ->
+                new SimpleStringProperty(
+                        data.getValue().getNivelActual() != null
+                                ? data.getValue().getNivelActual().toString()
+                                : "—"));
+        colNivel.setStyle("-fx-alignment: CENTER;");
+    }
+
+    /** Carga en la tabla los profesionales que tienen la competencia indicada. */
+    private void cargarProfesionalesConCompetencia(Long competenciaId) {
+        try {
+            List<PersonaCompetencia> lista =
+                    personaCompetenciaService.obtenerPersonasConCompetencia(competenciaId);
+            tblEquipoActivo.setItems(FXCollections.observableArrayList(lista));
+        } catch (Exception e) {
+            tblEquipoActivo.setItems(FXCollections.emptyObservableList());
+            System.err.println("Error cargando profesionales de la competencia: " + e.getMessage());
+        }
+    }
+
     private void cargarDatosEnFormulario(Competencia competencia) {
         profileName.setText(competencia.getNombre());
         nombreField.setText(competencia.getNombre());
@@ -255,6 +317,7 @@ public class CompetenciasController implements Initializable {
         System.out.println("(FRANDEV) --> TIPO QUE LLEGA: " + competencia.getTipo());
         tipoComboBox.setValue(competencia.getTipo());
         btnDelete.setVisible(true);
+        cargarProfesionalesConCompetencia(competencia.getId());
     }
 
     private void limpiarFormulario() {
@@ -262,6 +325,7 @@ public class CompetenciasController implements Initializable {
         descripcionField.clear();
         tipoComboBox.setValue(null);
         btnDelete.setVisible(false);
+        if (tblEquipoActivo != null) tblEquipoActivo.setItems(FXCollections.emptyObservableList());
     }
 
     private void seleccionarEnLista(Competencia competencia) {
@@ -273,7 +337,4 @@ public class CompetenciasController implements Initializable {
         Alert alert = new Alert(tipo);
         alert.setTitle(titulo);
         alert.setHeaderText(null);
-        alert.setContentText(mensaje);
-        alert.showAndWait();
-    }
-}
+        alert

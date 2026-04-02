@@ -5,6 +5,8 @@ import com.iesaguadulce.agilteammanager.service.personas.PersonaService;
 import com.iesaguadulce.agilteammanager.service.seguridad.ConfiguracionService;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
@@ -69,17 +71,32 @@ public class ConfiguracionController implements Initializable {
         }
     }
 
-    /** Resetea todas las contraseñas a valor por defecto. */
+    /** Resetea todas las contraseñas a valor por defecto, previa confirmación del usuario. */
     @FXML
     public void onResetearPasswords() {
-        try {
-            int total = personaService.resetearPasswordsTodas("1234");
-            lblResetEstado.setStyle("-fx-text-fill: #16A34A; -fx-font-size: 13px;");
-            lblResetEstado.setText("✓ " + total + " contraseñas reseteadas a '1234'");
-        } catch (Exception e) {
-            lblResetEstado.setStyle("-fx-text-fill: #DC2626; -fx-font-size: 13px;");
-            lblResetEstado.setText("✗ Error: " + e.getMessage());
-        }
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Confirmar reset de contraseñas");
+        confirm.setHeaderText("¿Resetear todas las contraseñas?");
+        confirm.setContentText(
+                "Esta acción cambiará la contraseña de TODOS los usuarios a '1234'.\n" +
+                "Los usuarios deberán cambiarla en su próximo inicio de sesión.\n\n" +
+                "¿Deseas continuar?");
+
+        confirm.showAndWait().ifPresent(respuesta -> {
+            if (respuesta == ButtonType.OK) {
+                try {
+                    int total = personaService.resetearPasswordsTodas("1234");
+                    lblResetEstado.setStyle("-fx-text-fill: #16A34A; -fx-font-size: 13px;");
+                    lblResetEstado.setText("✓ " + total + " contraseñas reseteadas a '1234'");
+                } catch (Exception e) {
+                    lblResetEstado.setStyle("-fx-text-fill: #DC2626; -fx-font-size: 13px;");
+                    lblResetEstado.setText("✗ Error: " + e.getMessage());
+                }
+            } else {
+                lblResetEstado.setStyle("-fx-text-fill: #6B7280; -fx-font-size: 13px;");
+                lblResetEstado.setText("Operación cancelada.");
+            }
+        });
     }
 
     /** Guarda parámetros del motor de asignación. */

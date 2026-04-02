@@ -49,6 +49,7 @@ public class MotorAsignacionService {
     private final AsignacionSugeridaRepository asignacionSugeridaRepository;
     private final DisponibilidadService disponibilidadService;
     private final ConfiguracionService configuracionService;
+    private final ScoreCalculator scoreCalculator;
 
     /**
      * Calcula sugerencias de asignación para una tarea.
@@ -178,24 +179,17 @@ public class MotorAsignacionService {
      */
     private BigDecimal calcularScoreBase(Persona persona, List<TareaCompetencia> competenciasRequeridas) {
 
-        BigDecimal scoreBase = BigDecimal.ZERO;
+        List<Integer> niveles = new ArrayList<>();
+        List<BigDecimal> pesos = new ArrayList<>();
 
         for (TareaCompetencia tc : competenciasRequeridas) {
-            Long competenciaId = tc.getCompetencia().getId();
-            BigDecimal peso = tc.getPeso();
-
-            // Obtener nivel actual de la persona en esta competencia
             Optional<Integer> nivelOpt = personaCompetenciaRepository
-                    .findNivelActual(persona.getId(), competenciaId);
-
-            int nivel = nivelOpt.orElse(0); // Si no tiene la competencia, nivel = 0
-
-            // Calcular aporte: nivel × peso
-            BigDecimal aporte = BigDecimal.valueOf(nivel).multiply(peso);
-            scoreBase = scoreBase.add(aporte);
+                    .findNivelActual(persona.getId(), tc.getCompetencia().getId());
+            niveles.add(nivelOpt.orElse(0));
+            pesos.add(tc.getPeso());
         }
 
-        return scoreBase.setScale(2, RoundingMode.HALF_UP);
+        return scoreCalculator.calcularScoreBase(niveles, pesos);
     }
 
     /**
@@ -205,21 +199,7 @@ public class MotorAsignacionService {
      */
     private BigDecimal calcularScoreAjustado(BigDecimal scoreBase, BigDecimal carga,
                                              BigDecimal prioridad) {
-
-        // Normalizar score base a rango 0-1
-        BigDecimal scoreNormalizado = scoreBase.divide(
-                BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP
-        );
-
-        // Calcular disponibilidad (1 - carga)
-        BigDecimal disponibilidad = BigDecimal.ONE.subtract(carga);
-
-        // Aplicar formula
-        BigDecimal scoreAjustado = scoreNormalizado
-                .multiply(disponibilidad)
-                .multiply(prioridad);
-
-        return scoreAjustado.setScale(4, RoundingMode.HALF_UP);
+        return scoreCalculator.calcularScoreAjustado(scoreBase, carga, prioridad);
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.iesaguadulce.agilteammanager.controller.ui.personas;
 
 import com.iesaguadulce.agilteammanager.config.SpringContext;
+import com.iesaguadulce.agilteammanager.util.FotoUtil;
 import com.iesaguadulce.agilteammanager.model.asignaciones.Asignacion;
 import com.iesaguadulce.agilteammanager.model.personas.Competencia;
 import com.iesaguadulce.agilteammanager.model.personas.Persona;
@@ -13,6 +14,7 @@ import com.iesaguadulce.agilteammanager.service.personas.CompetenciaService;
 import com.iesaguadulce.agilteammanager.service.personas.PersonaCompetenciaService;
 import com.iesaguadulce.agilteammanager.service.personas.PersonaService;
 import com.iesaguadulce.agilteammanager.service.seguridad.RolSistemaService;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -139,6 +141,9 @@ public class PersonasController implements Initializable {
     /** Persona actualmente seleccionada en el sidebar. null = modo "nueva" */
     private Persona personaSeleccionada;
 
+    /** true cuando el usuario está en modo "añadir nuevo" y aún no ha guardado */
+    private boolean formularioNuevoSinGuardar = false;
+
     /** Caché de imágenes de prioridad para no recargarlas en cada celda */
     private final Map<String, Image> cachePrioridad = new HashMap<>();
 
@@ -250,7 +255,29 @@ public class PersonasController implements Initializable {
 
         professionalsListView.getSelectionModel().selectedItemProperty()
                 .addListener((obs, oldVal, newVal) -> {
-                    if (newVal != null) {
+                    if (newVal == null) return;
+
+                    if (formularioNuevoSinGuardar) {
+                        // Hay un nuevo profesional sin guardar: pedimos confirmación
+                        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+                        confirm.setTitle("Cambios sin guardar");
+                        confirm.setHeaderText("Tiene un profesional nuevo sin guardar.");
+                        confirm.setContentText(
+                                "Si continúa perderá los datos introducidos.\n\n" +
+                                "¿Desea continuar sin guardar?");
+
+                        confirm.showAndWait().ifPresent(respuesta -> {
+                            if (respuesta == ButtonType.OK) {
+                                // Confirma: descarta el nuevo y carga el seleccionado
+                                formularioNuevoSinGuardar = false;
+                                mostrarDetalle(newVal);
+                            } else {
+                                // Cancela: revierte la selección y vuelve al formulario nuevo
+                                Platform.runLater(() ->
+                                        professionalsListView.getSelectionModel().clearSelection());
+                            }
+                        });
+                    } else {
                         mostrarDetalle(newVal);
                     }
                 });
@@ -476,9 +503,15 @@ public class PersonasController implements Initializable {
 
         File archivo = fileChooser.showOpenDialog(profileAvatar.getScene().getWindow());
         if (archivo != null) {
-            String url = archivo.toURI().toString(); // "file:/C:/ruta/imagen.png"
-            profileAvatar.setImage(new Image(url));
-            personaSeleccionada.setFotoPath(url);
+            try {
+                // Copiamos la imagen a ~/.agilteammanager/avatars/ y guardamos solo el nombre
+                String nombreFichero = FotoUtil.copiarAvatar(archivo);
+                personaSeleccionada.setFotoPath(nombreFichero);
+                profileAvatar.setImage(FotoUtil.cargarImagen(nombreFichero));
+            } catch (Exception e) {
+                mostrarAlerta(Alert.AlertType.ERROR, "Error al cambiar foto",
+                        "No se pudo copiar la imagen: " + e.getMessage());
+            }
         }
     }
 
@@ -639,8 +672,9 @@ public class PersonasController implements Initializable {
      */
     private void cargarAvatar(String fotoPath) {
         try {
-            if (fotoPath != null && !fotoPath.isBlank()) {
-                profileAvatar.setImage(new Image(fotoPath));
+            Image imagen = FotoUtil.cargarImagen(fotoPath);
+            if (imagen != null) {
+                profileAvatar.setImage(imagen);
             } else {
                 profileAvatar.setImage(
                         new Image(getClass().getResourceAsStream("/icons/professional.png"))
@@ -687,6 +721,7 @@ public class PersonasController implements Initializable {
         personaSeleccionada = new Persona();
         cambiosEstadoTareas.clear();
         limpiarFormulario();
+        formularioNuevoSinGuardar = true;
     }
 
     /**
@@ -826,6 +861,7 @@ public class PersonasController implements Initializable {
 
         try {
             Persona guardada = personaService.guardar(personaSeleccionada);
+            formularioNuevoSinGuardar = false;
             final Long idGuardado = guardada.getId();
             cargarPersonas();
             listaFiltrada.stream()

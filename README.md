@@ -4,8 +4,8 @@
 
 ![Java](https://img.shields.io/badge/Java-21.0.10_LTS-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
 ![JavaFX](https://img.shields.io/badge/JavaFX-21.0.4-007396?style=for-the-badge&logo=java&logoColor=white)
-![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.5.8-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18.2-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.4.2-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-316192?style=for-the-badge&logo=postgresql&logoColor=white)
 ![Maven](https://img.shields.io/badge/Maven-3.9+-C71A36?style=for-the-badge&logo=apache-maven&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 
@@ -88,7 +88,7 @@
 | Tecnología | Versión | Propósito |
 |---|---|---|
 | ![Java](https://img.shields.io/badge/-Java-ED8B00?logo=openjdk&logoColor=white) | 21.0.10 LTS (Temurin) | Lenguaje base |
-| ![Spring Boot](https://img.shields.io/badge/-Spring_Boot-6DB33F?logo=spring&logoColor=white) | 3.5.8 | Framework backend |
+| ![Spring Boot](https://img.shields.io/badge/-Spring_Boot-6DB33F?logo=spring&logoColor=white) | 3.4.2 | Framework backend |
 | ![JPA](https://img.shields.io/badge/-JPA/Hibernate-59666C?logo=hibernate&logoColor=white) | (incluido en Spring) | ORM y persistencia |
 
 ### Frontend & UI
@@ -101,7 +101,7 @@
 ### Base de Datos
 | Tecnología | Versión | Propósito |
 |---|---|---|
-| ![PostgreSQL](https://img.shields.io/badge/-PostgreSQL-316192?logo=postgresql&logoColor=white) | 18.2 | BBDD relacional principal |
+| ![PostgreSQL](https://img.shields.io/badge/-PostgreSQL-316192?logo=postgresql&logoColor=white) | 16 | BBDD relacional principal |
 
 ### Herramientas de Desarrollo
 | Tecnología | Versión | Propósito |
@@ -181,8 +181,8 @@
 ### 1️⃣ Clonar el repositorio
 
 ```bash
-git clone https://github.com/franjrodriguez/agilteammanager.git
-cd agilteammanager
+git clone https://github.com/franjrodriguez/agil-team-manager.git
+cd agil-team-manager
 ```
 
 ### 2️⃣ Crear usuario y base de datos
@@ -230,7 +230,7 @@ mvn clean javafx:run
 | Campo | Valor |
 |---|---|
 | Usuario | `admin` |
-| Contraseña | `admin` |
+| Contraseña | `1234` |
 
 ---
 
@@ -244,19 +244,20 @@ La opción más rápida para **tutores y evaluadores** — sin instalar Java ni 
 ### 1️⃣ Clonar el repositorio
 
 ```bash
-git clone https://github.com/franjrodriguez/agilteammanager.git
-cd agilteammanager
+git clone https://github.com/franjrodriguez/agil-team-manager.git
+cd agil-team-manager
 ```
 
 ### 2️⃣ Levantar los contenedores
 
 ```bash
-docker compose up --build
+docker compose up -d
 ```
 
-Se levantarán automáticamente:
-- 🐘 Contenedor **PostgreSQL 18.2** con `agilteamdb` y datos de prueba
-- ☕ Contenedor con la **aplicación JavaFX**
+Se levantará automáticamente:
+- 🐘 Contenedor **PostgreSQL 16** con `agilteamdb`, esquema y datos de prueba cargados
+
+> **Nota:** La aplicación JavaFX se ejecuta directamente en el equipo del usuario (no en Docker), ya que JavaFX requiere entorno gráfico. Consulta el apartado [⚙️ Instalación Local](#️-instalación-local) para ejecutar el JAR una vez levantada la base de datos.
 
 ### 3️⃣ Detener
 
@@ -281,7 +282,7 @@ agilteammanager/
 │   └── CARGAR_DATOS_PRUEBA.sql          ← Paso 3: datos de ejemplo
 │
 └── src/main/
-    ├── java/com/agilteam/manager/
+    ├── java/com/iesaguadulce/agilteammanager/
     │   ├── config/              ← Configuración Spring
     │   ├── model/
     │   │   ├── personas/        ← Persona, Competencia, Puesto
@@ -361,10 +362,10 @@ Tarea: prioridad=0.8
 - [x] Dashboard con KPIs
 - [x] CRUD Puestos de Trabajo
 - [x] CRUD Competencias (con filtro por tipo)
-- [ ] CRUD Personas
-- [ ] CRUD Proyectos / Sprints / Tareas
-- [ ] Motor de asignación (MotorAsignacionService)
-- [ ] Dockerización completa
+- [x] CRUD Personas (con gestión de disponibilidad)
+- [x] CRUD Proyectos / Sprints / Tareas
+- [x] Motor de asignación (MotorAsignacionService)
+- [x] Docker para base de datos (PostgreSQL)
 
 ### 🔄 Versión 1.5 (futuro)
 - [ ] API REST con documentación Swagger

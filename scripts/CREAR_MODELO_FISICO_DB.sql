@@ -206,7 +206,8 @@ INSERT INTO permisos (codigo, descripcion) VALUES
 ('VER_TAREAS_PROPIAS', 'Ver tareas asignadas propias'),
 ('ACTUALIZAR_ESTADO_PROPIO', 'Actualizar estado de tareas propias'),
 ('ACTUALIZAR_CARGA_PROPIA', 'Actualizar carga personal'),
-('EXPORTAR_CSV', 'Exportar reportes CSV');
+('EXPORTAR_CSV', 'Exportar reportes CSV'),
+('CRUD_CONFIGURACION', 'Gestionar configuración del sistema');
 
 -- Asociació Roles ↔ Permisos
 INSERT INTO roles_permisos (rol_id, permiso_id)
@@ -216,7 +217,7 @@ SELECT 1, id FROM permisos; -- ADMIN tiene todos los permisos
 INSERT INTO roles_permisos (rol_id, permiso_id)
 SELECT 2, id FROM permisos
 WHERE codigo IN (
-  'LOGIN', 'VER_DASHBOARD', 'CRUD_ROLES_PROFESIONALES', 'CRUD_PERSONAS',
+  'LOGIN', 'VER_DASHBOARD', 'CRUD_ROLES_PROFESIONALES', 'CRUD_COMPETENCIAS', 'CRUD_PERSONAS',
   'CRUD_PROYECTOS', 'CRUD_TAREAS', 'CALCULAR_ASIGNACION',
   'VER_TAREAS_PROPIAS', 'ACTUALIZAR_ESTADO_PROPIO',
   'ACTUALIZAR_CARGA_PROPIA', 'EXPORTAR_CSV'

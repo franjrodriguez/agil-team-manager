@@ -1,6 +1,7 @@
 package com.iesaguadulce.agilteammanager.controller.ui.dashboard;
 
 import com.iesaguadulce.agilteammanager.config.SpringContext;
+import com.iesaguadulce.agilteammanager.util.FotoUtil;
 import com.iesaguadulce.agilteammanager.controller.ui.login.LoginController;
 import com.iesaguadulce.agilteammanager.controller.ui.perfil.MisTareasController;
 import com.iesaguadulce.agilteammanager.model.personas.Persona;
@@ -13,6 +14,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuButton;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -22,7 +24,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -60,9 +61,10 @@ public class MainController {
     @FXML private Label    lbl_user;
     @FXML private Label    lbl_system_group;
     @FXML private Label    lbl_date;
-    @FXML private ImageView img_db_status;
-    @FXML private ImageView img_about;
-    @FXML private ImageView img_exit;
+    @FXML private ImageView  img_db_status;   // ya no está en FXML → será null (manejado con null-check)
+    @FXML private MenuButton btn_ayuda;
+    @FXML private ImageView  img_about;
+    @FXML private ImageView  img_exit;
 
     // ─────────────────────────────────────────────────────────
     // ÁREA CENTRAL
@@ -143,9 +145,9 @@ public class MainController {
         // Cargamos el servicio de permisos desde Spring
         permisoService = SpringContext.getBean(PermisoService.class);
 
-        Tooltip.install(img_db_status, new Tooltip("Estado de la conexión a la BD"));
-        Tooltip.install(img_about,     new Tooltip("Acerca de AgilTeam Manager"));
-        Tooltip.install(img_exit,      new Tooltip("Cerrar sesión"));
+        Tooltip.install(img_about,  new Tooltip("Acerca de AgilTeam Manager"));
+        Tooltip.install(img_exit,   new Tooltip("Cerrar sesión"));
+        if (btn_ayuda != null) btn_ayuda.setTooltip(new Tooltip("Centro de Ayuda y documentación"));
 
         actualizarCabecera();
         actualizarFooter();
@@ -279,6 +281,46 @@ public class MainController {
         }
     }
 
+    // ─────────────────────────────────────────────────────────
+    // AYUDA EN LÍNEA
+    // ─────────────────────────────────────────────────────────
+
+    /**
+     * Abre el Centro de Ayuda (HTML) en el navegador predeterminado del sistema.
+     * El archivo se encuentra en src/main/resources/ayuda/centro-ayuda.html
+     */
+    @FXML
+    public void abrirCentroAyuda() {
+        abrirRecursoEnNavegador("/ayuda/centro-ayuda.html");
+    }
+
+    /**
+     * Abre la página de vídeo demostración en el navegador predeterminado.
+     * El archivo se encuentra en src/main/resources/ayuda/video-demo.html
+     */
+    @FXML
+    public void abrirVideoDemo() {
+        abrirRecursoEnNavegador("/ayuda/video-demo.html");
+    }
+
+    /**
+     * Abre un recurso del classpath en el navegador predeterminado del sistema.
+     *
+     * @param rutaRecurso  Ruta dentro del classpath (ej. "/ayuda/centro-ayuda.html")
+     */
+    private void abrirRecursoEnNavegador(String rutaRecurso) {
+        try {
+            java.net.URL url = getClass().getResource(rutaRecurso);
+            if (url == null) {
+                mostrarError("No se encontró el archivo de ayuda:\n" + rutaRecurso);
+                return;
+            }
+            new ProcessBuilder("cmd", "/c", "start", url.toExternalForm()).start();
+        } catch (Exception e) {
+            mostrarError("No se pudo abrir el navegador.\n" + e.getMessage());
+        }
+    }
+
     /** Cierra la sesión actual y muestra el login para que otro usuario se autentique. */
     @FXML
     public void cerrarSesion(MouseEvent event) {
@@ -365,10 +407,16 @@ public class MainController {
         aplicarEstadoBoton(btn_profesionales,  codigos, "CRUD_PERSONAS");
         aplicarEstadoBoton(btn_proyectos,      codigos, "CRUD_PROYECTOS");
         aplicarEstadoBoton(btn_proy_motor,     codigos, "CALCULAR_ASIGNACION");
-        aplicarEstadoBoton(btn_my_tareas,      codigos, "VER_TAREAS_PROPIAS");
         aplicarEstadoBoton(btn_admin_user,     codigos, "CRUD_USUARIOS_SISTEMA");
         aplicarEstadoBoton(btn_admin_roles,    codigos, "CRUD_ROLES_SISTEMA");
-        aplicarEstadoBoton(btn_configuration,  codigos, "CRUD_ROLES_SISTEMA");
+        aplicarEstadoBoton(btn_configuration,  codigos, "CRUD_CONFIGURACION");
+
+        // Tareas Personales: OFF para ADMIN (rol de gestión del sistema, sin tareas asignadas)
+        if (esAdmin) {
+            aplicarEstadoBoton(btn_my_tareas, codigos, "");   // permiso inexistente → siempre OFF
+        } else {
+            aplicarEstadoBoton(btn_my_tareas, codigos, "VER_TAREAS_PROPIAS");
+        }
         // btn_inicio siempre habilitado (VER_DASHBOARD lo tienen todos)
     }
 
@@ -453,18 +501,16 @@ public class MainController {
 
     private void cargarAvatarUsuario() {
         if (img_user == null) return;
+
+        // Intentamos cargar el avatar desde ~/.agilteammanager/avatars/
         if (personaEnSesion != null) {
-            String path = personaEnSesion.getFotoPath();
-            if (path != null && !path.isBlank()) {
-                try {
-                    File f = new File(path);
-                    if (f.exists()) {
-                        img_user.setImage(new Image(f.toURI().toString()));
-                        return;
-                    }
-                } catch (Exception ignored) { }
+            Image imagen = FotoUtil.cargarImagen(personaEnSesion.getFotoPath());
+            if (imagen != null) {
+                img_user.setImage(imagen);
+                return;
             }
         }
+
         // Fallback: icono genérico según sexo
         Character sexo = personaEnSesion != null ? personaEnSesion.getSexo() : null;
         String ruta = Character.valueOf('F').equals(sexo)

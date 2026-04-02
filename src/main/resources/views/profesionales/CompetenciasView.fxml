@@ -98,12 +98,11 @@
                     </VBox>
                <VBox fx:id="tablaEquipoActivo" prefHeight="300.0">
                   <children>
-                     <Label styleClass="section-title" text="Profesionales en este puesto" />
+                     <Label styleClass="section-title" text="Profesionales con esta competencia" />
                      <TableView fx:id="tblEquipoActivo" prefHeight="300.0" VBox.vgrow="ALWAYS">
                         <columns>
-                           <TableColumn prefWidth="95.0" text="\% Carga" />
-                           <TableColumn prefWidth="338.0" text="Profesional" />
-                           <TableColumn prefWidth="113.0" text="Imagen" />
+                           <TableColumn fx:id="colNombre" prefWidth="438.0" text="Profesional" />
+                           <TableColumn fx:id="colNivel"  prefWidth="108.0" text="Nivel (0-100)" />
                         </columns>
                      </TableView>
                   </children>

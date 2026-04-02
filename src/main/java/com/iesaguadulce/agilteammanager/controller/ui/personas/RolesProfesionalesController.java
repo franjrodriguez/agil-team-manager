@@ -5,6 +5,7 @@ import com.iesaguadulce.agilteammanager.model.personas.Persona;
 import com.iesaguadulce.agilteammanager.model.personas.Puesto;
 import com.iesaguadulce.agilteammanager.service.personas.PersonaService;
 import com.iesaguadulce.agilteammanager.service.personas.PuestoService;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -90,6 +91,9 @@ public class RolesProfesionalesController implements Initializable {
 
     /** El puesto actualmente seleccionado/editado. null = modo "nuevo" */
     private Puesto puestoSeleccionado = null;
+
+    /** true cuando hay un formulario nuevo sin guardar */
+    private boolean formularioNuevoSinGuardar = false;
 
     /** Lista observable que alimenta el ListView */
     private ObservableList<Puesto> listaPuestos = FXCollections.observableArrayList();
@@ -188,10 +192,27 @@ public class RolesProfesionalesController implements Initializable {
     @FXML
     private void seleccionarPuesto(MouseEvent event) {
         Puesto seleccionado = puestotrabajoListView.getSelectionModel().getSelectedItem();
-        if (seleccionado == null) return;  // Clic en zona vacía de la lista → ignoramos
+        if (seleccionado == null) return;
 
-        puestoSeleccionado = seleccionado;
-        cargarDatosEnFormulario(puestoSeleccionado);
+        if (formularioNuevoSinGuardar) {
+            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+            confirm.setTitle("Cambios sin guardar");
+            confirm.setHeaderText("Hay un nuevo puesto sin guardar.");
+            confirm.setContentText("¿Descartar los cambios y seleccionar otro puesto?");
+            confirm.showAndWait().ifPresent(respuesta -> {
+                if (respuesta == ButtonType.OK) {
+                    formularioNuevoSinGuardar = false;
+                    puestoSeleccionado = seleccionado;
+                    cargarDatosEnFormulario(puestoSeleccionado);
+                } else {
+                    Platform.runLater(() ->
+                            puestotrabajoListView.getSelectionModel().clearSelection());
+                }
+            });
+        } else {
+            puestoSeleccionado = seleccionado;
+            cargarDatosEnFormulario(puestoSeleccionado);
+        }
     }
 
     /**
@@ -203,8 +224,9 @@ public class RolesProfesionalesController implements Initializable {
     @FXML
     private void nuevoPuesto() {
         puestoSeleccionado = null;
+        formularioNuevoSinGuardar = true;
         limpiarFormulario();
-        nombreField.requestFocus();  // El cursor va directo al campo nombre
+        nombreField.requestFocus();
     }
 
     /**
@@ -241,6 +263,7 @@ public class RolesProfesionalesController implements Initializable {
             Puesto guardado = puestoService.guardar(puesto);
 
             // Actualizamos la lista y seleccionamos el puesto recién guardado
+            formularioNuevoSinGuardar = false;
             cargarTodosLosPuestos();
             puestoSeleccionado = guardado;
             seleccionarEnLista(guardado);
@@ -298,6 +321,7 @@ public class RolesProfesionalesController implements Initializable {
     @FXML
     private void cancelar() {
         puestoSeleccionado = null;
+        formularioNuevoSinGuardar = false;
         limpiarFormulario();
         puestotrabajoListView.getSelectionModel().clearSelection();
     }
