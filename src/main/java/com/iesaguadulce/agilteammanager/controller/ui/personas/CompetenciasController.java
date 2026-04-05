@@ -5,6 +5,7 @@ import com.iesaguadulce.agilteammanager.model.personas.Competencia;
 import com.iesaguadulce.agilteammanager.model.personas.PersonaCompetencia;
 import com.iesaguadulce.agilteammanager.service.personas.CompetenciaService;
 import com.iesaguadulce.agilteammanager.service.personas.PersonaCompetenciaService;
+import com.iesaguadulce.agilteammanager.util.FotoUtil;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -12,6 +13,8 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -35,57 +38,124 @@ public class CompetenciasController implements Initializable {
     @Autowired
     private CompetenciaService competenciaService;
 
-    /** Panel izquierdo: buscador de texto */
-    @FXML private TextField searchField;
+    /**
+     * Panel izquierdo: buscador de texto
+     */
+    @FXML
+    private TextField searchField;
 
-    /** Panel izquierdo: lista de competencias */
-    @FXML private ListView<Competencia> competenciasListView;
+    /**
+     * Panel izquierdo: lista de competencias
+     */
+    @FXML
+    private ListView<Competencia> competenciasListView;
 
-    /** Panel derecho: título dinámico */
-    @FXML private Label profileName;
+    /**
+     * Panel derecho: título dinámico
+     */
+    @FXML
+    private Label profileName;
 
-    /** Panel derecho: campo nombre */
-    @FXML private TextField nombreField;
+    /**
+     * Panel derecho: campo nombre
+     */
+    @FXML
+    private TextField nombreField;
 
-    /** Panel derecho: campo descripción */
-    @FXML private TextArea descripcionField;
+    /**
+     * Panel derecho: campo descripción
+     */
+    @FXML
+    private TextArea descripcionField;
 
-    /** Panel derecho: selector de tipo (Lenguaje, Framework, BD, DevOps, Testing, Cloud) */
-    @FXML private ComboBox<String> tipoComboBox;
+    /**
+     * Panel derecho: selector de tipo (Lenguaje, Framework, BD, DevOps, Testing, Cloud)
+     */
+    @FXML
+    private ComboBox<String> tipoComboBox;
 
-    /** Botón de borrar (visible solo con selección) */
-    @FXML private Button btnDelete;
+    /**
+     * Botón de borrar (visible solo con selección)
+     */
+    @FXML
+    private Button btnDelete;
 
-    /** Tabla de profesionales con la competencia seleccionada */
-    @FXML private TableView<PersonaCompetencia>           tblEquipoActivo;
-    @FXML private TableColumn<PersonaCompetencia, String> colNombre;
-    @FXML private TableColumn<PersonaCompetencia, String> colNivel;
+    /**
+     * Botón de guardar cambios
+     */
+    @FXML
+    private Button btnSave;
 
-    /** Competencia actualmente seleccionada. null = modo "nueva" */
+    /**
+     * Tabla de profesionales con la competencia seleccionada
+     */
+    @FXML
+    private TableView<PersonaCompetencia> tblEquipoActivo;
+    @FXML
+    private TableColumn<PersonaCompetencia, Void> colFoto;
+    @FXML
+    private TableColumn<PersonaCompetencia, String> colNombre;
+    @FXML
+    private TableColumn<PersonaCompetencia, String> colNivel;
+
+    /**
+     * Competencia actualmente seleccionada. null = modo "nueva"
+     */
     private Competencia competenciaSeleccionada = null;
 
-    /** true cuando hay una nueva competencia sin guardar */
+    /**
+     * true cuando hay una nueva competencia sin guardar
+     */
     private boolean formularioNuevoSinGuardar = false;
 
-    /** Lista observable que alimenta el ListView */
+    /** true cuando el usuario ha modificado el formulario de una competencia existente */
+    private boolean isDirty = false;
+
+    /** true mientras se cargan datos en el formulario (evita falsos positivos en listeners) */
+    private boolean ignorarCambios = false;
+
+    /**
+     * Lista observable que alimenta el ListView
+     */
     private ObservableList<Competencia> listaCompetencias = FXCollections.observableArrayList();
 
     private PersonaCompetenciaService personaCompetenciaService;
 
-    /** Inicializa el controller cargando datos y configurando componentes. */
+    /**
+     * Inicializa el controller cargando datos y configurando componentes.
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         System.out.println("(FRANDEV) --> Entramos en CompetenciasController");
-        this.competenciaService          = SpringContext.getBean(CompetenciaService.class);
-        this.personaCompetenciaService   = SpringContext.getBean(PersonaCompetenciaService.class);
+        this.competenciaService = SpringContext.getBean(CompetenciaService.class);
+        this.personaCompetenciaService = SpringContext.getBean(PersonaCompetenciaService.class);
 
         configurarComboBoxTipo();
         configurarListView();
         configurarTablaEquipo();
+
+        // isDirty: btnSave desactivado al arrancar
+        btnSave.setDisable(true);
+
+        // isDirty: listeners en los tres campos del formulario
+        nombreField.textProperty().addListener((obs, oldV, newV) -> marcarCambiado());
+        descripcionField.textProperty().addListener((obs, oldV, newV) -> marcarCambiado());
+        tipoComboBox.valueProperty().addListener((obs, oldV, newV) -> marcarCambiado());
+
         cargarTodasLasCompetencias();
         limpiarFormulario();
 
         System.out.println("(FRANDEV) --> CompetenciasController inicializado correctamente");
+    }
+
+    /**
+     * Marca el formulario como modificado y activa el botón Guardar.
+     * Se ignora si estamos cargando datos programáticamente (ignorarCambios=true).
+     */
+    private void marcarCambiado() {
+        if (ignorarCambios) return;
+        isDirty = true;
+        btnSave.setDisable(false);
     }
 
     /**
@@ -120,7 +190,9 @@ public class CompetenciasController implements Initializable {
         competenciasListView.setItems(listaCompetencias);
     }
 
-    /** Carga todas las competencias desde el servicio. */
+    /**
+     * Carga todas las competencias desde el servicio.
+     */
     private void cargarTodasLasCompetencias() {
         List<Competencia> competencias = competenciaService.obtenerTodas();
         listaCompetencias.setAll(competencias);
@@ -145,26 +217,42 @@ public class CompetenciasController implements Initializable {
 
     /**
      * Carga la competencia seleccionada en el formulario.
+     *
      * @param event evento de clic del ratón
      */
     @FXML
     private void seleccionarCompetencia(MouseEvent event) {
         Competencia seleccionada = competenciasListView.getSelectionModel().getSelectedItem();
         if (seleccionada == null) return;
+        // Si es la misma competencia y no hay formulario nuevo, ignoramos el clic
+        if (seleccionada.equals(competenciaSeleccionada) && !formularioNuevoSinGuardar) return;
 
-        if (formularioNuevoSinGuardar) {
+        if (formularioNuevoSinGuardar || isDirty) {
+            String header = formularioNuevoSinGuardar
+                    ? "Hay una nueva competencia sin guardar."
+                    : "Hay cambios sin guardar en '" + competenciaSeleccionada.getNombre() + "'.";
+
             Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
             confirm.setTitle("Cambios sin guardar");
-            confirm.setHeaderText("Hay una nueva competencia sin guardar.");
+            confirm.setHeaderText(header);
             confirm.setContentText("¿Descartar los cambios y seleccionar otra competencia?");
             confirm.showAndWait().ifPresent(respuesta -> {
                 if (respuesta == ButtonType.OK) {
                     formularioNuevoSinGuardar = false;
+                    isDirty = false;
+                    btnSave.setDisable(true);
                     competenciaSeleccionada = seleccionada;
                     cargarDatosEnFormulario(competenciaSeleccionada);
                 } else {
-                    Platform.runLater(() ->
-                            competenciasListView.getSelectionModel().clearSelection());
+                    // Cancelar: volvemos a seleccionar la competencia anterior
+                    Competencia anterior = competenciaSeleccionada;
+                    Platform.runLater(() -> {
+                        if (anterior != null) {
+                            competenciasListView.getSelectionModel().select(anterior);
+                        } else {
+                            competenciasListView.getSelectionModel().clearSelection();
+                        }
+                    });
                 }
             });
         } else {
@@ -226,10 +314,14 @@ public class CompetenciasController implements Initializable {
                 );
             }
 
+            // Reset de estado ANTES de recargar (evita falsos positivos)
             formularioNuevoSinGuardar = false;
-            cargarTodasLasCompetencias();
+            isDirty = false;
+            btnSave.setDisable(true);
             competenciaSeleccionada = guardada;
-            // seleccionarEnLista(guardada);
+
+            cargarTodasLasCompetencias();
+            seleccionarEnLista(guardada);
             cargarDatosEnFormulario(guardada);
 
             mostrarAlerta(Alert.AlertType.INFORMATION, "Guardado",
@@ -275,6 +367,7 @@ public class CompetenciasController implements Initializable {
     private void cancelar() {
         competenciaSeleccionada = null;
         formularioNuevoSinGuardar = false;
+        isDirty = false;
         limpiarFormulario();
         competenciasListView.getSelectionModel().clearSelection();
     }
@@ -283,8 +376,39 @@ public class CompetenciasController implements Initializable {
     // MÉTODOS AUXILIARES PRIVADOS
     // ─────────────────────────────────────────────────────────
 
-    /** Configura las columnas de la tabla de profesionales. */
+    /**
+     * Configura las columnas de la tabla de profesionales.
+     */
     private void configurarTablaEquipo() {
+        // Columna foto — mismo patrón que DashboardController
+        colFoto.setCellFactory(col -> new TableCell<>() {
+            private final ImageView iv = new ImageView();
+            {
+                iv.setFitWidth(32);
+                iv.setFitHeight(32);
+                iv.setPreserveRatio(true);
+            }
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || getTableRow() == null || getTableRow().getItem() == null) {
+                    setGraphic(null);
+                    return;
+                }
+                PersonaCompetencia pc = getTableRow().getItem();
+                String fotoPath = (pc.getPersona() != null) ? pc.getPersona().getFotoPath() : null;
+                Image imagen = FotoUtil.cargarImagen(fotoPath);
+                if (imagen != null) {
+                    iv.setImage(imagen);
+                } else {
+                    iv.setImage(new Image(
+                            getClass().getResourceAsStream("/icons/professional.png")));
+                }
+                setGraphic(iv);
+                setAlignment(javafx.geometry.Pos.CENTER);
+            }
+        });
+
         colNombre.setCellValueFactory(data -> {
             PersonaCompetencia pc = data.getValue();
             String nombre = (pc.getPersona() != null) ? pc.getPersona().getNombre() : "—";
@@ -298,7 +422,9 @@ public class CompetenciasController implements Initializable {
         colNivel.setStyle("-fx-alignment: CENTER;");
     }
 
-    /** Carga en la tabla los profesionales que tienen la competencia indicada. */
+    /**
+     * Carga en la tabla los profesionales que tienen la competencia indicada.
+     */
     private void cargarProfesionalesConCompetencia(Long competenciaId) {
         try {
             List<PersonaCompetencia> lista =
@@ -311,21 +437,33 @@ public class CompetenciasController implements Initializable {
     }
 
     private void cargarDatosEnFormulario(Competencia competencia) {
-        profileName.setText(competencia.getNombre());
-        nombreField.setText(competencia.getNombre());
-        descripcionField.setText(competencia.getDescripcion() != null ? competencia.getDescripcion() : "");
-        System.out.println("(FRANDEV) --> TIPO QUE LLEGA: " + competencia.getTipo());
-        tipoComboBox.setValue(competencia.getTipo());
-        btnDelete.setVisible(true);
+        ignorarCambios = true;
+        try {
+            profileName.setText(competencia.getNombre());
+            nombreField.setText(competencia.getNombre());
+            descripcionField.setText(competencia.getDescripcion() != null ? competencia.getDescripcion() : "");
+            System.out.println("(FRANDEV) --> TIPO QUE LLEGA: " + competencia.getTipo());
+            tipoComboBox.setValue(competencia.getTipo());
+            btnDelete.setVisible(true);
+        } finally {
+            ignorarCambios = false;
+        }
         cargarProfesionalesConCompetencia(competencia.getId());
     }
 
     private void limpiarFormulario() {
-        nombreField.clear();
-        descripcionField.clear();
-        tipoComboBox.setValue(null);
-        btnDelete.setVisible(false);
-        if (tblEquipoActivo != null) tblEquipoActivo.setItems(FXCollections.emptyObservableList());
+        ignorarCambios = true;
+        try {
+            nombreField.clear();
+            descripcionField.clear();
+            tipoComboBox.setValue(null);
+            btnDelete.setVisible(false);
+            if (tblEquipoActivo != null) tblEquipoActivo.setItems(FXCollections.emptyObservableList());
+        } finally {
+            ignorarCambios = false;
+            isDirty = false;
+            btnSave.setDisable(true);
+        }
     }
 
     private void seleccionarEnLista(Competencia competencia) {
@@ -337,4 +475,7 @@ public class CompetenciasController implements Initializable {
         Alert alert = new Alert(tipo);
         alert.setTitle(titulo);
         alert.setHeaderText(null);
-        alert
+        alert.setContentText(mensaje);
+        alert.showAndWait();
+    }
+}

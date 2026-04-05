@@ -101,8 +101,9 @@
                      <Label styleClass="section-title" text="Profesionales con esta competencia" />
                      <TableView fx:id="tblEquipoActivo" prefHeight="300.0" VBox.vgrow="ALWAYS">
                         <columns>
-                           <TableColumn fx:id="colNombre" prefWidth="438.0" text="Profesional" />
-                           <TableColumn fx:id="colNivel"  prefWidth="108.0" text="Nivel (0-100)" />
+                           <TableColumn fx:id="colFoto" prefWidth="97.0" text="Foto" />
+                           <TableColumn fx:id="colNombre" prefWidth="779.0" text="Profesional" />
+                           <TableColumn fx:id="colNivel" prefWidth="108.0" text="Nivel (0-100)" />
                         </columns>
                      </TableView>
                   </children>

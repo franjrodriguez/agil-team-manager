@@ -116,6 +116,13 @@ public class ProyectosController {
     /** true cuando hay un nuevo proyecto sin guardar */
     private boolean formularioNuevoSinGuardar = false;
 
+    /** true cuando el usuario ha modificado el formulario de un proyecto existente */
+    private boolean isDirty = false;
+    /** true mientras se cargan datos programáticamente (evita falsos positivos) */
+    private boolean ignorarCambios = false;
+    /** true mientras se revierte la selección tras cancelar el diálogo */
+    private boolean revirtiendoSeleccion = false;
+
 
     /** Inicializa servicios, tablas y listeners. */
     @FXML
@@ -139,6 +146,16 @@ public class ProyectosController {
 
         btnAddProyecto.setOnAction(e -> onNuevoProyecto());
 
+        // isDirty: btnSave desactivado al arrancar
+        btnSave.setDisable(true);
+
+        // isDirty: listeners en los campos del formulario de proyecto
+        nombreField.textProperty().addListener((obs, oldV, newV) -> marcarCambiado());
+        descripcionField.textProperty().addListener((obs, oldV, newV) -> marcarCambiado());
+        fechacomienzoDate.valueProperty().addListener((obs, oldV, newV) -> marcarCambiado());
+        fechafinDate.valueProperty().addListener((obs, oldV, newV) -> marcarCambiado());
+        statusComboBox.valueProperty().addListener((obs, oldV, newV) -> marcarCambiado());
+
         // Sin sprint seleccionado, los botones de tarea y competencia permanecen desactivados
         btnAddTask.setDisable(true);
         btnAddCompetencia.setDisable(true);
@@ -149,6 +166,13 @@ public class ProyectosController {
     //
     //  CONFIGURACIÓN INICIAL
     //
+
+    /** Marca el formulario como modificado y activa el botón Guardar. */
+    private void marcarCambiado() {
+        if (ignorarCambios) return;
+        isDirty = true;
+        btnSave.setDisable(false);
+    }
 
     private void configurarComboEstados() {
         List<String> estados = List.of("planificacion", "activo", "completado", "cancelado");
@@ -355,21 +379,36 @@ public class ProyectosController {
     private void configurarSeleccionProyecto() {
         proyectoListView.getSelectionModel().selectedItemProperty().addListener(
                 (obs, anterior, nuevo) -> {
+                    if (revirtiendoSeleccion) return;
                     if (nuevo == null) return;
 
-                    if (formularioNuevoSinGuardar) {
+                    if (formularioNuevoSinGuardar || isDirty) {
+                        String header = formularioNuevoSinGuardar
+                                ? "Hay un nuevo proyecto sin guardar."
+                                : "Hay cambios sin guardar en '" +
+                                  (proyectoSeleccionado != null ? proyectoSeleccionado.getNombre() : "") + "'.";
                         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
                         confirm.setTitle("Cambios sin guardar");
-                        confirm.setHeaderText("Hay un nuevo proyecto sin guardar.");
+                        confirm.setHeaderText(header);
                         confirm.setContentText("¿Descartar los cambios y seleccionar otro proyecto?");
                         confirm.showAndWait().ifPresent(respuesta -> {
                             if (respuesta == ButtonType.OK) {
                                 formularioNuevoSinGuardar = false;
+                                isDirty = false;
+                                btnSave.setDisable(true);
                                 proyectoSeleccionado = nuevo;
                                 mostrarDetalleProyecto(nuevo);
                             } else {
-                                Platform.runLater(() ->
-                                        proyectoListView.getSelectionModel().clearSelection());
+                                // Revertir a la selección anterior sin disparar el listener de nuevo
+                                revirtiendoSeleccion = true;
+                                Platform.runLater(() -> {
+                                    if (anterior != null) {
+                                        proyectoListView.getSelectionModel().select(anterior);
+                                    } else {
+                                        proyectoListView.getSelectionModel().clearSelection();
+                                    }
+                                    revirtiendoSeleccion = false;
+                                });
                             }
                         });
                     } else {
@@ -441,13 +480,20 @@ public class ProyectosController {
     }
 
     private void mostrarDetalleProyecto(Proyecto p) {
-        projectName.setText(p.getNombre());
-        projectDescriptionBreve.setText(p.getDescripcion() != null ? p.getDescripcion() : "");
-        nombreField.setText(p.getNombre());
-        descripcionField.setText(p.getDescripcion());
-        fechacomienzoDate.setValue(p.getFechaInicio());
-        fechafinDate.setValue(p.getFechaFin());
-        if (p.getEstado() != null) statusComboBox.setValue(p.getEstado());
+        ignorarCambios = true;
+        try {
+            projectName.setText(p.getNombre());
+            projectDescriptionBreve.setText(p.getDescripcion() != null ? p.getDescripcion() : "");
+            nombreField.setText(p.getNombre());
+            descripcionField.setText(p.getDescripcion());
+            fechacomienzoDate.setValue(p.getFechaInicio());
+            fechafinDate.setValue(p.getFechaFin());
+            if (p.getEstado() != null) statusComboBox.setValue(p.getEstado());
+        } finally {
+            ignorarCambios = false;
+            isDirty = false;
+            btnSave.setDisable(true);
+        }
 
         // Resetear sprint, tareas y competencias al cambiar de proyecto
         sprintSeleccionado = null;
@@ -488,16 +534,23 @@ public class ProyectosController {
     private void onNuevoProyecto() {
         proyectoSeleccionado = null;
         formularioNuevoSinGuardar = true;
-        projectName.setText("Nuevo Proyecto");
-        projectDescriptionBreve.setText("");
-        nombreField.clear();
-        descripcionField.clear();
-        fechacomienzoDate.setValue(null);
-        fechafinDate.setValue(null);
-        statusComboBox.setValue("planificacion");
-        sprintsTable.setItems(FXCollections.emptyObservableList());
-        tareasTable.setItems(FXCollections.emptyObservableList());
-        btnAddTask.setDisable(true);
+        ignorarCambios = true;
+        try {
+            projectName.setText("Nuevo Proyecto");
+            projectDescriptionBreve.setText("");
+            nombreField.clear();
+            descripcionField.clear();
+            fechacomienzoDate.setValue(null);
+            fechafinDate.setValue(null);
+            statusComboBox.setValue("planificacion");
+            sprintsTable.setItems(FXCollections.emptyObservableList());
+            tareasTable.setItems(FXCollections.emptyObservableList());
+            btnAddTask.setDisable(true);
+        } finally {
+            ignorarCambios = false;
+            isDirty = false;
+            btnSave.setDisable(true);
+        }
         nombreField.requestFocus();
     }
 
@@ -538,7 +591,10 @@ public class ProyectosController {
                 );
             }
 
+            // Reset ANTES de recargar (evita que cargarListaProyectos dispare el listener con isDirty=true)
             formularioNuevoSinGuardar = false;
+            isDirty = false;
+            btnSave.setDisable(true);
 
             // Capturamos id y nombre ANTES de recargar la lista,
             // porque setItems() puede disparar el listener y sobreescribir proyectoSeleccionado.

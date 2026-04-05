@@ -48,3 +48,6 @@ HISTORICO.md
 
 ### Temporales ###
 *.bak
+
+### Maven portable (descargado por iniciar_windows.bat) ###
+tools/

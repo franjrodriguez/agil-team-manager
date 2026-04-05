@@ -108,7 +108,8 @@
     -fx-cursor: hand;
     -fx-background-radius: 6;
 }
-.help-button .label {
+/* '>' limita el selector al label DIRECTO del botón, sin bajar al popup */
+.help-button > .label {
     -fx-text-fill: white;
 }
 .help-button:hover {
@@ -119,6 +120,21 @@
 }
 .help-button .arrow-button .arrow {
     -fx-background-color: white;
+}
+/* Items del desplegable: fondo blanco, texto oscuro visible */
+.help-button .menu-item {
+    -fx-background-color: white;
+}
+.help-button .menu-item .label {
+    -fx-text-fill: -app-text-main;
+}
+.help-button .menu-item:hover,
+.help-button .menu-item:focused {
+    -fx-background-color: #F3F4F6;
+}
+.help-button .menu-item:hover .label,
+.help-button .menu-item:focused .label {
+    -fx-text-fill: -app-text-main;
 }
 
 /* Sidebar */

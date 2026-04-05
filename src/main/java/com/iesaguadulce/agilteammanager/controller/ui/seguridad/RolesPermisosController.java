@@ -4,6 +4,7 @@ import com.iesaguadulce.agilteammanager.config.SpringContext;
 import com.iesaguadulce.agilteammanager.model.seguridad.Permiso;
 import com.iesaguadulce.agilteammanager.model.seguridad.RolSistema;
 import com.iesaguadulce.agilteammanager.service.seguridad.PermisoService;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -67,6 +68,13 @@ public class RolesPermisosController implements Initializable {
     /** Rol actualmente seleccionado. null = modo "nuevo" */
     private RolSistema rolSeleccionado;
 
+    /** true cuando el usuario ha modificado el formulario */
+    private boolean isDirty = false;
+    /** true mientras se cargan datos programáticamente (evita falsos positivos) */
+    private boolean ignorarCambios = false;
+    /** true mientras se revierte la selección tras cancelar el diálogo */
+    private boolean revirtiendoSeleccion = false;
+
     /**
      * Inicializa controlador obteniendo servicio y configurando componentes.
      */
@@ -79,9 +87,24 @@ public class RolesPermisosController implements Initializable {
         configurarListView();
         configurarTablaPermisos();
         configurarBotones();
+
+        // isDirty: btnSave desactivado al arrancar
+        btnSave.setDisable(true);
+
+        // isDirty: listeners en los campos del formulario
+        rolField.textProperty().addListener((obs, oldV, newV) -> marcarCambiado());
+        descripcionArea.textProperty().addListener((obs, oldV, newV) -> marcarCambiado());
+
         cargarRoles();
 
         System.out.println("(FRANDEV) --> RolesPermisosController inicializado correctamente");
+    }
+
+    /** Marca el formulario como modificado y activa el botón Guardar. */
+    private void marcarCambiado() {
+        if (ignorarCambios) return;
+        isDirty = true;
+        btnSave.setDisable(false);
     }
 
     /**
@@ -107,7 +130,30 @@ public class RolesPermisosController implements Initializable {
 
         rolesListView.getSelectionModel().selectedItemProperty()
                 .addListener((obs, oldVal, newVal) -> {
-                    if (newVal != null) {
+                    if (revirtiendoSeleccion) return;
+                    if (newVal == null) return;
+
+                    if (isDirty) {
+                        String nombreActual = rolSeleccionado != null ? rolSeleccionado.getNombre() : "";
+                        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+                        confirm.setTitle("Cambios sin guardar");
+                        confirm.setHeaderText("Hay cambios sin guardar en '" + nombreActual + "'.");
+                        confirm.setContentText("¿Descartar los cambios y seleccionar otro rol?");
+                        confirm.showAndWait().ifPresent(respuesta -> {
+                            if (respuesta == ButtonType.OK) {
+                                isDirty = false;
+                                btnSave.setDisable(true);
+                                mostrarDetalle(newVal);
+                            } else {
+                                RolSistema anterior = oldVal;
+                                revirtiendoSeleccion = true;
+                                Platform.runLater(() -> {
+                                    rolesListView.getSelectionModel().select(anterior);
+                                    revirtiendoSeleccion = false;
+                                });
+                            }
+                        });
+                    } else {
                         mostrarDetalle(newVal);
                     }
                 });
@@ -227,10 +273,15 @@ public class RolesPermisosController implements Initializable {
      */
     private void mostrarDetalle(RolSistema rol) {
         this.rolSeleccionado = rol;
-
-        rolField.setText(rol.getNombre());
-        descripcionArea.setText(rol.getDescripcion() != null ? rol.getDescripcion() : "");
-
+        ignorarCambios = true;
+        try {
+            rolField.setText(rol.getNombre());
+            descripcionArea.setText(rol.getDescripcion() != null ? rol.getDescripcion() : "");
+        } finally {
+            ignorarCambios = false;
+            isDirty = false;
+            btnSave.setDisable(true);
+        }
         cargarPermisosDelRol(rol);
     }
 
@@ -266,6 +317,9 @@ public class RolesPermisosController implements Initializable {
             } else {
                 permisoService.actualizarRol(rolSeleccionado.getId(), nombre, descripcion);
             }
+            // Reset ANTES de recargar (evita que cargarRoles dispare el listener con isDirty=true)
+            isDirty = false;
+            btnSave.setDisable(true);
             cargarRoles();
             mostrarAlerta(Alert.AlertType.INFORMATION, "Guardado", "Rol guardado correctamente.");
         } catch (RuntimeException e) {
@@ -403,9 +457,16 @@ public class RolesPermisosController implements Initializable {
      * Limpia el formulario central.
      */
     private void limpiarFormulario() {
-        rolField.clear();
-        descripcionArea.clear();
-        listaPermisos.clear();
+        ignorarCambios = true;
+        try {
+            rolField.clear();
+            descripcionArea.clear();
+            listaPermisos.clear();
+        } finally {
+            ignorarCambios = false;
+            isDirty = false;
+            btnSave.setDisable(true);
+        }
     }
 
     /**

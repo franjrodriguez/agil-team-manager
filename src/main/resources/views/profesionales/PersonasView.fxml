@@ -8,7 +8,6 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
@@ -19,7 +18,6 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
 <!--
@@ -28,11 +26,8 @@
 ║  Estilos: primer-light.css  +  agilteam-styles.css              ║
 ╚══════════════════════════════════════════════════════════════════╝
 -->
-<BorderPane fx:id="rootPane"
-            prefHeight="806.0" prefWidth="1200.0"
-            xmlns="http://javafx.com/javafx/17.0.12"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.iesaguadulce.agilteammanager.controller.ui.personas.PersonasController">
+
+<BorderPane fx:id="rootPane" prefHeight="806.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iesaguadulce.agilteammanager.controller.ui.personas.PersonasController">
 
     <stylesheets>
         <URL value="@../../css/primer-light.css" />
@@ -43,28 +38,18 @@
          TOP — Cabecera fija
          ═══════════════════════════════════════════════════════ -->
     <top>
-        <HBox fx:id="headerBox" alignment="CENTER_LEFT" prefHeight="72.0" spacing="14.0"
-              style="-fx-background-color: -app-bg-card;
-                     -fx-border-color: -app-border-soft;
-                     -fx-border-width: 0 0 1 0;">
-            <padding><Insets top="0" right="24" bottom="0" left="24" /></padding>
+        <HBox fx:id="headerBox" alignment="CENTER_LEFT" prefHeight="72.0" spacing="14.0" style="-fx-background-color: -app-bg-card;                      -fx-border-color: -app-border-soft;                      -fx-border-width: 0 0 1 0;">
+            <padding><Insets bottom="0" left="24" right="24" top="0" /></padding>
 
             <VBox fx:id="headerInfo" alignment="CENTER_LEFT" spacing="2.0" HBox.hgrow="ALWAYS">
                 <Label fx:id="profileName" styleClass="section-title" text="Profesionales" />
                 <Label fx:id="profileRole" styleClass="page-subtitle" text="Selecciona un profesional" />
             </VBox>
 
-            <ComboBox fx:id="statusComboBox" prefHeight="34.0" prefWidth="140.0"
-                      promptText="Estado" />
+            <ComboBox fx:id="statusComboBox" prefHeight="34.0" prefWidth="140.0" promptText="Estado" />
 
-            <Button fx:id="btnDelete" mnemonicParsing="false"
-                    prefHeight="36.0" prefWidth="160.0"
-                    style="-fx-background-color: -app-error; -fx-text-fill: white;
-                           -fx-background-radius: 6; -fx-font-weight: 600;"
-                    text="Borrar Profesional" />
-            <Button fx:id="btnSave" mnemonicParsing="false"
-                    prefHeight="36.0" prefWidth="160.0"
-                    styleClass="primary" text="Guardar Cambios" />
+            <Button fx:id="btnDelete" mnemonicParsing="false" prefHeight="36.0" prefWidth="160.0" style="-fx-background-color: -app-error; -fx-text-fill: white;                            -fx-background-radius: 6; -fx-font-weight: 600;" text="Borrar Profesional" />
+            <Button fx:id="btnSave" mnemonicParsing="false" prefHeight="36.0" prefWidth="160.0" styleClass="primary" text="Guardar Cambios" />
         </HBox>
     </top>
 
@@ -72,19 +57,14 @@
          LEFT — Panel lateral claro
          ═══════════════════════════════════════════════════════ -->
     <left>
-        <VBox fx:id="sidebarPanel" prefHeight="734.0" prefWidth="380.0" spacing="10.0"
-              styleClass="app-panel" BorderPane.alignment="CENTER">
-            <padding><Insets top="16" right="16" bottom="16" left="16" /></padding>
+        <VBox fx:id="sidebarPanel" prefHeight="734.0" prefWidth="380.0" spacing="10.0" styleClass="app-panel" BorderPane.alignment="CENTER">
+            <padding><Insets bottom="16" left="16" right="16" top="16" /></padding>
 
-            <TextField fx:id="searchField" prefHeight="38.0"
-                       promptText="Buscar profesional..." />
+            <TextField fx:id="searchField" prefHeight="38.0" promptText="Buscar profesional..." />
 
-            <ComboBox fx:id="statusFilter" prefHeight="34.0" promptText="Estado"
-                      maxWidth="1.7976931348623157E308" />
+            <ComboBox fx:id="statusFilter" maxWidth="1.7976931348623157E308" prefHeight="34.0" promptText="Estado" />
 
-            <Button fx:id="btnAddProfessional" mnemonicParsing="false"
-                    prefHeight="38.0" prefWidth="400.0" styleClass="primary"
-                    text="Añadir Profesional" />
+            <Button fx:id="btnAddProfessional" mnemonicParsing="false" prefHeight="38.0" prefWidth="400.0" styleClass="primary" text="Añadir Profesional" />
 
             <ListView fx:id="professionalsListView" VBox.vgrow="ALWAYS" />
         </VBox>
@@ -94,25 +74,17 @@
          CENTER — Área de trabajo
          ═══════════════════════════════════════════════════════ -->
     <center>
-        <ScrollPane fx:id="detailScrollPane" hbarPolicy="NEVER" fitToWidth="true"
-                    BorderPane.alignment="CENTER">
+        <ScrollPane fx:id="detailScrollPane" fitToWidth="true" hbarPolicy="NEVER" BorderPane.alignment="CENTER">
             <content>
-                <VBox fx:id="detailPane" spacing="16.0"
-                      style="-fx-background-color: -app-bg-workspace;">
-                    <padding><Insets top="28" right="32" bottom="32" left="32" /></padding>
+                <VBox fx:id="detailPane" spacing="16.0" style="-fx-background-color: -app-bg-workspace;">
+                    <padding><Insets bottom="32" left="32" right="32" top="28" /></padding>
 
                     <!-- Datos personales -->
-                    <GridPane fx:id="personalDataGrid" hgap="16.0" vgap="12.0"
-                              style="-fx-background-color: -app-bg-card;
-                                     -fx-background-radius: 8;
-                                     -fx-border-color: -app-border-soft;
-                                     -fx-border-radius: 8;
-                                     -fx-border-width: 1;
-                                     -fx-padding: 16;">
+                    <GridPane fx:id="personalDataGrid" hgap="16.0" style="-fx-background-color: -app-bg-card;                                      -fx-background-radius: 8;                                      -fx-border-color: -app-border-soft;                                      -fx-border-radius: 8;                                      -fx-border-width: 1;                                      -fx-padding: 16;" vgap="12.0">
                         <columnConstraints>
-                            <ColumnConstraints hgrow="ALWAYS" percentWidth="38" minWidth="10.0" />
-                            <ColumnConstraints hgrow="ALWAYS" percentWidth="38" minWidth="10.0" />
-                            <ColumnConstraints hgrow="NEVER" minWidth="160.0" prefWidth="190.0" maxWidth="220.0" />
+                            <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" percentWidth="38" />
+                            <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" percentWidth="38" />
+                            <ColumnConstraints hgrow="NEVER" maxWidth="220.0" minWidth="160.0" prefWidth="190.0" />
                         </columnConstraints>
                         <rowConstraints>
                             <RowConstraints />
@@ -125,116 +97,70 @@
 
                         <!-- Fila 0: etiquetas -->
                         <Label styleClass="form-label" text="NOMBRE" />
-                        <Label styleClass="form-label" text="PUESTO DE TRABAJO"
-                               GridPane.columnIndex="1" />
+                        <Label styleClass="form-label" text="PUESTO DE TRABAJO" GridPane.columnIndex="1" />
                         <!-- Fila 1: campos -->
-                        <TextField fx:id="nombreField" prefHeight="36.0"
-                                   promptText="Nombre completo"
-                                   GridPane.rowIndex="1" />
-                        <ComboBox fx:id="puestoComboBox" prefHeight="36.0"
-                                  maxWidth="1.7976931348623157E308"
-                                  promptText="Selecciona un puesto..."
-                                  GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <TextField fx:id="nombreField" prefHeight="36.0" promptText="Nombre completo" GridPane.rowIndex="1" />
+                        <ComboBox fx:id="puestoComboBox" maxWidth="1.7976931348623157E308" prefHeight="36.0" promptText="Selecciona un puesto..." GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <!-- Fila 2: etiquetas -->
-                        <Label styleClass="form-label" text="EMAIL"
-                               GridPane.rowIndex="2" />
-                        <Label styleClass="form-label" text="NOMBRE DE USUARIO"
-                               GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <Label styleClass="form-label" text="EMAIL" GridPane.rowIndex="2" />
+                        <Label styleClass="form-label" text="NOMBRE DE USUARIO" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                         <!-- Fila 3: campos -->
-                        <TextField fx:id="emailField" prefHeight="36.0"
-                                   promptText="correo@empresa.com"
-                                   GridPane.rowIndex="3" />
-                        <TextField fx:id="usernameField" prefHeight="36.0"
-                                   promptText="nombre.usuario"
-                                   GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                        <TextField fx:id="emailField" prefHeight="36.0" promptText="correo@empresa.com" GridPane.rowIndex="3" />
+                        <TextField fx:id="usernameField" prefHeight="36.0" promptText="nombre.usuario" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                         <!-- Fila 4: etiquetas -->
-                        <Label styleClass="form-label" text="SEXO / FECHA INCORPORACIÓN"
-                               GridPane.rowIndex="4">
+                        <Label styleClass="form-label" text="SEXO / FECHA INCORPORACIÓN" GridPane.rowIndex="4">
                             <GridPane.margin><Insets top="8.0" /></GridPane.margin>
                         </Label>
-                        <Label styleClass="form-label" text="ROL DE SISTEMA"
-                               GridPane.columnIndex="1" GridPane.rowIndex="4">
+                        <Label styleClass="form-label" text="ROL DE SISTEMA" GridPane.columnIndex="1" GridPane.rowIndex="4">
                             <GridPane.margin><Insets top="8.0" /></GridPane.margin>
                         </Label>
                         <!-- Fila 5: campos -->
-                        <HBox fx:id="sexJoinBox" alignment="CENTER_LEFT" spacing="12.0"
-                              GridPane.rowIndex="5">
-                            <ComboBox fx:id="sexComboBox" prefHeight="36.0" prefWidth="120.0"
-                                      promptText="Sexo" />
-                            <DatePicker fx:id="joinDatePicker" prefHeight="36.0" prefWidth="160.0"
-                                        promptText="Fecha incorporación" />
+                        <HBox fx:id="sexJoinBox" alignment="CENTER_LEFT" spacing="12.0" GridPane.rowIndex="5">
+                            <ComboBox fx:id="sexComboBox" prefHeight="36.0" prefWidth="120.0" promptText="Sexo" />
+                            <DatePicker fx:id="joinDatePicker" prefHeight="36.0" prefWidth="160.0" promptText="Fecha incorporación" />
                         </HBox>
-                        <ComboBox fx:id="systemRoleComboBox" prefHeight="36.0"
-                                  maxWidth="1.7976931348623157E308"
-                                  promptText="Rol de sistema"
-                                  GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                        <ComboBox fx:id="systemRoleComboBox" maxWidth="1.7976931348623157E308" prefHeight="36.0" promptText="Rol de sistema" GridPane.columnIndex="1" GridPane.rowIndex="5" />
 
                         <!-- Columna derecha: foto del profesional -->
-                        <VBox alignment="CENTER" spacing="12.0"
-                              GridPane.columnIndex="2" GridPane.rowSpan="6">
-                            <ImageView fx:id="profileAvatar" fitHeight="150.0" fitWidth="150.0"
-                                       pickOnBounds="true" preserveRatio="true" />
-                            <Button fx:id="btnCambiarFoto" mnemonicParsing="false"
-                                    onAction="#onCambiarFoto" text="📷 Cambiar foto"
-                                    prefHeight="34.0" prefWidth="160.0"
-                                    style="-fx-font-size: 12px;" />
+                        <VBox alignment="CENTER" spacing="12.0" GridPane.columnIndex="2" GridPane.rowSpan="6">
+                            <ImageView fx:id="profileAvatar" fitHeight="150.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true" />
+                            <Button fx:id="btnCambiarFoto" mnemonicParsing="false" onAction="#onCambiarFoto" prefHeight="34.0" prefWidth="160.0" style="-fx-font-size: 12px;" text="📷 Cambiar foto" />
                         </VBox>
                     </GridPane>
 
                     <!-- Competencias técnicas -->
-                    <VBox fx:id="competenciesSection" spacing="12.0"
-                          style="-fx-background-color: -app-bg-card;
-                                 -fx-background-radius: 8;
-                                 -fx-border-color: -app-border-soft;
-                                 -fx-border-radius: 8;
-                                 -fx-border-width: 1;
-                                 -fx-padding: 16;">
+                    <VBox fx:id="competenciesSection" spacing="12.0" style="-fx-background-color: -app-bg-card;                                  -fx-background-radius: 8;                                  -fx-border-color: -app-border-soft;                                  -fx-border-radius: 8;                                  -fx-border-width: 1;                                  -fx-padding: 16;">
 
                         <HBox fx:id="taskSectionHeader1" alignment="CENTER_LEFT" spacing="10.0">
-                            <Label styleClass="section-title" text="Competencias Técnicas"
-                                   HBox.hgrow="ALWAYS" />
-                            <Button fx:id="btnAddCompetencia" mnemonicParsing="false"
-                                    onAction="#onAñadirCompetencia"
-                                    prefHeight="32.0" prefWidth="32.0"
-                                    styleClass="btn-secondary" text="+" />
+                            <Label styleClass="section-title" text="Competencias Técnicas" HBox.hgrow="ALWAYS" />
+                            <Button fx:id="btnAddCompetencia" mnemonicParsing="false" onAction="#onAñadirCompetencia" prefHeight="32.0" prefWidth="32.0" styleClass="btn-secondary" text="+" />
                         </HBox>
-
-                        <Separator />
 
                         <TableView fx:id="competenciesTable" prefHeight="180.0">
                             <columns>
-                                <TableColumn fx:id="tipoColumn"                prefWidth="120.0" text="TIPO" />
-                                <TableColumn fx:id="nombreColumn"              prefWidth="180.0" text="NOMBRE" />
-                                <TableColumn fx:id="descripcionColumn"         prefWidth="280.0" text="DESCRIPCIÓN" />
-                                <TableColumn fx:id="nivelColumn"               prefWidth="70.0"  text="NIVEL" />
-                                <TableColumn fx:id="accionesCompetenciaColumn" prefWidth="60.0"  text="" />
+                                <TableColumn fx:id="tipoColumn" prefWidth="120.0" text="TIPO" />
+                                <TableColumn fx:id="nombreColumn" prefWidth="180.0" text="NOMBRE" />
+                                <TableColumn fx:id="descripcionColumn" prefWidth="280.0" text="DESCRIPCIÓN" />
+                                <TableColumn fx:id="nivelColumn" prefWidth="70.0" text="NIVEL" />
+                                <TableColumn fx:id="accionesCompetenciaColumn" prefWidth="100.0" text="" />
                             </columns>
                         </TableView>
                     </VBox>
 
                     <!-- Tareas asignadas -->
-                    <VBox fx:id="taskSection" spacing="12.0"
-                          style="-fx-background-color: -app-bg-card;
-                                 -fx-background-radius: 8;
-                                 -fx-border-color: -app-border-soft;
-                                 -fx-border-radius: 8;
-                                 -fx-border-width: 1;
-                                 -fx-padding: 16;">
+                    <VBox fx:id="taskSection" spacing="12.0" style="-fx-background-color: -app-bg-card;                                  -fx-background-radius: 8;                                  -fx-border-color: -app-border-soft;                                  -fx-border-radius: 8;                                  -fx-border-width: 1;                                  -fx-padding: 16;">
 
                         <HBox fx:id="taskSectionHeader" alignment="CENTER_LEFT">
-                            <Label styleClass="section-title" text="Tareas Asignadas"
-                                   HBox.hgrow="ALWAYS" />
+                            <Label styleClass="section-title" text="Tareas Asignadas" HBox.hgrow="ALWAYS" />
                         </HBox>
-
-                        <Separator />
 
                         <TableView fx:id="tasksTable" prefHeight="180.0">
                             <columns>
-                                <TableColumn fx:id="prioColumn"      prefWidth="95.0"  text="PRIORIDAD" />
-                                <TableColumn fx:id="tareaColumn"     prefWidth="250.0" text="TAREA" />
-                                <TableColumn fx:id="fechaColumn"     prefWidth="120.0" text="FECHA" />
-                                <TableColumn fx:id="horaColumn"      prefWidth="80.0"  text="HORA" />
-                                <TableColumn fx:id="estadoColumn"    prefWidth="115.0" text="ESTADO" />
+                                <TableColumn fx:id="prioColumn" prefWidth="95.0" text="PRIORIDAD" />
+                                <TableColumn fx:id="tareaColumn" prefWidth="250.0" text="TAREA" />
+                                <TableColumn fx:id="fechaColumn" prefWidth="120.0" text="FECHA" />
+                                <TableColumn fx:id="horaColumn" prefWidth="80.0" text="HORA" />
+                                <TableColumn fx:id="estadoColumn" prefWidth="115.0" text="ESTADO" />
                                 <TableColumn fx:id="completadoColumn" prefWidth="49.0" text="" />
                             </columns>
                         </TableView>
@@ -243,7 +169,7 @@
                     <Region VBox.vgrow="ALWAYS" />
 
                     <!-- Nodos fantasma -->
-                    <HBox fx:id="actionButtons" visible="false" managed="false" />
+                    <HBox fx:id="actionButtons" managed="false" visible="false" />
 
                 </VBox>
             </content>

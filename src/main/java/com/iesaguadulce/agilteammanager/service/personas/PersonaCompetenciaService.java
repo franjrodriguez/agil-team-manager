@@ -84,11 +84,14 @@ public class PersonaCompetenciaService {
     }
 
     /**
-     * Obtiene todas las personas que tienen una competencia
+     * Obtiene todas las personas que tienen una competencia.
+     * Inicializa el proxy de Persona dentro de la sesión para evitar LazyInitializationException.
      */
     @Transactional(readOnly = true)
     public List<PersonaCompetencia> obtenerPersonasConCompetencia(Long competenciaId) {
-        return personaCompetenciaRepository.findByCompetenciaId(competenciaId);
+        List<PersonaCompetencia> lista = personaCompetenciaRepository.findByCompetenciaId(competenciaId);
+        lista.forEach(pc -> Hibernate.initialize(pc.getPersona()));
+        return lista;
     }
 
     /**

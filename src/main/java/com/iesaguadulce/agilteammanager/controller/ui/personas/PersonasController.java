@@ -13,6 +13,7 @@ import com.iesaguadulce.agilteammanager.model.seguridad.RolSistema;
 import com.iesaguadulce.agilteammanager.service.personas.CompetenciaService;
 import com.iesaguadulce.agilteammanager.service.personas.PersonaCompetenciaService;
 import com.iesaguadulce.agilteammanager.service.personas.PersonaService;
+import com.iesaguadulce.agilteammanager.service.proyectos.TareaService;
 import com.iesaguadulce.agilteammanager.service.seguridad.RolSistemaService;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -63,6 +64,7 @@ public class PersonasController implements Initializable {
     private PuestoService puestoService;
     private CompetenciaService competenciaService;
     private PersonaCompetenciaService personaCompetenciaService;
+    private TareaService tareaService;
 
     // ─────────────────────────────────────────────────────────
     // REFERENCIAS AL FXML — Contenedor raíz
@@ -144,6 +146,15 @@ public class PersonasController implements Initializable {
     /** true cuando el usuario está en modo "añadir nuevo" y aún no ha guardado */
     private boolean formularioNuevoSinGuardar = false;
 
+    /** true cuando cualquier campo del formulario ha sido modificado sin guardar */
+    private boolean isDirty = false;
+
+    /** true mientras el código carga datos en el formulario — evita falsos isDirty */
+    private boolean ignorarCambios = false;
+
+    /** true mientras revertimos la selección del ListView tras cancelar — evita bucle en el listener */
+    private boolean revirtiendoSeleccion = false;
+
     /** Caché de imágenes de prioridad para no recargarlas en cada celda */
     private final Map<String, Image> cachePrioridad = new HashMap<>();
 
@@ -175,6 +186,7 @@ public class PersonasController implements Initializable {
         this.puestoService = SpringContext.getBean(PuestoService.class);
         this.competenciaService = SpringContext.getBean(CompetenciaService.class);
         this.personaCompetenciaService = SpringContext.getBean(PersonaCompetenciaService.class);
+        this.tareaService = SpringContext.getBean(TareaService.class);
 
         precargarImagenesPrioridad();
         configurarFiltros();
@@ -230,6 +242,16 @@ public class PersonasController implements Initializable {
 
         // Buscador de texto: filtra en tiempo real al escribir
         searchField.textProperty().addListener((obs, oldVal, newVal) -> aplicarFiltros());
+
+        // Listeners de cambios en el formulario — activan isDirty y habilitan Guardar
+        nombreField.textProperty().addListener((o, a, n) -> marcarCambiado());
+        emailField.textProperty().addListener((o, a, n) -> marcarCambiado());
+        usernameField.textProperty().addListener((o, a, n) -> marcarCambiado());
+        puestoComboBox.valueProperty().addListener((o, a, n) -> marcarCambiado());
+        systemRoleComboBox.valueProperty().addListener((o, a, n) -> marcarCambiado());
+        sexComboBox.valueProperty().addListener((o, a, n) -> marcarCambiado());
+        statusComboBox.valueProperty().addListener((o, a, n) -> marcarCambiado());
+        joinDatePicker.valueProperty().addListener((o, a, n) -> marcarCambiado());
     }
 
     /**
@@ -256,25 +278,36 @@ public class PersonasController implements Initializable {
         professionalsListView.getSelectionModel().selectedItemProperty()
                 .addListener((obs, oldVal, newVal) -> {
                     if (newVal == null) return;
+                    if (revirtiendoSeleccion) return;  // somos nosotros revirtiendo — ignorar
 
-                    if (formularioNuevoSinGuardar) {
-                        // Hay un nuevo profesional sin guardar: pedimos confirmación
+                    if (formularioNuevoSinGuardar || isDirty) {
+                        String cabecera = formularioNuevoSinGuardar
+                                ? "Tiene un profesional nuevo sin guardar."
+                                : "Hay cambios sin guardar en el formulario.";
+
                         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
                         confirm.setTitle("Cambios sin guardar");
-                        confirm.setHeaderText("Tiene un profesional nuevo sin guardar.");
+                        confirm.setHeaderText(cabecera);
                         confirm.setContentText(
-                                "Si continúa perderá los datos introducidos.\n\n" +
+                                "Si continúa perderá los datos modificados.\n\n" +
                                 "¿Desea continuar sin guardar?");
 
                         confirm.showAndWait().ifPresent(respuesta -> {
                             if (respuesta == ButtonType.OK) {
-                                // Confirma: descarta el nuevo y carga el seleccionado
                                 formularioNuevoSinGuardar = false;
+                                isDirty = false;
                                 mostrarDetalle(newVal);
                             } else {
-                                // Cancela: revierte la selección y vuelve al formulario nuevo
-                                Platform.runLater(() ->
-                                        professionalsListView.getSelectionModel().clearSelection());
+                                // Cancela: revertimos la selección sin disparar el diálogo de nuevo
+                                Platform.runLater(() -> {
+                                    revirtiendoSeleccion = true;
+                                    if (oldVal != null) {
+                                        professionalsListView.getSelectionModel().select(oldVal);
+                                    } else {
+                                        professionalsListView.getSelectionModel().clearSelection();
+                                    }
+                                    revirtiendoSeleccion = false;
+                                });
                             }
                         });
                     } else {
@@ -390,21 +423,34 @@ public class PersonasController implements Initializable {
         nivelColumn.setCellValueFactory(cell ->
                 new javafx.beans.property.SimpleObjectProperty<>(cell.getValue().getNivelActual()));
 
-        // Columna "✕" — botón de eliminar por fila
+        // Columna acciones — botón editar nivel + botón eliminar por fila
         accionesCompetenciaColumn.setCellFactory(col -> new TableCell<>() {
+            private final Button btnEditar = new Button("✎");
             private final Button btnQuitar = new Button("✕");
+            private final javafx.scene.layout.HBox box =
+                    new javafx.scene.layout.HBox(4, btnEditar, btnQuitar);
             {
+                btnEditar.getStyleClass().add("primary");
+                btnEditar.setStyle("-fx-font-size: 11px;");
+                btnEditar.setPrefWidth(40);
+                btnEditar.setOnAction(e -> {
+                    PersonaCompetencia pc = getTableView().getItems().get(getIndex());
+                    onEditarNivel(pc);
+                });
+
                 btnQuitar.setStyle("-fx-background-color: -app-error; -fx-text-fill: white; -fx-font-size: 11px;");
                 btnQuitar.setPrefWidth(40);
                 btnQuitar.setOnAction(e -> {
                     PersonaCompetencia pc = getTableView().getItems().get(getIndex());
                     onQuitarCompetencia(pc);
                 });
+
+                box.setAlignment(Pos.CENTER);
             }
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                setGraphic(empty ? null : btnQuitar);
+                setGraphic(empty ? null : box);
             }
         });
     }
@@ -541,21 +587,72 @@ public class PersonasController implements Initializable {
     }
 
     /**
+     * Abre un diálogo para editar el nivel de una competencia (1-100).
+     */
+    private void onEditarNivel(PersonaCompetencia pc) {
+        if (pc == null || pc.getCompetencia() == null) return;
+
+        int nivelActual = pc.getNivelActual() != null ? pc.getNivelActual() : 1;
+
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Editar nivel");
+        dialog.setHeaderText("Competencia: " + pc.getCompetencia().getNombre());
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+        Spinner<Integer> spinnerNivel = new Spinner<>(1, 100, nivelActual);
+        spinnerNivel.setEditable(true);
+        spinnerNivel.setMaxWidth(Double.MAX_VALUE);
+
+        javafx.scene.layout.VBox content = new javafx.scene.layout.VBox(8,
+                new Label("Nuevo nivel (1–100):"), spinnerNivel);
+        content.setPrefWidth(260);
+        dialog.getDialogPane().setContent(content);
+
+        dialog.showAndWait().ifPresent(bt -> {
+            if (bt == ButtonType.OK) {
+                try {
+                    personaCompetenciaService.asignarNivel(
+                            personaSeleccionada.getId(),
+                            pc.getCompetencia().getId(),
+                            spinnerNivel.getValue());
+                    recargarCompetencias();
+                } catch (Exception e) {
+                    mostrarAlerta(Alert.AlertType.ERROR, "Error al editar nivel", e.getMessage());
+                }
+            }
+        });
+    }
+
+    /**
      * Recarga solo la tabla de competencias sin tocar el resto del formulario.
+     * El refresh() fuerza el re-render visual de las celdas tras setItems().
      */
     private void recargarCompetencias() {
         List<PersonaCompetencia> competencias =
                 personaCompetenciaService.obtenerCompetenciasDePersona(personaSeleccionada.getId());
         competenciesTable.setItems(FXCollections.observableArrayList(competencias));
+        competenciesTable.refresh();
+    }
+
+    /**
+     * Activa el flag de cambios pendientes y habilita el botón Guardar.
+     * No hace nada si ignorarCambios está activo (carga programática de datos).
+     */
+    private void marcarCambiado() {
+        if (ignorarCambios) return;
+        isDirty = true;
+        btnSave.setDisable(false);
     }
 
     /**
      * Enlaza los botones del panel inferior con sus acciones correspondientes.
+     * El botón Guardar arranca deshabilitado: se activa al detectar cambios.
      */
     private void configurarBotones() {
         btnAddProfessional.setOnAction(e -> onNuevoProfesional());
         btnSave.setOnAction(e -> onGuardarCambios());
         btnDelete.setOnAction(e -> onEliminarProfesional());
+        btnSave.setDisable(true);
     }
 
     // =========================================================================
@@ -631,40 +728,49 @@ public class PersonasController implements Initializable {
         this.personaSeleccionada = persona;
         cambiosEstadoTareas.clear();
 
-        // Cabecera
-        profileName.setText(persona.getNombre());
-        profileRole.setText(persona.getPuesto() != null
-                ? persona.getPuesto().getNombre()
-                : "Sin puesto");
+        // Bloqueamos listeners mientras cargamos datos en el formulario
+        ignorarCambios = true;
+        try {
+            isDirty = false;
+            btnSave.setDisable(true);
 
-        // Estado con color visual
-        statusComboBox.setValue(persona.getEstado());
-        aplicarEstiloEstado(persona.getEstado());
+            // Cabecera
+            profileName.setText(persona.getNombre());
+            profileRole.setText(persona.getPuesto() != null
+                    ? persona.getPuesto().getNombre()
+                    : "Sin puesto");
 
-        cargarAvatar(persona.getFotoPath());
+            // Estado con color visual
+            statusComboBox.setValue(persona.getEstado());
+            aplicarEstiloEstado(persona.getEstado());
 
-        // Formulario de datos personales
-        nombreField.setText(persona.getNombre());
-        puestoComboBox.setValue(persona.getPuesto());
-        emailField.setText(persona.getEmail());
-        usernameField.setText(persona.getUsuario());
+            cargarAvatar(persona.getFotoPath());
 
-        if (persona.getSexo() != null) {
-            switch (persona.getSexo()) {
-                case 'M' -> sexComboBox.setValue("Hombre");
-                case 'F' -> sexComboBox.setValue("Mujer");
-                default  -> sexComboBox.setValue("Otro");
+            // Formulario de datos personales
+            nombreField.setText(persona.getNombre());
+            puestoComboBox.setValue(persona.getPuesto());
+            emailField.setText(persona.getEmail());
+            usernameField.setText(persona.getUsuario());
+
+            if (persona.getSexo() != null) {
+                switch (persona.getSexo()) {
+                    case 'M' -> sexComboBox.setValue("Hombre");
+                    case 'F' -> sexComboBox.setValue("Mujer");
+                    default  -> sexComboBox.setValue("Otro");
+                }
             }
+
+            joinDatePicker.setValue(persona.getFechaAlta());
+
+            if (persona.getRol() != null) {
+                systemRoleComboBox.setValue(persona.getRol().getNombre());
+            }
+
+            cargarTareas(persona);
+            cargarCompetencias(persona);
+        } finally {
+            ignorarCambios = false;
         }
-
-        joinDatePicker.setValue(persona.getFechaAlta());
-
-        if (persona.getRol() != null) {
-            systemRoleComboBox.setValue(persona.getRol().getNombre());
-        }
-
-        cargarTareas(persona);
-        cargarCompetencias(persona);
     }
 
     /**
@@ -721,7 +827,7 @@ public class PersonasController implements Initializable {
         personaSeleccionada = new Persona();
         cambiosEstadoTareas.clear();
         limpiarFormulario();
-        formularioNuevoSinGuardar = true;
+        formularioNuevoSinGuardar = true;   // le indica al sistema que está en modo ALTA
     }
 
     /**
@@ -777,7 +883,23 @@ public class PersonasController implements Initializable {
         final String nombreGuardado = personaSeleccionada.getNombre();
 
         try {
-            personaService.guardar(personaSeleccionada);
+            // Actualiza solo los campos del formulario — no toca competencias ni asignaciones
+            personaService.actualizarCampos(personaSeleccionada);
+
+            // Persiste los cambios de estado de tareas marcados con el checkbox
+            for (Asignacion asig : tasksTable.getItems()) {
+                if (cambiosEstadoTareas.containsKey(asig.getId()) && asig.getTarea() != null) {
+                    String nuevoEstado = Boolean.TRUE.equals(cambiosEstadoTareas.get(asig.getId()))
+                            ? "completada" : "pendiente";
+                    tareaService.cambiarEstado(asig.getTarea().getId(), nuevoEstado);
+                }
+            }
+
+            // Reseteamos isDirty ANTES de recargar la lista para que el select()
+            // que viene a continuación no vuelva a disparar el diálogo de confirmación
+            isDirty = false;
+            btnSave.setDisable(true);
+            cambiosEstadoTareas.clear();
 
             // Recarga la lista (esto cambia personaSeleccionada como efecto secundario)
             cargarPersonas();
@@ -790,8 +912,6 @@ public class PersonasController implements Initializable {
                         professionalsListView.getSelectionModel().select(p);
                         professionalsListView.scrollTo(p);
                     });
-
-            cambiosEstadoTareas.clear();
             mostrarAlerta(Alert.AlertType.INFORMATION, "Guardado",
                     "Los cambios de '" + nombreGuardado + "' se han guardado correctamente.");
 
@@ -903,22 +1023,30 @@ public class PersonasController implements Initializable {
 
     /**
      * Deja todos los campos del formulario en blanco.
+     * ignorarCambios evita que el vaciado de campos dispare isDirty.
      */
     private void limpiarFormulario() {
-        profileName.setText("Nuevo profesional");
-        profileRole.setText("Sin puesto asignado");
-        cargarAvatar(null);
-        statusComboBox.setValue("activo");
-        aplicarEstiloEstado("activo");
-        nombreField.clear();
-        puestoComboBox.setValue(null);
-        emailField.clear();
-        usernameField.clear();
-        sexComboBox.setValue(null);
-        joinDatePicker.setValue(null);
-        systemRoleComboBox.setValue(null);
-        tasksTable.setItems(FXCollections.emptyObservableList());
-        competenciesTable.setItems(FXCollections.emptyObservableList());
+        ignorarCambios = true;
+        try {
+            profileName.setText("Nuevo profesional");
+            profileRole.setText("Sin puesto asignado");
+            cargarAvatar(null);
+            statusComboBox.setValue("activo");
+            aplicarEstiloEstado("activo");
+            nombreField.clear();
+            puestoComboBox.setValue(null);
+            emailField.clear();
+            usernameField.clear();
+            sexComboBox.setValue(null);
+            joinDatePicker.setValue(null);
+            systemRoleComboBox.setValue(null);
+            tasksTable.setItems(FXCollections.emptyObservableList());
+            competenciesTable.setItems(FXCollections.emptyObservableList());
+        } finally {
+            ignorarCambios = false;
+            isDirty = false;
+            btnSave.setDisable(true);
+        }
     }
 
     // =========================================================================

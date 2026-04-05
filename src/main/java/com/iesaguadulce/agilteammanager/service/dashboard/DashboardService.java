@@ -150,4 +150,33 @@ public class DashboardService {
                 })
                 .collect(Collectors.toList());
     }
+
+    /**
+     * Obtiene lista de personas de un puesto concreto con su carga y tareas.
+     * Misma lógica que obtenerEquipoActivo() pero filtrado por puesto.
+     *
+     * @param puestoId ID del puesto de trabajo
+     */
+    @Transactional(readOnly = true)
+    public List<PersonaActivaDTO> obtenerEquipoActivoPorPuesto(Long puestoId) {
+        List<Persona> personas = personaRepository.findByPuestoId(puestoId);
+
+        return personas.stream()
+                .map(p -> {
+                    BigDecimal carga = disponibilidadRepository.findUltimaCargaByPersonaId(p.getId());
+                    double cargaActual = (carga != null) ? carga.doubleValue() : 0.0;
+
+                    int numTareas = asignacionRepository.countByPersonaIdAndTareaEstado(
+                            p.getId(), "en_progreso"
+                    );
+
+                    return new PersonaActivaDTO(
+                            p.getNombre(),
+                            cargaActual,
+                            numTareas,
+                            p.getFotoPath()
+                    );
+                })
+                .collect(Collectors.toList());
+    }
 }

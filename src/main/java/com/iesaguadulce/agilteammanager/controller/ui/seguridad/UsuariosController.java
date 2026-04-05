@@ -5,6 +5,7 @@ import com.iesaguadulce.agilteammanager.model.personas.Persona;
 import com.iesaguadulce.agilteammanager.model.seguridad.RolSistema;
 import com.iesaguadulce.agilteammanager.service.seguridad.PermisoService;
 import com.iesaguadulce.agilteammanager.service.seguridad.UsuarioService;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -76,6 +77,13 @@ public class UsuariosController implements Initializable {
     private FilteredList<Persona> listaFiltrada;
     private Persona usuarioSeleccionado;
 
+    /** true cuando el usuario ha modificado el formulario */
+    private boolean isDirty = false;
+    /** true mientras se cargan datos programáticamente (evita falsos positivos) */
+    private boolean ignorarCambios = false;
+    /** true mientras se revierte la selección tras cancelar el diálogo */
+    private boolean revirtiendoSeleccion = false;
+
     /**
      * Inicializa el controlador obteniendo servicios desde SpringContext.
      * Configura filtros, listView y carga datos iniciales.
@@ -89,6 +97,13 @@ public class UsuariosController implements Initializable {
         configurarListView();
         configurarBotones();
         cargarUsuarios();
+    }
+
+    /** Marca el formulario como modificado y activa el botón Guardar. */
+    private void marcarCambiado() {
+        if (ignorarCambios) return;
+        isDirty = true;
+        btnSave.setDisable(false);
     }
 
     /** Configura ComboBox de filtros y búsqueda en tiempo real. */
@@ -108,6 +123,12 @@ public class UsuariosController implements Initializable {
                 roles.stream().map(RolSistema::getNombre).toList()));
 
         searchField.textProperty().addListener((obs, oldVal, newVal) -> aplicarFiltros());
+
+        // isDirty: listeners en los campos del formulario de edición
+        emailField.textProperty().addListener((obs, oldV, newV) -> marcarCambiado());
+        passwordField.textProperty().addListener((obs, oldV, newV) -> marcarCambiado());
+        statusComboBox.valueProperty().addListener((obs, oldV, newV) -> marcarCambiado());
+        systemRoleComboBox.valueProperty().addListener((obs, oldV, newV) -> marcarCambiado());
     }
 
     /** Configura cellFactory del ListView y listener de selección. */
@@ -127,7 +148,33 @@ public class UsuariosController implements Initializable {
 
         professionalsListView.getSelectionModel().selectedItemProperty()
                 .addListener((obs, oldVal, newVal) -> {
-                    if (newVal != null) mostrarDetalle(newVal);
+                    if (revirtiendoSeleccion) return;
+                    if (newVal == null) return;
+
+                    if (isDirty) {
+                        String nombreActual = usuarioSeleccionado != null ? usuarioSeleccionado.getNombre() : "";
+                        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+                        confirm.setTitle("Cambios sin guardar");
+                        confirm.setHeaderText("Hay cambios sin guardar en '" + nombreActual + "'.");
+                        confirm.setContentText("¿Descartar los cambios y seleccionar otro usuario?");
+                        confirm.showAndWait().ifPresent(respuesta -> {
+                            if (respuesta == ButtonType.OK) {
+                                isDirty = false;
+                                btnSave.setDisable(true);
+                                mostrarDetalle(newVal);
+                            } else {
+                                // Revertir selección sin disparar el listener de nuevo
+                                Persona anterior = oldVal;
+                                revirtiendoSeleccion = true;
+                                Platform.runLater(() -> {
+                                    professionalsListView.getSelectionModel().select(anterior);
+                                    revirtiendoSeleccion = false;
+                                });
+                            }
+                        });
+                    } else {
+                        mostrarDetalle(newVal);
+                    }
                 });
     }
 
@@ -136,6 +183,7 @@ public class UsuariosController implements Initializable {
         btnAddProfessional.setOnAction(e -> onNuevoUsuario());
         btnSave.setOnAction(e -> onGuardarCambios());
         btnDelete.setOnAction(e -> onEliminarUsuario());
+        btnSave.setDisable(true);
     }
 
     /** Carga usuarios desde BD al ListView. */
@@ -156,23 +204,30 @@ public class UsuariosController implements Initializable {
     /** Muestra detalle del usuario seleccionado en el formulario. */
     private void mostrarDetalle(Persona persona) {
         this.usuarioSeleccionado = persona;
-        profileName.setText(persona.getNombre());
-        profileRole.setText(persona.getRol() != null ? persona.getRol().getNombre() : "Sin rol");
-        statusComboBox.setValue(persona.getEstado());
-        aplicarEstiloEstado(persona.getEstado());
-        cargarAvatar(persona.getFotoPath());
-        emailField.setText(persona.getUsuario());
-        passwordField.clear();
-        if (persona.getRol() != null) systemRoleComboBox.setValue(persona.getRol().getNombre());
+        ignorarCambios = true;
+        try {
+            profileName.setText(persona.getNombre());
+            profileRole.setText(persona.getRol() != null ? persona.getRol().getNombre() : "Sin rol");
+            statusComboBox.setValue(persona.getEstado());
+            aplicarEstiloEstado(persona.getEstado());
+            cargarAvatar(persona.getFotoPath());
+            emailField.setText(persona.getUsuario());
+            passwordField.clear();
+            if (persona.getRol() != null) systemRoleComboBox.setValue(persona.getRol().getNombre());
 
-        // Panel derecho: puesto de trabajo
-        if (persona.getPuesto() != null) {
-            puestoLabel.setText(persona.getPuesto().getNombre());
-            String desc = persona.getPuesto().getDescripcion();
-            puestoDescLabel.setText(desc != null && !desc.isBlank() ? desc : "");
-        } else {
-            puestoLabel.setText("Sin puesto");
-            puestoDescLabel.setText("");
+            // Panel derecho: puesto de trabajo
+            if (persona.getPuesto() != null) {
+                puestoLabel.setText(persona.getPuesto().getNombre());
+                String desc = persona.getPuesto().getDescripcion();
+                puestoDescLabel.setText(desc != null && !desc.isBlank() ? desc : "");
+            } else {
+                puestoLabel.setText("Sin puesto");
+                puestoDescLabel.setText("");
+            }
+        } finally {
+            ignorarCambios = false;
+            isDirty = false;
+            btnSave.setDisable(true);
         }
     }
 
@@ -225,6 +280,9 @@ public class UsuariosController implements Initializable {
         try {
             usuarioService.actualizarCredenciales(
                     usuarioSeleccionado.getId(), usuario, password, rolNombre, estado);
+            // Reset ANTES de recargar (evita que cargarUsuarios dispare el listener con isDirty=true)
+            isDirty = false;
+            btnSave.setDisable(true);
             cargarUsuarios();
             mostrarAlerta(Alert.AlertType.INFORMATION, "Guardado",
                     "Las credenciales de \"" + usuarioSeleccionado.getNombre() + "\" se han guardado correctamente.");
@@ -240,16 +298,23 @@ public class UsuariosController implements Initializable {
 
     /** Limpia el formulario. */
     private void limpiarFormulario() {
-        profileName.setText("");
-        profileRole.setText("");
-        profileAvatar.setImage(null);
-        statusComboBox.setValue(null);
-        statusComboBox.setStyle("");
-        emailField.clear();
-        passwordField.clear();
-        systemRoleComboBox.setValue(null);
-        puestoLabel.setText("—");
-        puestoDescLabel.setText("");
+        ignorarCambios = true;
+        try {
+            profileName.setText("");
+            profileRole.setText("");
+            profileAvatar.setImage(null);
+            statusComboBox.setValue(null);
+            statusComboBox.setStyle("");
+            emailField.clear();
+            passwordField.clear();
+            systemRoleComboBox.setValue(null);
+            puestoLabel.setText("—");
+            puestoDescLabel.setText("");
+        } finally {
+            ignorarCambios = false;
+            isDirty = false;
+            btnSave.setDisable(true);
+        }
     }
 
     /** Aplica color de fondo según estado del usuario. */

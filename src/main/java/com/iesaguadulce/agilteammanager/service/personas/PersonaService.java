@@ -89,10 +89,31 @@ public class PersonaService {
     }
 
     /**
-     * Guarda (crea o actualiza) una persona
+     * Guarda (crea o actualiza) una persona.
+     * Usar solo para crear nuevas personas. Para editar, usar actualizarCampos().
      */
     public Persona guardar(Persona persona) {
         return personaRepository.save(persona);
+    }
+
+    /**
+     * Actualiza SOLO los campos del formulario de una persona existente.
+     * Carga la entidad managed desde BD para no machacar colecciones
+     * (competencias, asignaciones) gestionadas por sus propios servicios.
+     */
+    public Persona actualizarCampos(Persona persona) {
+        Persona managed = personaRepository.findById(persona.getId())
+                .orElseThrow(() -> new RuntimeException("Persona no encontrada: " + persona.getId()));
+        managed.setNombre(persona.getNombre());
+        managed.setEmail(persona.getEmail());
+        managed.setUsuario(persona.getUsuario());
+        managed.setPuesto(persona.getPuesto());
+        managed.setRol(persona.getRol());
+        managed.setEstado(persona.getEstado());
+        managed.setSexo(persona.getSexo());
+        managed.setFechaAlta(persona.getFechaAlta());
+        managed.setFotoPath(persona.getFotoPath());
+        return personaRepository.save(managed);
     }
 
     /**

@@ -1,17 +1,18 @@
 package com.iesaguadulce.agilteammanager.controller.ui.personas;
 
 import com.iesaguadulce.agilteammanager.config.SpringContext;
-import com.iesaguadulce.agilteammanager.model.personas.Persona;
+import com.iesaguadulce.agilteammanager.dto.PersonaActivaDTO;
 import com.iesaguadulce.agilteammanager.model.personas.Puesto;
-import com.iesaguadulce.agilteammanager.service.personas.PersonaService;
+import com.iesaguadulce.agilteammanager.service.dashboard.DashboardService;
 import com.iesaguadulce.agilteammanager.service.personas.PuestoService;
+import com.iesaguadulce.agilteammanager.util.FotoUtil;
 import javafx.application.Platform;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -56,7 +57,7 @@ public class RolesProfesionalesController implements Initializable {
     @Autowired
     private PuestoService puestoService;
 
-    private PersonaService personaService;
+    private DashboardService dashboardService;
 
 
     // ─────────────────────────────────────────────────────────
@@ -82,8 +83,11 @@ public class RolesProfesionalesController implements Initializable {
     /** Botón de borrar (oculto si no hay selección) */
     @FXML private Button btnDelete;
 
+    /** Botón de guardar cambios */
+    @FXML private Button btnSave;
+
     /** Tabla de profesionales del puesto seleccionado */
-    @FXML private TableView<Persona> tblEquipoActivo;
+    @FXML private TableView<PersonaActivaDTO> tblEquipoActivo;
 
     // ─────────────────────────────────────────────────────────
     // ESTADO INTERNO DEL CONTROLADOR
@@ -94,6 +98,12 @@ public class RolesProfesionalesController implements Initializable {
 
     /** true cuando hay un formulario nuevo sin guardar */
     private boolean formularioNuevoSinGuardar = false;
+
+    /** true cuando el usuario ha modificado el formulario de un puesto existente */
+    private boolean isDirty = false;
+
+    /** true mientras se cargan datos en el formulario (evita falsos positivos en listeners) */
+    private boolean ignorarCambios = false;
 
     /** Lista observable que alimenta el ListView */
     private ObservableList<Puesto> listaPuestos = FXCollections.observableArrayList();
@@ -110,17 +120,34 @@ public class RolesProfesionalesController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         System.out.println("(FRANDEV) --> Entramos en RolesProfesionalesController");
         this.puestoService = SpringContext.getBean(PuestoService.class);
-        this.personaService = SpringContext.getBean(PersonaService.class);
+        this.dashboardService = SpringContext.getBean(DashboardService.class);
 
         configurarListView();
         configurarTablaEquipo();
         System.out.println("(FRANDEV) --> REGRESAMOS DE PREPARAR AL LISTVIEW...");
+
+        // isDirty: btnSave desactivado al arrancar
+        btnSave.setDisable(true);
+
+        // isDirty: listeners en los dos campos del formulario
+        nombreField.textProperty().addListener((obs, oldV, newV) -> marcarCambiado());
+        descripcionField.textProperty().addListener((obs, oldV, newV) -> marcarCambiado());
 
         cargarTodosLosPuestos();
         System.out.println("(FRANDEV) --> REGRESO AL FUTURO CARGANDO PUESTOS DE CURRELE");
 
         limpiarFormulario();
         System.out.println("(FRANDEV) --> REGRESA LIMPIO Y SIN DAÑO DE ASEAR EL CULETE DEL FORMULARIO");
+    }
+
+    /**
+     * Marca el formulario como modificado y activa el botón Guardar.
+     * Se ignora si estamos cargando datos programáticamente (ignorarCambios=true).
+     */
+    private void marcarCambiado() {
+        if (ignorarCambios) return;
+        isDirty = true;
+        btnSave.setDisable(false);
     }
 
     /**
@@ -193,20 +220,35 @@ public class RolesProfesionalesController implements Initializable {
     private void seleccionarPuesto(MouseEvent event) {
         Puesto seleccionado = puestotrabajoListView.getSelectionModel().getSelectedItem();
         if (seleccionado == null) return;
+        // Si es el mismo puesto, ignoramos el clic (evita recarga innecesaria)
+        if (seleccionado.equals(puestoSeleccionado) && !formularioNuevoSinGuardar) return;
 
-        if (formularioNuevoSinGuardar) {
+        if (formularioNuevoSinGuardar || isDirty) {
+            String header = formularioNuevoSinGuardar
+                    ? "Hay un nuevo puesto sin guardar."
+                    : "Hay cambios sin guardar en '" + puestoSeleccionado.getNombre() + "'.";
+
             Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
             confirm.setTitle("Cambios sin guardar");
-            confirm.setHeaderText("Hay un nuevo puesto sin guardar.");
+            confirm.setHeaderText(header);
             confirm.setContentText("¿Descartar los cambios y seleccionar otro puesto?");
             confirm.showAndWait().ifPresent(respuesta -> {
                 if (respuesta == ButtonType.OK) {
                     formularioNuevoSinGuardar = false;
+                    isDirty = false;
+                    btnSave.setDisable(true);
                     puestoSeleccionado = seleccionado;
                     cargarDatosEnFormulario(puestoSeleccionado);
                 } else {
-                    Platform.runLater(() ->
-                            puestotrabajoListView.getSelectionModel().clearSelection());
+                    // Cancelar: volvemos a seleccionar el puesto anterior
+                    Puesto anterior = puestoSeleccionado;
+                    Platform.runLater(() -> {
+                        if (anterior != null) {
+                            puestotrabajoListView.getSelectionModel().select(anterior);
+                        } else {
+                            puestotrabajoListView.getSelectionModel().clearSelection();
+                        }
+                    });
                 }
             });
         } else {
@@ -262,10 +304,13 @@ public class RolesProfesionalesController implements Initializable {
             // Delegamos el guardado al Service
             Puesto guardado = puestoService.guardar(puesto);
 
-            // Actualizamos la lista y seleccionamos el puesto recién guardado
+            // Reset de estado ANTES de recargar la lista (evita falsos positivos)
             formularioNuevoSinGuardar = false;
-            cargarTodosLosPuestos();
+            isDirty = false;
+            btnSave.setDisable(true);
             puestoSeleccionado = guardado;
+
+            cargarTodosLosPuestos();
             seleccionarEnLista(guardado);
             cargarDatosEnFormulario(guardado);
 
@@ -322,6 +367,7 @@ public class RolesProfesionalesController implements Initializable {
     private void cancelar() {
         puestoSeleccionado = null;
         formularioNuevoSinGuardar = false;
+        isDirty = false;
         limpiarFormulario();
         puestotrabajoListView.getSelectionModel().clearSelection();
     }
@@ -335,12 +381,15 @@ public class RolesProfesionalesController implements Initializable {
      * También actualiza el título y la sección de relacionados.
      */
     private void cargarDatosEnFormulario(Puesto puesto) {
-        profileName.setText(puesto.getNombre());
-        nombreField.setText(puesto.getNombre());
-        descripcionField.setText(puesto.getDescripcion() != null ? puesto.getDescripcion() : "");
-
-        // Mostrar botón borrar solo cuando hay un puesto seleccionado
-        btnDelete.setVisible(true);
+        ignorarCambios = true;
+        try {
+            profileName.setText(puesto.getNombre());
+            nombreField.setText(puesto.getNombre());
+            descripcionField.setText(puesto.getDescripcion() != null ? puesto.getDescripcion() : "");
+            btnDelete.setVisible(true);
+        } finally {
+            ignorarCambios = false;
+        }
 
         cargarProfesionalesDelPuesto(puesto);
     }
@@ -349,11 +398,16 @@ public class RolesProfesionalesController implements Initializable {
      * Limpia el formulario para el estado "sin selección" o "nuevo".
      */
     private void limpiarFormulario() {
-        // profileName.setText("Selecciona un puesto de la lista");
-        nombreField.clear();
-        descripcionField.clear();
-        // btnDelete.setVisible(false);  // Ocultamos el botón borrar
-        tblEquipoActivo.getItems().clear();
+        ignorarCambios = true;
+        try {
+            nombreField.clear();
+            descripcionField.clear();
+            tblEquipoActivo.getItems().clear();
+        } finally {
+            ignorarCambios = false;
+            isDirty = false;
+            btnSave.setDisable(true);
+        }
     }
 
     /**
@@ -367,19 +421,23 @@ public class RolesProfesionalesController implements Initializable {
 
     /**
      * Configura las columnas de la tabla de profesionales.
-     * Columna 1 → nombre. Columna 2 → foto (patrón idéntico al DashboardController).
+     * Patrón idéntico al DashboardController.configurarTablas() para tblEquipoActivo.
      */
     @SuppressWarnings("unchecked")
     private void configurarTablaEquipo() {
-        // Columna 1: nombre del profesional
-        TableColumn<Persona, String> colNombre =
-                (TableColumn<Persona, String>) tblEquipoActivo.getColumns().get(1);
-        colNombre.setCellValueFactory(data ->
-                new SimpleStringProperty(data.getValue().getNombre()));
+        // Columna 0: % Carga
+        TableColumn<PersonaActivaDTO, String> colCarga =
+                (TableColumn<PersonaActivaDTO, String>) tblEquipoActivo.getColumns().get(0);
+        colCarga.setCellValueFactory(new PropertyValueFactory<>("cargaFormateada"));
 
-        // Columna 2: foto — Void para leer el item completo desde la fila
-        TableColumn<Persona, Void> colFoto =
-                (TableColumn<Persona, Void>) tblEquipoActivo.getColumns().get(2);
+        // Columna 1: nombre del profesional
+        TableColumn<PersonaActivaDTO, String> colNombre =
+                (TableColumn<PersonaActivaDTO, String>) tblEquipoActivo.getColumns().get(1);
+        colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+
+        // Columna 2: foto
+        TableColumn<PersonaActivaDTO, Void> colFoto =
+                (TableColumn<PersonaActivaDTO, Void>) tblEquipoActivo.getColumns().get(2);
         colFoto.setCellFactory(col -> new TableCell<>() {
             private final ImageView iv = new ImageView();
             {
@@ -395,14 +453,10 @@ public class RolesProfesionalesController implements Initializable {
                     return;
                 }
                 String fotoPath = getTableRow().getItem().getFotoPath();
-                try {
-                    if (fotoPath != null && !fotoPath.isBlank()) {
-                        iv.setImage(new Image(fotoPath, true));
-                    } else {
-                        iv.setImage(new Image(
-                                getClass().getResourceAsStream("/icons/professional.png")));
-                    }
-                } catch (Exception e) {
+                Image imagen = FotoUtil.cargarImagen(fotoPath);
+                if (imagen != null) {
+                    iv.setImage(imagen);
+                } else {
                     iv.setImage(new Image(
                             getClass().getResourceAsStream("/icons/professional.png")));
                 }
@@ -416,7 +470,7 @@ public class RolesProfesionalesController implements Initializable {
      * Carga en la tabla los profesionales que tienen asignado el puesto recibido.
      */
     private void cargarProfesionalesDelPuesto(Puesto puesto) {
-        List<Persona> personas = personaService.obtenerPorPuesto(puesto.getId());
+        List<PersonaActivaDTO> personas = dashboardService.obtenerEquipoActivoPorPuesto(puesto.getId());
         tblEquipoActivo.setItems(FXCollections.observableArrayList(personas));
     }
 
