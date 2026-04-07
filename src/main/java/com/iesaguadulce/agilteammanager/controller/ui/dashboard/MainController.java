@@ -316,7 +316,7 @@ public class MainController {
             if (respuesta == btnAnticipo) {
                 try {
                     new ProcessBuilder("cmd", "/c", "start",
-                            "https://www.youtube.com/watch?v=udTYBxQ03YE&t=93s")
+                            "https://youtu.be/6Ryfq6fbziA")
                             .start();
                 } catch (IOException e) {
                     mostrarError("No se pudo abrir el navegador.\n" + e.getMessage());
