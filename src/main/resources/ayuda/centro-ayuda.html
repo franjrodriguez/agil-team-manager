@@ -4,7 +4,275 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Centro de Ayuda — AgilTeam Manager</title>
-  <link rel="stylesheet" href="css/estilos.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+        font-family: 'Segoe UI', Arial, sans-serif;
+        font-size: 15px;
+        color: #2c2c2c;
+        background: #f4f6f9;
+        line-height: 1.65;
+    }
+
+    /* ── Header ──────────────────────────────────────────────── */
+    header {
+        background: #1E3A5F;
+        color: #fff;
+        padding: 20px 40px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    header .logo {
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+    header .subtitle {
+        font-size: 13px;
+        color: #A8C8E8;
+        margin-top: 2px;
+    }
+    header .badge {
+        margin-left: auto;
+        background: #2E75B6;
+        color: #fff;
+        font-size: 11px;
+        padding: 4px 10px;
+        border-radius: 12px;
+    }
+
+    /* ── Layout ──────────────────────────────────────────────── */
+    .container {
+        display: flex;
+        max-width: 1100px;
+        margin: 30px auto;
+        gap: 28px;
+        padding: 0 20px;
+    }
+
+    /* ── Sidebar nav ─────────────────────────────────────────── */
+    nav {
+        width: 220px;
+        flex-shrink: 0;
+    }
+    nav .nav-title {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #888;
+        letter-spacing: 1px;
+        margin-bottom: 10px;
+        padding-left: 4px;
+    }
+    nav ul { list-style: none; }
+    nav ul li a {
+        display: block;
+        padding: 8px 14px;
+        border-radius: 6px;
+        color: #1E3A5F;
+        text-decoration: none;
+        font-size: 14px;
+        transition: background 0.15s;
+    }
+    nav ul li a:hover,
+    nav ul li a.active { background: #D6E4F0; font-weight: 600; }
+    nav ul li + li { margin-top: 2px; }
+
+    /* ── Content ─────────────────────────────────────────────── */
+    main { flex: 1; min-width: 0; }
+
+    section {
+        background: #fff;
+        border-radius: 10px;
+        padding: 30px 34px;
+        margin-bottom: 24px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        scroll-margin-top: 90px;
+    }
+
+    h2 {
+        font-size: 19px;
+        color: #1E3A5F;
+        margin-bottom: 14px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #D6E4F0;
+    }
+    h3 {
+        font-size: 15px;
+        color: #2E75B6;
+        margin: 18px 0 6px;
+    }
+    p { margin-bottom: 10px; }
+    ul, ol { padding-left: 22px; margin-bottom: 10px; }
+    li { margin-bottom: 5px; }
+
+    /* ── Tip / Info boxes ────────────────────────────────────── */
+    .tip {
+        background: #FFF3CD;
+        border-left: 4px solid #FFC107;
+        border-radius: 0 6px 6px 0;
+        padding: 10px 16px;
+        margin: 12px 0;
+        font-size: 14px;
+        color: #856404;
+    }
+    .info {
+        background: #D6E4F0;
+        border-left: 4px solid #2E75B6;
+        border-radius: 0 6px 6px 0;
+        padding: 10px 16px;
+        margin: 12px 0;
+        font-size: 14px;
+        color: #1E3A5F;
+    }
+
+    /* ── Tables ──────────────────────────────────────────────── */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+        margin: 12px 0;
+    }
+    thead tr { background: #1E3A5F; color: #fff; }
+    thead th { padding: 9px 12px; text-align: left; }
+    tbody tr:nth-child(even) { background: #f0f6fc; }
+    tbody td { padding: 8px 12px; border-bottom: 1px solid #e0e0e0; }
+
+    /* ── Step badges ─────────────────────────────────────────── */
+    .steps { counter-reset: step; }
+    .step {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+        margin-bottom: 14px;
+    }
+    .step-num {
+        background: #2E75B6;
+        color: #fff;
+        font-weight: 700;
+        font-size: 13px;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+    .step-body { flex: 1; }
+    .step-body strong { color: #1E3A5F; }
+
+    /* ── FAQ accordion ───────────────────────────────────────── */
+    details {
+        border: 1px solid #D6E4F0;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        overflow: hidden;
+    }
+    summary {
+        padding: 12px 16px;
+        cursor: pointer;
+        font-weight: 600;
+        color: #1E3A5F;
+        background: #f7f9fc;
+        list-style: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    summary::after { content: '▸'; transition: transform 0.2s; }
+    details[open] summary::after { transform: rotate(90deg); }
+    details[open] summary { background: #D6E4F0; }
+    .faq-body { padding: 14px 16px; font-size: 14px; }
+
+    /* ── Screenshots ─────────────────────────────────────────── */
+    figure.screenshot {
+        margin: 20px 0 8px;
+        text-align: center;
+    }
+    figure.screenshot img {
+        max-width: 100%;
+        width: 820px;
+        border: 1px solid #D6E4F0;
+        border-radius: 8px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+        display: block;
+        margin: 0 auto;
+    }
+    /* Captura concreta más pequeña (p. ej. ~50 % del ancho estándar 820px) */
+    figure.screenshot.screenshot--half img {
+        width: 60%;
+    }
+    figure.screenshot.screenshot--half .img-placeholder {
+        max-width: 410px;
+    }
+    figure.screenshot img.pending {
+        display: none;
+    }
+    figure.screenshot .img-placeholder {
+        display: none;
+        background: #f0f6fc;
+        border: 2px dashed #A8C8E8;
+        border-radius: 8px;
+        padding: 28px 20px;
+        color: #2E75B6;
+        font-size: 13px;
+        max-width: 820px;
+        margin: 0 auto;
+    }
+    figure.screenshot img[src=""][alt],
+    figure.screenshot img:not([src]) {
+        display: none;
+    }
+    figcaption {
+        font-size: 12px;
+        color: #999;
+        margin-top: 7px;
+        font-style: italic;
+    }
+
+    /* ── Back to top ─────────────────────────────────────────── */
+    .back-top {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 22px;
+        padding-top: 14px;
+        border-top: 1px solid #eef2f7;
+    }
+    .back-top a {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 12px;
+        color: #2E75B6;
+        text-decoration: none;
+        padding: 5px 12px;
+        border-radius: 20px;
+        background: #f0f6fc;
+        border: 1px solid #D6E4F0;
+        transition: background 0.15s, box-shadow 0.15s;
+    }
+    .back-top a:hover {
+        background: #D6E4F0;
+        box-shadow: 0 1px 4px rgba(46,117,182,0.15);
+    }
+    .back-top a .arrow { font-size: 14px; line-height: 1; }
+
+    /* ── Footer ──────────────────────────────────────────────── */
+    footer {
+        text-align: center;
+        padding: 24px;
+        font-size: 12px;
+        color: #aaa;
+    }
+  </style>
 
   <script>
     /* Muestra el placeholder si la imagen no carga */
@@ -36,25 +304,6 @@
 <div class="container">
 
   <!-- ══════════════════════════════════════════
-       NAVEGACIÓN LATERAL
-  ══════════════════════════════════════════ -->
-  <nav>
-    <div class="nav-title">Contenidos</div>
-    <ul>
-      <li><a href="#inicio" class="active">¿Qué es AgilTeam?</a></li>
-      <li><a href="#acceso">Acceso y roles</a></li>
-      <li><a href="#menu">Menú de navegación</a></li>
-      <li><a href="#personas">Gestión de personas</a></li>
-      <li><a href="#proyectos">Proyectos y sprints</a></li>
-      <li><a href="#tareas">Tareas</a></li>
-      <li><a href="#motor">Motor de asignación</a></li>
-      <li><a href="#dashboard">Dashboard</a></li>
-      <li><a href="#configuracion">Configuración</a></li>
-      <li><a href="#faq">Preguntas frecuentes</a></li>
-    </ul>
-  </nav>
-
-  <!-- ══════════════════════════════════════════
        CONTENIDO PRINCIPAL
   ══════════════════════════════════════════ -->
   <main>
@@ -81,9 +330,6 @@
         <figcaption>Pantalla principal tras iniciar sesión</figcaption>
       </figure>
 
-      <div class="back-top">
-        <a href="#top"><span class="arrow">↑</span> Volver al índice</a>
-      </div>
     </section>
 
     <!-- 2. Acceso y roles -->
@@ -123,10 +369,6 @@
         contraseña 1234. Idealmente se debe crear un usuario nuevo para cada profesional y cambiar
         las contraseñas por defecto por una contraseña segura.
       </div>
-
-      <div class="back-top">
-        <a href="#top"><span class="arrow">↑</span> Volver al índice</a>
-      </div>
     </section>
 
     <!-- 2.1 Menú de navegación -->
@@ -161,10 +403,6 @@
           <tr><td>Configuración</td><td>✅</td><td>❌</td><td>❌</td></tr>
         </tbody>
       </table>
-
-      <div class="back-top">
-        <a href="#top"><span class="arrow">↑</span> Volver al índice</a>
-      </div>
     </section>
 
     <!-- 3. Personas -->
@@ -218,10 +456,6 @@
         En esta tabla los jefes de proyecto pueden cambiar el estado de la tarea marcandola
         como completada.
       </p>
-
-      <div class="back-top">
-        <a href="#top"><span class="arrow">↑</span> Volver al índice</a>
-      </div>
     </section>
 
     <!-- 4. Proyectos -->
@@ -278,10 +512,6 @@
         <div class="img-placeholder">📷 &nbsp;<em>captura051.png</em> — Formulario para crear un sprint nuevo</div>
         <figcaption>Añadir Sprint</figcaption>
       </figure>
-
-      <div class="back-top">
-        <a href="#top"><span class="arrow">↑</span> Volver al índice</a>
-      </div>
     </section>
 
     <!-- 5. Tareas -->
@@ -334,10 +564,6 @@
           <tr><td><strong>BLOQUEADA</strong></td><td>No puede avanzar por una dependencia externa</td></tr>
         </tbody>
       </table>
-
-      <div class="back-top">
-        <a href="#top"><span class="arrow">↑</span> Volver al índice</a>
-      </div>
     </section>
 
     <!-- 6. Motor de asignación -->
@@ -424,10 +650,6 @@
         El botón debería ser pulsado siempre que haya tareas nuevas sin candidatos calculados (mensaje ambar al presionar sobre la tarea).
         Tambien se debería pulsar si hemos añadido profesionales nuevos o se han modificado sus competencias y conocimientos.
       </div>
-
-      <div class="back-top">
-        <a href="#top"><span class="arrow">↑</span> Volver al índice</a>
-      </div>
     </section>
 
     <!-- 7. Dashboard -->
@@ -453,10 +675,6 @@
         El dashboard se actualiza cada vez que accedes a él. Para ver los datos más recientes,
         navega a otra sección y vuelve.
       </div>
-
-      <div class="back-top">
-        <a href="#top"><span class="arrow">↑</span> Volver al índice</a>
-      </div>
     </section>
 
     <!-- 8. Configuración -->
@@ -480,10 +698,6 @@
 
       <div class="info">
         Los cambios en roles y permisos tienen efecto en el siguiente inicio de sesión del usuario afectado.
-      </div>
-
-      <div class="back-top">
-        <a href="#top"><span class="arrow">↑</span> Volver al índice</a>
       </div>
     </section>
 
@@ -555,10 +769,6 @@
           El vídeo estará disponible próximamente en el repositorio del proyecto.
         </div>
       </details>
-
-      <div class="back-top">
-        <a href="#top"><span class="arrow">↑</span> Volver al índice</a>
-      </div>
     </section>
 
   </main>

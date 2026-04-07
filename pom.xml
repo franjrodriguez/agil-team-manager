@@ -116,6 +116,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <jvmArguments>-Djava.awt.headless=false</jvmArguments>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>

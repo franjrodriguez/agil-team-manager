@@ -2,6 +2,7 @@ package com.iesaguadulce.agilteammanager.controller.ui.dashboard;
 
 import com.iesaguadulce.agilteammanager.config.SpringContext;
 import com.iesaguadulce.agilteammanager.util.FotoUtil;
+import com.iesaguadulce.agilteammanager.util.HelpViewer;
 import com.iesaguadulce.agilteammanager.controller.ui.login.LoginController;
 import com.iesaguadulce.agilteammanager.controller.ui.perfil.MisTareasController;
 import com.iesaguadulce.agilteammanager.model.personas.Persona;
@@ -11,11 +12,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -291,7 +288,12 @@ public class MainController {
      */
     @FXML
     public void abrirCentroAyuda() {
-        abrirRecursoEnNavegador("/ayuda/centro-ayuda.html");
+        // abrirRecursoEnNavegador("/ayuda/centro-ayuda.html");
+        try {
+            new HelpViewer().mostrarAyuda();
+        } catch (IOException e) {
+            mostrarError("No se pudo abrir el centro de ayuda.\n" + e.getMessage());
+        }
     }
 
     /**
@@ -300,11 +302,32 @@ public class MainController {
      */
     @FXML
     public void abrirVideoDemo() {
-        abrirRecursoEnNavegador("/ayuda/video-demo.html");
-    }
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Vídeo Demostración");
+        alert.setHeaderText("AgilTeam Manager — Vídeo demostración");
+        alert.setContentText("El vídeo de demostración estará disponible próximamente en el repositorio del proyecto.");
+
+        ButtonType btnAnticipo = new ButtonType("Ver anticipo");
+        ButtonType btnSeguir   = new ButtonType("Seguir", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        alert.getButtonTypes().setAll(btnAnticipo, btnSeguir);
+
+        alert.showAndWait().ifPresent(respuesta -> {
+            if (respuesta == btnAnticipo) {
+                try {
+                    new ProcessBuilder("cmd", "/c", "start",
+                            "https://www.youtube.com/watch?v=udTYBxQ03YE&t=93s")
+                            .start();
+                } catch (IOException e) {
+                    mostrarError("No se pudo abrir el navegador.\n" + e.getMessage());
+                }
+            }
+        });    }
 
     /**
      * Abre un recurso del classpath en el navegador predeterminado del sistema.
+     * Si la app corre desde un JAR, extrae toda la carpeta /ayuda/ a un directorio
+     * temporal manteniendo la estructura relativa (HTML + imágenes + CSS).
      *
      * @param rutaRecurso  Ruta dentro del classpath (ej. "/ayuda/centro-ayuda.html")
      */
@@ -315,9 +338,59 @@ public class MainController {
                 mostrarError("No se encontró el archivo de ayuda:\n" + rutaRecurso);
                 return;
             }
-            new ProcessBuilder("cmd", "/c", "start", url.toExternalForm()).start();
+
+            java.nio.file.Path archivoAAbrir;
+
+            if ("file".equals(url.getProtocol())) {
+                // Desarrollo (IntelliJ): archivo normal en disco, abrir directamente
+                archivoAAbrir = java.nio.file.Path.of(url.toURI());
+            } else {
+                // Producción (JAR): extraer toda la carpeta /ayuda/ a un directorio temporal
+                // para que el navegador pueda resolver imágenes y CSS con rutas relativas
+                java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("agilteam_ayuda_");
+                extraerCarpetaDelJar("/ayuda/", tempDir);
+                String nombreArchivo = rutaRecurso.substring("/ayuda/".length());
+                archivoAAbrir = tempDir.resolve(nombreArchivo);
+            }
+
+            new ProcessBuilder("cmd", "/c", "start", archivoAAbrir.toUri().toString()).start();
+
         } catch (Exception e) {
             mostrarError("No se pudo abrir el navegador.\n" + e.getMessage());
+        }
+    }
+
+    /**
+     * Extrae recursivamente una carpeta del JAR al directorio de destino,
+     * preservando la estructura de subdirectorios para que las rutas relativas
+     * (imágenes, CSS) funcionen correctamente en el navegador.
+     * Usa JarFile directamente para evitar conflictos con el FileSystem ya abierto por la JVM.
+     *
+     * @param carpetaRecurso  Ruta de la carpeta en el classpath (ej. "/ayuda/")
+     * @param destino         Directorio de destino en el sistema de archivos
+     */
+    private void extraerCarpetaDelJar(String carpetaRecurso, java.nio.file.Path destino) throws Exception {
+        java.io.File jarFile = new java.io.File(
+                getClass().getProtectionDomain().getCodeSource().getLocation().toURI());
+
+        // Normalizar prefijo: "/ayuda/" → "ayuda/"
+        String prefijo = carpetaRecurso.startsWith("/") ? carpetaRecurso.substring(1) : carpetaRecurso;
+
+        try (java.util.jar.JarFile jar = new java.util.jar.JarFile(jarFile)) {
+            java.util.Enumeration<java.util.jar.JarEntry> entries = jar.entries();
+            while (entries.hasMoreElements()) {
+                java.util.jar.JarEntry entry = entries.nextElement();
+                if (entry.getName().startsWith(prefijo) && !entry.isDirectory()) {
+                    // Ruta relativa dentro de la carpeta (ej. "images/captura01.png")
+                    String rutaRelativa = entry.getName().substring(prefijo.length());
+                    java.nio.file.Path dest = destino.resolve(rutaRelativa);
+                    java.nio.file.Files.createDirectories(dest.getParent());
+                    try (java.io.InputStream is = jar.getInputStream(entry)) {
+                        java.nio.file.Files.copy(is, dest,
+                                java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                    }
+                }
+            }
         }
     }
 

@@ -134,7 +134,7 @@ echo.
 echo (La ventana de la aplicación aparecerá en unos segundos)
 echo.
 
-java -jar "!JAR!"
+java "-Djava.awt.headless=false" -jar "!JAR!"
 
 echo.
 echo Aplicación finalizada.
